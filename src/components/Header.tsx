@@ -1,6 +1,6 @@
 "use client";
-import Link from 'next/link';
-import { Menu, User } from 'lucide-react';
+import Link from "next/link";
+import { Menu, User } from "lucide-react";
 import "../styles/common/_header.scss";
 
 export default function Header() {

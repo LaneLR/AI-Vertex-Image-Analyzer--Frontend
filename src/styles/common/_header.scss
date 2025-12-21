@@ -1,58 +1,58 @@
 .header {
-	position: sticky;
-	top: 0;
-	z-index: 50;
-	width: 100%;
-	background: rgba(0,0,0,0.8);
-	backdrop-filter: blur(8px);
-	border-bottom: 1px solid rgba(244,244,245,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(244, 244, 245, 0.1);
 
-	&__container {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 1rem;
-		max-width: 36rem;
-		margin: 0 auto;
-	}
+  &__container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    max-width: 36rem;
+    margin: 0 auto;
+  }
 
-	&__menu-btn,
-	&__account-btn {
-		padding: 0.5rem;
-		border-radius: 999px;
-		background: none;
-		border: none;
-		transition: background 0.2s;
-		cursor: pointer;
-		&:hover {
-			background: rgba(244,244,245,0.1);
-		}
-	}
+  &__menu-btn,
+  &__account-btn {
+    padding: 0.5rem;
+    border-radius: 999px;
+    background: none;
+    border: none;
+    transition: background 0.2s;
+    cursor: pointer;
+    &:hover {
+      background: rgba(244, 244, 245, 0.1);
+    }
+  }
 
-	&__menu-icon {
-		width: 1.5rem;
-		height: 1.5rem;
-		color: #F4F4F5;
-	}
+  &__menu-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #f4f4f5;
+  }
 
-	&__brand {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		text-decoration: none;
-	}
+  &__brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+  }
 
-	&__title {
-		font-size: 1.25rem;
-		font-weight: 900;
-		letter-spacing: -0.04em;
-		text-transform: uppercase;
-		color: #F4F4F5;
-	}
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    text-transform: uppercase;
+    color: #f4f4f5;
+  }
 
-	&__account-icon {
-		width: 1.5rem;
-		height: 1.5rem;
-		color: #3387b7;
-	}
+  &__account-icon {
+    width: 1.5rem;
+    height: 1.5rem;
+    color: #3387b7;
+  }
 }
