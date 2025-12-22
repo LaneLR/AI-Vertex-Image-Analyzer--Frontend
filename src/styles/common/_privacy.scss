@@ -1,0 +1,83 @@
+.privacy-page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 80px 24px;
+  color: #e5e5e5;
+  line-height: 1.6;
+  background-color: transparent;
+  font-family: 'Inter', Arial, sans-serif;
+
+  &__header {
+    margin-bottom: 60px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 20px;
+  }
+
+  &__title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+
+    @media (max-width: 440px) {
+      font-size: 2rem;
+    }
+  }
+
+  &__last-updated {
+    font-size: 0.9rem;
+    color: #666;
+  }
+
+  &__section {
+    margin-bottom: 40px;
+
+    &-title {
+      font-size: 1.25rem;
+      color: #ffffff;
+      margin-bottom: 16px;
+      font-weight: 600;
+    }
+  }
+
+  &__text {
+    color: #a1a1a1;
+    margin-bottom: 20px;
+  }
+
+  &__navigation {
+    margin-top: 80px;
+    padding: 40px;
+    background-color: #0a0a0a;
+    border: 1px solid #1a1a1a;
+    border-radius: 12px;
+    text-align: center;
+  }
+
+  &__nav-text {
+    margin-bottom: 20px;
+    font-size: 1.1rem;
+  }
+
+  &__links {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+
+    @media (max-width: 440px) {
+      flex-direction: column;
+      gap: 16px;
+    }
+  }
+
+  &__link {
+    color: #ffffff;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: #888; // Or your brand accent color
+    }
+  }
+}

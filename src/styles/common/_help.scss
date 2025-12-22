@@ -1,0 +1,130 @@
+.help-page {
+  --primary-accent: #0070f3; // Example accent color
+  --bg-card: #111111;
+  --border-color: #333333;
+
+  font-family: 'Inter', Arial, sans-serif;
+  padding: 0 20px 80px;
+  background-color: transparent;
+//   color: #fff;
+
+  &__hero {
+    padding: 40px 0 60px;
+    text-align: center;
+  }
+
+  &__title {
+    font-size: 2.5rem;
+    margin-bottom: 30px;
+
+    @media (max-width: 440px) {
+      font-size: 2.3rem;
+    }
+  }
+
+  &__search-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  &__search-input {
+    width: 100%;
+    padding: 15px 25px;
+    border-radius: 50px;
+    border: 1px solid var(--border-color);
+    background: #1a1a1a;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+
+    &:focus {
+      border-color: var(--primary-accent);
+    }
+  }
+
+  &__categories {
+    max-width: 1100px;
+    margin: 40px auto 0;
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr; // Stack on mobile
+    }
+  }
+
+  &__category-card {
+    background: var(--bg-card);
+    padding: 30px;
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+
+    // Modifier for a specific type of card
+    &--alert {
+      border-color: #ff4d4d22;
+      background: linear-gradient(180deg, #111 0%, #1a1111 100%);
+    }
+  }
+
+  &__category-title {
+    font-size: 1.2rem;
+    margin-bottom: 20px;
+    color: var(--primary-accent);
+  }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  &__list-item {
+    padding: 10px 0;
+    color: #888;
+    border-bottom: 1px solid #222;
+    cursor: pointer;
+    transition: color 0.2s;
+
+    &:hover {
+      color: #fff;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__footer {
+    margin-top: 80px;
+    text-align: center;
+    border-top: 1px solid var(--border-color);
+    padding-top: 40px;
+  }
+
+  &__footer-text {
+    margin-bottom: 20px;
+    color: #888;
+  }
+
+  &__btn {
+    padding: 12px 30px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+
+    &--primary {
+      background-color: #fff;
+      color: #000;
+      transition: opacity 0.2s;
+
+      &:hover {
+        opacity: 0.9;
+      }
+    }
+  }
+}

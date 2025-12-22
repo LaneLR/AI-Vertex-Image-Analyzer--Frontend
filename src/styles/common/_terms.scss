@@ -1,0 +1,83 @@
+.terms-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 80px 24px;
+  color: #d1d1d1;
+  background-color: transparent;
+
+  &__header {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+
+  &__title {
+    font-size: 3rem;
+    color: #ffffff;
+    margin-bottom: 16px;
+    letter-spacing: -0.02em;
+
+    @media (max-width: 440px) {
+      font-size: 2.2rem;
+    }
+  }
+
+  &__subtitle {
+    font-size: 1.1rem;
+    color: #666;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: 50px;
+  }
+
+  &__clause {
+    border-left: 2px solid #222;
+    padding-left: 30px;
+    transition: border-color 0.3s ease;
+
+    &:hover {
+      border-color: #ffffff; // Subtle brand interaction
+    }
+
+    &-heading {
+      font-size: 1.4rem;
+      color: #ffffff;
+      margin-bottom: 15px;
+      font-weight: 600;
+    }
+  }
+
+  &__text {
+    line-height: 1.8;
+    color: #a1a1a1;
+
+    strong {
+      color: #ffffff;
+    }
+  }
+
+  &__footer {
+    margin-top: 60px;
+    padding: 30px;
+    background: #0a0a0a;
+    border-radius: 8px;
+    text-align: center;
+
+    &-note {
+      font-size: 0.95rem;
+    }
+
+    &-link {
+      color: #ffffff;
+      font-weight: 500;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+
+      &:hover {
+        color: #888;
+      }
+    }
+  }
+}

@@ -12,7 +12,6 @@ import {
   Bell,
 } from "lucide-react";
 import Link from "next/link";
-import "../../styles/common/_account.scss";
 
 export default function AccountPage() {
   const { isSubscriber, setIsSubscriber, dailyScansUsed, maxFreeScans } =

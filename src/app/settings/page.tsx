@@ -13,7 +13,6 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import Link from "next/link";
-import "../../styles/common/_settings.scss";
 
 export default function SettingsPage() {
   // Toggle States
