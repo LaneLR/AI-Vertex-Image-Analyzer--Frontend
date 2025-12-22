@@ -58,6 +58,9 @@ export default function Footer() {
           <p className="footer__copyright">
             © 2025 FLIP FINDER AI • VERSION 1.0.4
           </p>
+          <p className="footer__copyright">
+            POWERED BY GEMINI
+          </p>
           <div className="footer__social">
             <Github className="footer__social-icon" />
           </div>

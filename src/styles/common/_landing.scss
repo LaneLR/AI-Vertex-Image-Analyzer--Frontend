@@ -1,27 +1,7 @@
 .landing {
-    background-color: #f8f8f8;
+    background-color: transparent;
     min-height: 100vh;
     font-family: 'Inter', Arial, sans-serif;
-
-    &__nav {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 1.5rem;
-        max-width: 36rem;
-        margin: 0 auto;
-        border-bottom: 1px solid rgba(244, 244, 245, 0.1);
-        background: #fff;
-    }
-
-    &__nav-icon {
-        width: 1.5rem;
-        height: 1.5rem;
-        color: #000;
-        &--accent {
-            color: #3387b7;
-        }
-    }
 
     &__title {
         font-size: 2rem;
@@ -44,8 +24,8 @@
         aspect-ratio: 1 / 1;
         width: 100%;
         border-radius: 1.5rem;
+        border: 1px solid rgb(124, 124, 124);
         background: rgba(244, 244, 245, 0.05);
-        border: 2px dashed rgba(244, 244, 245, 0.2);
         overflow: hidden;
         display: flex;
         align-items: center;
@@ -114,20 +94,31 @@
     }
 
     &__actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        gap: 20px;
+
+        @media screen and (max-width: 440px) {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            height: fit-content;
+        }
     }
 
     &__action {
         display: flex;
         align-items: center;
         justify-content: center;
+        width: 100%;
         gap: 0.5rem;
         font-weight: bold;
         border-radius: 1rem;
         font-size: 1rem;
-        padding: 1rem 0;
+        padding: 1rem;
         text-transform: uppercase;
         transition: all 0.2s;
         cursor: pointer;
@@ -137,12 +128,21 @@
             color: #fff;
             &:hover { opacity: 0.9; }
             &:active { transform: scale(0.97); }
+
+            @media screen and (max-width: 440px) {
+                gap: 1rem;
+            }
         }
         &--gallery {
             background: #F4F4F5;
             color: #000;
             &:hover { background: #fff; }
             &:active { transform: scale(0.97); }
+            text-align: center;
+         
+            @media screen and (max-width: 440px) {
+                gap: 1rem;
+            }
         }
     }
 

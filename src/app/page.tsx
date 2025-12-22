@@ -44,12 +44,6 @@ export default function FlipFinderHome() {
 
   return (
     <main className="landing">
-      {/* HEADER */}
-      <nav className="landing__nav">
-        <Menu className="landing__nav-icon" />
-        <h1 className="landing__title">Flip Finder</h1>
-        <CloudUpload className="landing__nav-icon landing__nav-icon--accent" />
-      </nav>
 
       <div className="landing__container">
         {/* IMAGE VIEWPORT */}
@@ -132,12 +126,6 @@ export default function FlipFinderHome() {
             </div>
           </div>
         )}
-
-        {/* FOOTER CALL TO ACTION */}
-        <p className="landing__footer-cta">
-          Upgrade to <span className="landing__footer-cta--highlight">PRO</span>{" "}
-          for unlimited scans
-        </p>
       </div>
     </main>
   );
