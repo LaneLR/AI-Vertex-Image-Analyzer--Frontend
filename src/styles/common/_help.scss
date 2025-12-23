@@ -9,7 +9,7 @@
 //   color: #fff;
 
   &__hero {
-    padding: 40px 0 0;
+    // padding: 40px 0 0;
     text-align: center;
   }
 
@@ -58,7 +58,7 @@
   }
 
   &__category-card {
-    background-color: rgb(238, 238, 238);
+    background-color: #0A0A0A;
     padding: 30px;
     border-radius: 12px;
     // border: 1px solid var(--border-color);
@@ -74,9 +74,9 @@
   }
 
   &__category-title {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     margin-bottom: 20px;
-    color: var(--primary-accent);
+    color: #F5F5F5;
   }
 
   &__list {
@@ -87,13 +87,13 @@
 
   &__list-item {
     padding: 10px 0;
-    color: #888;
-    border-bottom: 1px solid #222;
+    color: #FFF;
+    border-bottom: 1px solid #5c5c5c;
     cursor: pointer;
     transition: color 0.2s;
 
     &:hover {
-      color: #000;
+      color: #919191;
     }
 
     &:last-child {
@@ -110,7 +110,7 @@
 
   &__footer-text {
     margin-bottom: 20px;
-    color: #888;
+    color: #666;
   }
 
   &__btn {

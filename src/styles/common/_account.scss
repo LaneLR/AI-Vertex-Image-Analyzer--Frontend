@@ -39,7 +39,7 @@
   &__container {
     max-width: 28rem;
     margin: 0 auto;
-    padding: 1.5rem;
+    // padding: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 2rem;
@@ -72,7 +72,7 @@
   }
   &__profile-joined {
     font-size: 1rem;
-    color: #747474
+    color: #666
   }
 
   &__upgrade-btn {
@@ -100,7 +100,7 @@
   }
   &__scans-left {
     margin-top: 0.5rem;
-    color: #000;
+    color: #666;
     font-size: 1rem;
   }
 
@@ -186,14 +186,15 @@
   &__usage-meter-bar-bg {
     width: 100%;
     height: 0.5rem;
-    background: rgba(244, 244, 245, 0.1);
+    background: rgba(255, 255, 255, 0.1); 
     border-radius: 999px;
     overflow: hidden;
   }
   &__usage-meter-bar {
     height: 100%;
-    background: #ff6000;
-    transition: width 1s;
+    background: #ff6000; 
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #ff6000;
   }
   &__usage-meter-note {
     font-size: 12px;

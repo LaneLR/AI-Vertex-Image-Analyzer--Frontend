@@ -45,7 +45,7 @@ export default function Header() {
         </button>
 
         <Link href="/" className="header__brand">
-          <h1 className="header__title">Flip Finder</h1>
+          <h1 className="header__title"><span className="header__title-first-word">Flip </span><span className="header__title-second-word">Finder</span></h1>
         </Link>
 
         <Link href="/account" className="header__account-btn">

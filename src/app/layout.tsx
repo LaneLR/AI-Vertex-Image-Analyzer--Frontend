@@ -1,10 +1,8 @@
 import React from "react";
 import type { Metadata } from "next";
 import "./globals.css";
-import { AppProvider } from "@/context/AppContext";
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
 import "@/styles/main.scss";
+import ClientWrapper from "../components/ClientWrapper";
 
 export const metadata: Metadata = {
   title: "Flip Finder | AI Thrift Appraisal",
@@ -15,11 +13,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className="global">
       <body>
-        <AppProvider>
-          <Header />
-          <div>{children}</div>
-          <Footer />
-        </AppProvider>
+        {/* We move the AppProvider and Header logic into a ClientWrapper */}
+        <ClientWrapper>
+          {children}
+        </ClientWrapper>
       </body>
     </html>
   );

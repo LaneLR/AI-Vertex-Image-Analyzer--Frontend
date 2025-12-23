@@ -2,7 +2,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background-color: rgba(0,0,0,0.8);
+  background-color: #2E2E2E;
   border-bottom: 1px solid rgba(white, 0.1);
   height: 60px;
 
@@ -37,15 +37,34 @@
     text-decoration: none;
   }
 
-  &__title {
-    font-size: 1.25rem;
+  &__title-first-word {
+    font-size: 1.5rem;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: -0.02em;
-    background: linear-gradient(to right, #ff6000, #3387b7);
+    background-color: #ff6000;
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
+
+    @media (max-width: 440px) {
+      font-size: 1.25rem;
+    }
+  }
+
+  &__title-second-word {
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -0.02em;
+    background-color: #fff;
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    @media (max-width: 440px) {
+      font-size: 1.25rem;
+    }
   }
 
   // Dropdown Styles

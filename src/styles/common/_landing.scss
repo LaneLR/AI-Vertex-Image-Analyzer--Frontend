@@ -85,6 +85,10 @@
         gap: 0.5rem;
         align-items: center;
         justify-content: center;
+
+        &--text {
+            color: #666;
+        }
     }
 
     &__placeholder-icon {
@@ -299,7 +303,7 @@
     }
 
     &__source-item {
-    color: rgba(0, 0, 0, 0.7);
-    font-weight: 500;
+        color: rgba(0, 0, 0, 0.7);
+        font-weight: 500;
     }
 }
