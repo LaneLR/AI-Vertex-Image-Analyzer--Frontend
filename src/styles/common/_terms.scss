@@ -1,7 +1,7 @@
 .terms-page {
   max-width: 900px;
   margin: 0 auto;
-  padding: 80px 24px;
+  padding: 0 20px 40px;
   color: #d1d1d1;
   background-color: transparent;
 
@@ -12,7 +12,7 @@
 
   &__title {
     font-size: 3rem;
-    color: #ffffff;
+    color: #000;
     margin-bottom: 16px;
     letter-spacing: -0.02em;
 
@@ -38,12 +38,12 @@
     transition: border-color 0.3s ease;
 
     &:hover {
-      border-color: #ffffff; // Subtle brand interaction
+      border-color: #000; 
     }
 
     &-heading {
       font-size: 1.4rem;
-      color: #ffffff;
+      color: #000;
       margin-bottom: 15px;
       font-weight: 600;
     }
@@ -54,7 +54,7 @@
     color: #a1a1a1;
 
     strong {
-      color: #ffffff;
+      color: #000;
     }
   }
 

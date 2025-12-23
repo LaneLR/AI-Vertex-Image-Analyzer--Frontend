@@ -1,59 +1,111 @@
 .header {
   position: sticky;
   top: 0;
-  z-index: 50;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.8);
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(244, 244, 245, 0.1);
-  font-family: 'Inter', Arial, sans-serif;
+  z-index: 100;
+  background-color: rgba(0,0,0,0.8);
+  border-bottom: 1px solid rgba(white, 0.1);
+  height: 60px;
 
   &__container {
+    max-width: 1200px;
+    margin: 0 auto;
+    height: 100%;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1rem;
-    max-width: 36rem;
-    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
   }
 
-  &__menu-btn,
-  &__account-btn {
-    padding: 0.5rem;
-    border-radius: 999px;
+  &__account-icon {
+    color: #3387b7;
+  }
+
+  &__menu-btn, &__account-btn {
     background: none;
     border: none;
-    transition: background 0.2s;
+    color: white;
     cursor: pointer;
-    &:hover {
-      background: rgba(244, 244, 245, 0.1);
-    }
-  }
+    display: flex;
+    align-items: center;
+    transition: color 0.2s;
 
-  &__menu-icon {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: #f4f4f5;
+    &:hover { color: #ff6000; }
   }
 
   &__brand {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
     text-decoration: none;
   }
 
   &__title {
     font-size: 1.25rem;
-    font-weight: 900;
-    letter-spacing: -0.04em;
+    font-weight: 800;
     text-transform: uppercase;
-    color: #f4f4f5;
+    letter-spacing: -0.02em;
+    background: linear-gradient(to right, #ff6000, #3387b7);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
 
-  &__account-icon {
-    width: 1.5rem;
-    height: 1.5rem;
-    color: #3387b7;
+  // Dropdown Styles
+  &__dropdown {
+    position: absolute;
+    top: 60px;
+    left: 1.5rem;
+    width: 200px;
+    background: #1a1a1a;
+    border: 1px solid rgba(white, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    animation: slideDown 0.2s ease-out;
   }
+
+  &__list {
+    list-style: none;
+    padding: 0.5rem 0;
+    margin: 0;
+  }
+
+  &__item {
+    display: block;
+  }
+
+  &__link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.75rem 1rem;
+    color: rgba(white, 0.8);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(white, 0.05);
+      color: #ff6000;
+    }
+
+    &--logout {
+      color: #ff4d4d;
+      &:hover { color: #ff3333; background: rgba(#ff4d4d, 0.05); }
+    }
+  }
+
+  &__divider {
+    height: 1px;
+    background: rgba(white, 0.1);
+    margin: 0.5rem 0;
+  }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
