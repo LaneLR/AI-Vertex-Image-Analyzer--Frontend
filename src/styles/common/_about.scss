@@ -1,15 +1,18 @@
 .about-page {
-  padding: 40px 20px 0;
+  // padding: 40px 20px 0 0;
   max-width: 1200px;
   margin: 0 auto;
   background-color: transparent;
   color: #f4f4f4;
   font-family: 'Inter', Arial, sans-serif;
 
+  &__body {
+    padding: 0 20px;
+  }
+
   &__hero {
     text-align: center;
     padding: 40px 0 60px;
-    border-bottom: 1px solid #333;
   }
 
   &__title {

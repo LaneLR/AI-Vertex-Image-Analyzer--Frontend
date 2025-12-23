@@ -11,9 +11,19 @@ import {
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import "../styles/common/_landing.scss";
+import { resizeImage } from "@/utils/imageUtils";
+
+interface GeminiResult {
+  sources: string[];
+  title: string;
+  description: string;
+  priceRange: string;
+  platform: string;
+}
 
 export default function FlipFinderHome() {
   const [image, setImage] = useState<string | null>(null);
+  const [resultData, setResultData] = useState<GeminiResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -21,22 +31,55 @@ export default function FlipFinderHome() {
   const { isSubscriber, dailyScansUsed, maxFreeScans, incrementScans } =
     useApp();
 
-  // Mock function to simulate AI Analysis
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    // const isTestingUI = true; // Set to true to save API calls
+
+    // if (isTestingUI) {
+    //   await new Promise(resolve => setTimeout(resolve, 2000)); // Simulate delay
+    //   setResultData({
+    //     title: "MOCK: Vintage Denim Jacket",
+    //     description: "This is a test description to check the SCSS layout.",
+    //     priceRange: "$50 - $70",
+    //     platform: "eBay"
+    //   });
+    //   setIsAnalyzing(false);
+    //   setShowResult(true);
+    //   return;
+    // }
+    
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        setImage(event.target?.result as string);
-        setIsAnalyzing(true);
-        setShowResult(false);
-        setTimeout(() => {
-          setIsAnalyzing(false);
-          setShowResult(true);
-        }, 3000);
-      };
-      incrementScans();
-      reader.readAsDataURL(file);
+    if (!file) return;
+
+    if (!isSubscriber && dailyScansUsed >= maxFreeScans) {
+      alert("Daily limit reached!");
+      return;
+    }
+
+    setImage(URL.createObjectURL(file));
+    setIsAnalyzing(true);
+
+    try {
+      const optimizedBlob = await resizeImage(file, 768)
+;      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await fetch("/api/analyze", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+
+      setResultData(data); 
+      incrementScans(); 
+    } catch (err) {
+      console.error("Upload failed", err);
+    } finally {
+      setIsAnalyzing(false);
+      setShowResult(true);
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 100);
     }
   };
 
@@ -44,7 +87,6 @@ export default function FlipFinderHome() {
 
   return (
     <main className="landing">
-
       <div className="landing__container">
         {/* IMAGE VIEWPORT */}
         <div className="landing__viewport">
@@ -89,39 +131,32 @@ export default function FlipFinderHome() {
           />
         </div>
 
-        {/* RESULTS CARD (Only shown after analysis) */}
-        {showResult && (
+        {showResult && resultData && (
           <div className="landing__result-animate">
             <div className="landing__result-badge">AI Appraisal Complete!</div>
             <div className="landing__result-card">
               <p className="landing__result-label">Estimated Value</p>
               <h2 className="landing__result-value">
-                $80 - 120 <span className="landing__result-currency">USD</span>
+                {resultData.priceRange} <span className="landing__result-currency">USD</span>
               </h2>
+
               <div className="landing__result-details">
-                <p className="landing__result-desc">
-                  Vintage 90s Embroidered Denim Jacket. Features chain-stitch
-                  embroidery.
-                  <span className="landing__result-brand">
-                    {" "}
-                    Brand: Levi's (Verified)
-                  </span>
-                </p>
-                <div className="landing__result-tags">
-                  <span className="landing__result-tag">Condition: 8/10</span>
-                  <span className="landing__result-tag landing__result-tag--demand">
-                    Demand: High
-                  </span>
+                <h3 className="landing__result-title">{resultData.title}</h3>
+                <p className="landing__result-desc">{resultData.description}</p>
+
+                <div className="landing__sources-list">
+                  <p className="landing__sources-header">Market Sources:</p>
+                  {resultData.sources?.map((source: string, index: number) => (
+                    <div key={index} className="landing__source-item">
+                      <span className="landing__needs-class"></span>
+                      {source}
+                    </div>
+                  ))}
                 </div>
               </div>
+
               <div className="landing__result-actions">
-                <button className="landing__result-btn landing__result-btn--ebay">
-                  <ExternalLink className="landing__result-btn-icon" /> List on
-                  eBay
-                </button>
-                <button className="landing__result-btn landing__result-btn--log">
-                  <Archive className="landing__result-btn-icon" /> Save to Log
-                </button>
+                {/* ... existing buttons ... */}
               </div>
             </div>
           </div>

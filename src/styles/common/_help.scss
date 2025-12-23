@@ -9,7 +9,7 @@
 //   color: #fff;
 
   &__hero {
-    padding: 40px 0 60px;
+    padding: 40px 0 0;
     text-align: center;
   }
 
@@ -58,16 +58,19 @@
   }
 
   &__category-card {
-    background: var(--bg-card);
+    background-color: rgb(238, 238, 238);
     padding: 30px;
     border-radius: 12px;
-    border: 1px solid var(--border-color);
+    // border: 1px solid var(--border-color);
 
     // Modifier for a specific type of card
-    &--alert {
-      border-color: #ff4d4d22;
-      background: linear-gradient(180deg, #111 0%, #1a1111 100%);
+    &:not(:last-child) {
+      border-bottom: 1px solid rgba(27, 27, 27, 0.1);
     }
+    // &--alert {
+    //   border-color: #ff4d4d22;
+    //   background: linear-gradient(180deg, #111 0%, #1a1111 100%);
+    // }
   }
 
   &__category-title {
@@ -90,7 +93,7 @@
     transition: color 0.2s;
 
     &:hover {
-      color: #fff;
+      color: #000;
     }
 
     &:last-child {

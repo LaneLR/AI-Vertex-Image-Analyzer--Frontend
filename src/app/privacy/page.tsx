@@ -1,9 +1,16 @@
 import React from "react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default function PrivacyPage() {
   return (
     <main className="privacy-page">
+      <nav className="account__nav">
+        <Link href="/" className="account__nav-back">
+          <ArrowLeft className="account__nav-back-icon" />
+        </Link>
+        <h1 className="account__nav-title">PRIVACY</h1>
+      </nav>
       <header className="privacy-page__header">
         <h1 className="privacy-page__title">Privacy Policy</h1>
         <p className="privacy-page__last-updated">Last Updated: December 2025</p>

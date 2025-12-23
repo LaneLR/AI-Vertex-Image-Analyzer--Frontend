@@ -27,7 +27,7 @@ export default function SettingsPage() {
         <Link href="/account" className="settings__nav-back">
           <ArrowLeft className="settings__nav-back-icon" />
         </Link>
-        <h1 className="settings__nav-title">Settings</h1>
+        <h1 className="settings__nav-title">SETTINGS</h1>
       </nav>
 
       <div className="settings__container">

@@ -1,18 +1,27 @@
+import { ArrowLeft } from "lucide-react";
 import React from "react";
+import Link from "next/link";
 
 export default function HelpPage() {
   return (
     <main className="help-page">
       {/* Search/Hero Section */}
+      <nav className="account__nav">
+        <Link href="/" className="account__nav-back">
+          <ArrowLeft className="account__nav-back-icon" />
+        </Link>
+        <h1 className="account__nav-title">HELP</h1>
+      </nav>
+
       <section className="help-page__hero">
         <h1 className="help-page__title">How can we help?</h1>
-        <div className="help-page__search-container">
+        {/* <div className="help-page__search-container">
           <input 
             type="text" 
             placeholder="Search for articles, guides..." 
             className="help-page__search-input"
           />
-        </div>
+        </div> */}
       </section>
 
       {/* Help Categories */}

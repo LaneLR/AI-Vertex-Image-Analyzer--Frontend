@@ -291,4 +291,15 @@
             font-weight: bold;
         }
     }
+
+    &__sources-list {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    &__source-item {
+    color: rgba(0, 0, 0, 0.7);
+    font-weight: 500;
+    }
 }

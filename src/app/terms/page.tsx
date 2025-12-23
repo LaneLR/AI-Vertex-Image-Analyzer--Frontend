@@ -1,9 +1,16 @@
 import React from "react";
 import Link from "next/link";
+import { ArrowLeft } from "lucide-react";
 
 export default function TermsPage() {
   return (
     <main className="terms-page">
+      <nav className="settings__nav">
+        <Link href="/" className="settings__nav-back">
+          <ArrowLeft className="settings__nav-back-icon" />
+        </Link>
+        <h1 className="settings__nav-title">TERMS OF SERVICE</h1>
+      </nav>
       <header className="terms-page__header">
         <h1 className="terms-page__title">Terms of Service</h1>
         <p className="terms-page__subtitle">Please read these terms carefully before using Flip Finder.</p>

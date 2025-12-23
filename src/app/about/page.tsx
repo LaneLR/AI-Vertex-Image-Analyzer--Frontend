@@ -1,9 +1,20 @@
+import { ArrowLeft } from "lucide-react";
 import React from "react";
+import Link from "next/link";
 
 export default function AboutPage() {
   return (
     <main className="about-page">
       {/* Hero Section */}
+      <nav className="settings__nav">
+        <Link href="/" className="settings__nav-back">
+          <ArrowLeft className="settings__nav-back-icon" />
+        </Link>
+        <h1 className="settings__nav-title">ABOUT</h1>
+      </nav>
+      <div className="about-page__body">
+
+      
       <section className="about-page__hero">
         <h1 className="about-page__title">About Flip Finder</h1>
         <p className="about-page__subtitle">
@@ -18,7 +29,7 @@ export default function AboutPage() {
           <p className="about-page__text">
             Flip Finder was built for the modern treasure hunter. We combine 
             cutting-edge AI vision technology with real-time market data to 
-            help you identify, value, and flip thrift store finds instantly.
+            help you identify, value, and flip thrift store finds.
           </p>
         </div>
 
@@ -44,11 +55,11 @@ export default function AboutPage() {
           </div>
           <div className="about-page__section">
             <p className="about-page__text">
-                *Flip Finder is not a financial advisor. Use our tools responsibly.
+                *Flip Finder is an AI tool that provides price estimates. Use our tools responsibly.
             </p>
           </div>
         </div>
-      </section>
+      </section></div>
     </main>
   );
 }

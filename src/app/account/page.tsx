@@ -31,7 +31,7 @@ export default function AccountPage() {
         <Link href="/" className="account__nav-back">
           <ArrowLeft className="account__nav-back-icon" />
         </Link>
-        <h1 className="account__nav-title">Account</h1>
+        <h1 className="account__nav-title">ACCOUNT</h1>
       </nav>
 
       <div className="account__container">
@@ -108,9 +108,9 @@ export default function AccountPage() {
                   ></div>
                 </div>
                 <p className="account__usage-meter-note">Resets at midnight</p>
-                <button className="account__upgrade-btn account__upgrade-btn--full">
+                {/* <button className="account__upgrade-btn account__upgrade-btn--full">
                   UPGRADE TO UNLIMITED
-                </button>
+                </button> */}
               </div>
             )}
             {isSubscriber && (
