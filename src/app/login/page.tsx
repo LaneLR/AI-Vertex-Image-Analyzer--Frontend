@@ -1,3 +1,4 @@
+import UnifiedAuthPage from "@/components/AuthPage";
 import LoginClient from "../../components/LoginClient";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
@@ -16,5 +17,5 @@ export default async function LoginPage() {
     redirect("/");
   }
 
-  return <LoginClient />;
+  return <UnifiedAuthPage />;
 }

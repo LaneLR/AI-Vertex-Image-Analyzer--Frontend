@@ -1,38 +1,34 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { NextResponse } from 'next/server';
-import User from '../../../../lib/models/User';
+import User from '@/lib/models/User';
+import { sendVerificationEmail } from '@/lib/mail';
 
 export async function POST(req: Request) {
   try {
     const { email, password, firstName } = await req.json();
-
-    // 1. Validation
-    if (!email || !password) {
-      return NextResponse.json({ error: "Missing fields" }, { status: 400 });
-    }
-
-    // 2. Check if user exists
+    
+    // 1. Check if user already exists
     const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return NextResponse.json({ error: "Email already in use" }, { status: 409 });
+      return NextResponse.json({ error: "Email already in use" }, { status: 400 });
     }
 
-    // 3. Create User (Sequelize hook handles hashing)
-    const newUser = await User.create({
+    const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // 2. Create unverified user
+    await User.create({
       email,
-      password,
+      password, // Hooks in User.ts will hash this
       firstName,
-      subscriptionStatus: 'basic'
+      verificationCode: otpCode,
+      isVerified: false
     });
 
-    // 4. Return success (toJSON strips the password)
-    return NextResponse.json({ 
-      message: "User created successfully", 
-      user: newUser 
-    }, { status: 201 });
+    // 3. Send Email
+    await sendVerificationEmail(email, otpCode);
 
+    return NextResponse.json({ message: "Verification code sent" });
   } catch (error: any) {
-    console.error("Registration Error:", error);
+    console.error("REGISTRATION_ERROR:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

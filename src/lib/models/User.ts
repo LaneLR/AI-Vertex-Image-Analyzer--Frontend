@@ -12,6 +12,8 @@ interface UserAttributes {
   dailyScansCount: number;
   lastScanDate: string;
   stripeCustomerId?: string;
+  isVerified?: boolean;
+  verificationCode?: string;
 }
 
 // Define creation attributes
@@ -26,6 +28,8 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public dailyScansCount!: number;
   public lastScanDate!: string;
   public stripeCustomerId!: string;
+  public isVerified!: boolean;
+  public verificationCode!: string;
 
   // Security: Remove password from JSON responses
   toJSON() {
@@ -53,7 +57,7 @@ User.init({
   },
   password: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   firstName: {
     type: DataTypes.STRING,
@@ -74,7 +78,15 @@ User.init({
   stripeCustomerId: {
     type: DataTypes.STRING,
     allowNull: true
-  }
+  },
+  isVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  verificationCode: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
 }, {
   sequelize,
   modelName: 'User',
