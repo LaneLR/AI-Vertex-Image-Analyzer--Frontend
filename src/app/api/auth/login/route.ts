@@ -45,7 +45,12 @@ export async function POST(req: Request) {
     return response;
 
   } catch (error: any) {
-    console.error("Login Error:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+      // This will print the SPECIFIC error (e.g., "no pg_hba.conf entry") 
+      // to your Render service logs.
+      console.error("FULL DATABASE ERROR:", error); 
+      return NextResponse.json({ 
+        error: "Internal Server Error", 
+        details: error.message // Temporarily send this to your frontend to see it in the browser
+      }, { status: 500 });
   }
 }
