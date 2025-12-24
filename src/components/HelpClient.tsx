@@ -3,8 +3,17 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { useState } from "react";
+import InfoModal from "./InfoModal";
 
 export default function HelpClient() {
+  const [activeModal, setActiveModal] = useState<{title: string, content: string} | null>(null);
+
+  const helpTopics = [
+    { title: "AI Appraisals", content: "Our AI analyzes thousands of historical market data points from eBay, Poshmark, and Grailed to give you an estimate based on current demand." },
+    { title: "Payment Methods", content: "We currently support Stripe, Apple Pay, and Google Pay for Pro subscriptions." }
+  ];
+
   const handleSupportClick = () => {
     // Logic for contact support (e.g., mailto or intercom)
     window.location.href = "mailto:support@flipfinder.com";
@@ -69,6 +78,27 @@ export default function HelpClient() {
           Contact Support
         </button>
       </footer>
+        <ul className="help-page__list">
+          {helpTopics.map((topic) => (
+            <li 
+              key={topic.title} 
+              className="help-page__list-item"
+              onClick={() => setActiveModal({ title: topic.title, content: topic.content })}
+              style={{ cursor: "pointer" }}
+            >
+              {topic.title}
+            </li>
+          ))}
+        </ul>
+
+      {/* Reusable Modal */}
+      <InfoModal 
+        isOpen={!!activeModal} 
+        onClose={() => setActiveModal(null)} 
+        title={activeModal?.title || ""}
+      >
+        <p>{activeModal?.content}</p>
+      </InfoModal>
     </main>
   );
 }

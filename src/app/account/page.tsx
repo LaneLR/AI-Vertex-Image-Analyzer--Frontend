@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import AccountClient from "@/components/AccountClient";
 import { cookies } from "next/headers";
 import User from "../../lib/models/User";

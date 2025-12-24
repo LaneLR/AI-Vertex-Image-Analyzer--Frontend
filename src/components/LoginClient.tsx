@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 "use client";
 
 import React, { useState } from "react";
@@ -51,7 +52,7 @@ export default function LoginClient() {
           </h1>
           <p className="auth__subtitle">
             {isLogin
-              ? "Log in to access your appraisal history."
+              ? "Log in to start appraising your items."
               : "Create an account to track your thrift finds."}
           </p>
         </header>
