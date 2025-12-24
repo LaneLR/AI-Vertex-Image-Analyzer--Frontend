@@ -8,7 +8,7 @@
     "build": "next build",
     "start": "next start -p $PORT",
     "lint": "next lint",
-    "seed": "node src/app/utils/seedUsers.mjs"
+    "seed": "node src/utils/seedUsers.js"
   },
   "dependencies": {
     "@auth0/nextjs-auth0": "^4.9.0",
