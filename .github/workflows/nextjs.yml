@@ -17,16 +17,21 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          cache: 'npm' # Change to 'yarn' if you use yarn
+          cache: 'npm'
 
       - name: Install dependencies
-        run: npm ci # Uses package-lock.json for a clean, consistent install
-
-    #   - name: Run Lint (Optional but recommended)
-    #     run: npm run lint
+        run: npm ci
 
       - name: Build Next.js app
         run: npm run build
+        env:
+          # Dummy values to satisfy the Next.js build-time check
+          DATABASE_URL: postgres://dummy:dummy@localhost:5432/dummy
+          NEXT_TELEMETRY_DISABLED: 1
+          # If your code uses these, they need dummy values too:
+        #   AUTH0_SECRET: 'some-very-long-dummy-string-for-build-purposes'
+        #   AUTH0_BASE_URL: 'http://localhost:3000'
+        #   STRIPE_SECRET_KEY: 'sk_test_dummy'
 
       - name: Success message
-        run: echo "Build passed successfully! Ready for Render deployment."
+        run: echo "Build passed! Ready for Render."
