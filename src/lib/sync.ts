@@ -4,7 +4,7 @@ import User from './models/User';
 const syncDatabase = async () => {
   try {
     // 'alter: true' updates the table schema without dropping data
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ force: true });
     console.log('✅ Database & tables synced');
   } catch (error) {
     console.error('❌ Unable to sync database:', error);
