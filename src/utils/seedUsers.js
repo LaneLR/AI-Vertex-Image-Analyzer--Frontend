@@ -12,9 +12,6 @@ async function createTestUser() {
       isSubscriber: true, // Giving your test user Pro access
     });
 
-    console.log('✅ Test user created successfully:');
-    console.log('Email: test@flipfinder.com');
-    console.log('Password: password123');
     process.exit(0);
   } catch (error) {
     console.error('❌ Error creating user:', error);
