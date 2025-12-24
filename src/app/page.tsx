@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import HomeClient from "../components/HomeClient";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
