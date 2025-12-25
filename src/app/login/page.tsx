@@ -1,21 +1,17 @@
 import UnifiedAuthPage from "@/components/AuthPage";
-import LoginClient from "../../components/LoginClient";
-import { cookies } from "next/headers";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Adjust path as needed
 import { redirect } from "next/navigation";
 
-export const metadata = {
-  title: "Login | Flip Finder",
-  description: "Log in to your Flip Finder account to manage your thrift appraisals.",
-};
-
 export default async function LoginPage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  const session = await getServerSession(authOptions);
 
-  // If the user is already logged in, send them to the home page
-  if (token) {
+  // If NextAuth session exists, redirect to home immediately
+  if (session) {
+    console.log("[login/page.tsx] Session found. Redirecting to home.");
     redirect("/");
   }
 
+  console.log("[login/page.tsx] No session found. Rendering UnifiedAuthPage.");
   return <UnifiedAuthPage />;
 }

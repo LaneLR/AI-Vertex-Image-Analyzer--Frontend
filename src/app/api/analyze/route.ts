@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     // Using gemini-1.5-flash which is standard in late 2025 for this use case
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       // FORCING structured output via generationConfig
       generationConfig: {
         responseMimeType: "application/json",

@@ -39,7 +39,7 @@ export default function AccountClient({ user, history }: AccountClientProps) {
             <UserIcon className="account__profile-avatar-icon" />
           </div>
           <div>
-            <h2 className="account__profile-name">{user.firstName || "Hunter"}</h2>
+            <h2 className="account__profile-name">{user.email}</h2>
             <p className="account__profile-joined">
               Member since {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
             </p>

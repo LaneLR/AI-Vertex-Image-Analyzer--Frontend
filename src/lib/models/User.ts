@@ -7,7 +7,6 @@ interface UserAttributes {
   id: string;
   email: string;
   password?: string;
-  firstName?: string;
   subscriptionStatus: 'basic' | 'pro';
   dailyScansCount: number;
   lastScanDate: string;
@@ -23,7 +22,6 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
   public id!: string;
   public email!: string;
   public password!: string;
-  public firstName!: string;
   public subscriptionStatus!: 'basic' | 'pro';
   public dailyScansCount!: number;
   public lastScanDate!: string;
@@ -59,10 +57,6 @@ User.init({
     type: DataTypes.STRING,
     allowNull: true
   },
-  firstName: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
   subscriptionStatus: {
     type: DataTypes.ENUM('basic', 'pro'),
     defaultValue: 'basic'
@@ -90,6 +84,7 @@ User.init({
 }, {
   sequelize,
   modelName: 'User',
+  tableName: 'users',
   hooks: {
     beforeCreate: async (user: User) => {
       const salt = await bcrypt.genSalt(10);

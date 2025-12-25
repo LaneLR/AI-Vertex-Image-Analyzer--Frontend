@@ -3,6 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import User from "@/lib/models/User";
 import bcrypt from "bcryptjs";
+import { connectDB } from "@/lib/db"; 
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -17,11 +18,11 @@ export const authOptions: NextAuthOptions = {
         password: { label: "Password", type: "password" }
       },
       async authorize(credentials) {
+        await connectDB(); 
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await User.findOne({ where: { email: credentials.email } });
 
-        // Check if user exists and is verified
         if (!user) throw new Error("No user found with that email");
         if (!user.isVerified) throw new Error("Please verify your email before logging in");
         if (!user.password) throw new Error("Please sign in with Google");
@@ -29,39 +30,49 @@ export const authOptions: NextAuthOptions = {
         const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) throw new Error("Invalid password");
 
-        return { id: user.id, email: user.email, name: user.firstName };
+        return { 
+          id: user.id.toString(), 
+          email: user.email 
+        };
       }
     })
   ],
   session: { strategy: "jwt" },
   callbacks: {
-    async signIn({ user, account, profile }) {
+    async signIn({ user, account }) {
+      await connectDB(); 
       if (account?.provider === "google") {
-        // Automatically create Google users in our DB if they don't exist
         const [dbUser] = await User.findOrCreate({
           where: { email: user.email! },
           defaults: {
             email: user.email!,
-            firstName: user.name || "User",
-            isVerified: true, // Google emails are pre-verified
-            subscriptionStatus: 'basic'
+            isVerified: true,
+            subscriptionStatus: 'basic',
+            dailyScansCount: 0
           }
         });
-        user.id = dbUser.id;
+        user.id = dbUser.id.toString();
       }
       return true;
     },
     async jwt({ token, user }) {
-      if (user) token.sub = user.id;
+      if (user) {
+        token.id = user.id;
+      }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) (session.user as any).id = token.sub;
+      if (session.user) {
+        (session.user as any).id = token.id;
+      }
       return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  pages: { signIn: "/login" },
+  pages: { 
+    signIn: "/login",
+    error: "/login" 
+  },
 };
 
 const handler = NextAuth(authOptions);

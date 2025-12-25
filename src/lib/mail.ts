@@ -4,13 +4,13 @@ const transporter = nodemailer.createTransport({
   service: "gmail", 
   auth: {
     user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS, // Use an App Password, not your real password
+    pass: process.env.EMAIL_PASS,
   },
 });
 
 export async function sendVerificationEmail(email: string, code: string) {
   const mailOptions = {
-    from: '"Flip Finder" <noreply@flipfinder.com>',
+    from: '"Flip Finder" <testemail@gmail.com>',
     to: email,
     subject: "Your Flip Finder Verification Code",
     html: `
