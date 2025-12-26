@@ -2,10 +2,11 @@
 "use client";
 
 import React, { useState, useRef } from "react";
-import { Camera, Upload, ArrowRight } from "lucide-react";
+import { Camera, Upload } from "lucide-react";
 import { useApp } from "@/context/AppContext";
 import { resizeImage } from "@/utils/imageUtils";
-import "../styles/common/_landing.scss";
+import InfoModal from "@/components/InfoModal";
+import Loading from "./Loading";
 
 interface GeminiResult {
   sources: string[];
@@ -21,8 +22,17 @@ export default function HomeClient({ initialUser }: { initialUser: any }) {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+  const { isSubscriber, dailyScansUsed, maxFreeScans, incrementScans } =
+    useApp();
 
-  const { isSubscriber, dailyScansUsed, maxFreeScans, incrementScans } = useApp();
+  const openModal = (title: string, message: string) => {
+    setModalConfig({ isOpen: true, title, message });
+  };
 
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -30,7 +40,10 @@ export default function HomeClient({ initialUser }: { initialUser: any }) {
 
     // Security: Client-side check before burning AI credits
     if (!isSubscriber && dailyScansUsed >= maxFreeScans) {
-      alert("Daily limit reached! Upgrade to Pro for unlimited scans.");
+      openModal(
+        "Limit Reached",
+        "You've used all your free scans for today. Upgrade to Pro for unlimited appraisals!"
+      );
       return;
     }
 
@@ -52,15 +65,25 @@ export default function HomeClient({ initialUser }: { initialUser: any }) {
         setResultData(data);
         incrementScans();
       } else {
-        alert(data.error || "Analysis failed");
+        openModal(
+          "Analysis Error",
+          data.error ||
+            "We couldn't identify this item. Please try a clearer photo."
+        );
       }
     } catch (err) {
-      console.error("Upload failed", err);
+      openModal(
+        "Connection Error",
+        "Could not reach the AI server. Check your internet connection."
+      );
     } finally {
       setIsAnalyzing(false);
       setShowResult(true);
       setTimeout(() => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: "smooth",
+        });
       }, 100);
     }
   };
@@ -77,7 +100,7 @@ export default function HomeClient({ initialUser }: { initialUser: any }) {
               <img src={image} alt="Uploaded Item" className="landing__image" />
               {isAnalyzing && (
                 <div className="landing__analyzing-overlay">
-                  <div className="landing__spinner"></div>
+                  {/* <Loading message="AI Analyzing Item..." />{" "} */}
                   <p className="landing__analyzing-text">AI Analyzing...</p>
                 </div>
               )}
@@ -85,17 +108,25 @@ export default function HomeClient({ initialUser }: { initialUser: any }) {
           ) : (
             <div className="landing__placeholder">
               <Camera className="landing__placeholder-icon" />
-              <p className="landing__placeholder-text">Preview will appear here</p>
+              <p className="landing__placeholder-text">
+                Preview will appear here
+              </p>
             </div>
           )}
         </div>
 
         {/* INPUT ACTIONS */}
         <div className="landing__actions">
-          <button onClick={triggerFileInput} className="landing__action landing__action--photo">
+          <button
+            onClick={triggerFileInput}
+            className="landing__action landing__action--photo"
+          >
             <Camera className="landing__action-icon" /> TAKE PHOTO
           </button>
-          <button onClick={triggerFileInput} className="landing__action landing__action--gallery">
+          <button
+            onClick={triggerFileInput}
+            className="landing__action landing__action--gallery"
+          >
             <Upload className="landing__action-icon" /> GALLERY
           </button>
           <input
@@ -113,7 +144,8 @@ export default function HomeClient({ initialUser }: { initialUser: any }) {
             <div className="landing__result-card">
               <p className="landing__result-label">Estimated Value</p>
               <h2 className="landing__result-value">
-                {resultData.priceRange} <span className="landing__result-currency">USD</span>
+                {resultData.priceRange}{" "}
+                <span className="landing__result-currency">USD</span>
               </h2>
 
               <div className="landing__result-details">

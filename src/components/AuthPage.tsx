@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import InfoModal from "./InfoModal";
+import Loading from "./Loading";
 
 export default function UnifiedAuthPage() {
   const { data: session, status } = useSession();
@@ -15,32 +17,45 @@ export default function UnifiedAuthPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
 
+  useEffect(() => {
+    // Only redirect if authenticated and on /login
+    if (status === "authenticated" && window.location.pathname === "/login") {
+      console.log("[AuthPage] Authenticated on /login. Redirecting to home...");
+      setTimeout(() => {
+        router.replace("/");
+      }, 3000);
+    }
+  }, [status, router]);
 
-useEffect(() => {
-  // Only redirect if authenticated and on /login
-  if (status === "authenticated" && window.location.pathname === "/login") {
-    console.log("[AuthPage] Authenticated on /login. Redirecting to home...");
-    setTimeout(() => {
-   router.replace("/");
-    }, 3000)
-    
-  }
-}, [status, router]);
-
+  const openModal = (title: string, message: string) => {
+    setModalConfig({ isOpen: true, title, message });
+  };
 
   if (status === "loading") {
-    return <div className="auth__loading">Verifying session...</div>;
+    return <Loading />;
   }
 
   // If authenticated and not on /login, render nothing (prevents loop)
   if (status === "authenticated") {
-    if (typeof window !== "undefined" && window.location.pathname === "/login") {
-      console.log("[AuthPage] Already authenticated and on /login. Waiting for redirect...");
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname === "/login"
+    ) {
+      console.log(
+        "[AuthPage] Already authenticated and on /login. Waiting for redirect..."
+      );
       return null;
     }
     // On any other page, don't render the auth page
-    console.log("[AuthPage] Already authenticated and not on /login. Rendering nothing.");
+    console.log(
+      "[AuthPage] Already authenticated and not on /login. Rendering nothing."
+    );
     return null;
   }
 
@@ -188,7 +203,12 @@ useEffect(() => {
             <button
               type="button"
               className="auth__submit-btn"
-              onClick={() => alert("Check your email for reset instructions")}
+              onClick={() =>
+                openModal(
+                  "Reset Link Sent",
+                  "Check your email for reset instructions."
+                )
+              }
             >
               Send Reset Link
             </button>
@@ -258,6 +278,13 @@ useEffect(() => {
           )}
         </div>
       </div>
+      <InfoModal
+        isOpen={modalConfig.isOpen}
+        onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
+        title={modalConfig.title}
+      >
+        <p>{modalConfig.message}</p>
+      </InfoModal>
     </main>
   );
 }
