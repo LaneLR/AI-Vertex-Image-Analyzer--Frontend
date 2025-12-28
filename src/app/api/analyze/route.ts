@@ -105,6 +105,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import User from "@/lib/models/User";
 import { connectDB } from "@/lib/db";
 import { Op } from "sequelize";
+import SearchHistory from "@/lib/models/SearchHistory";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
@@ -204,6 +205,15 @@ Prioritize checking eBay, Facebook Marketplace, Craigslist, and WhatNot first be
     if (jsonResponse.error) {
       return NextResponse.json({ error: jsonResponse.error }, { status: 422 });
     }
+
+  await SearchHistory.create({
+    userId: user.id,
+    itemTitle: jsonResponse.title,
+    priceRange: jsonResponse.priceRange,
+    description: jsonResponse.description,
+    platform: jsonResponse.platform || "Resale Market",
+    sources: jsonResponse.sources || [],
+  });
 
     // 3. Increment scan count ONLY on successful analysis
     await user.increment('dailyScansCount');

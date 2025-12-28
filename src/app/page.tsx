@@ -8,7 +8,6 @@ export default async function Page() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    console.log("[page.tsx] No session found. Redirecting to /login.");
     redirect("/login");
   }
 
