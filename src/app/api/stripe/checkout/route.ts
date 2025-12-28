@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
@@ -5,7 +6,7 @@ import User from "@/lib/models/User";
 import Stripe from "stripe";
 import { connectDB } from "@/lib/db";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "dummy_key", { 
   apiVersion: "2024-12-18.acacia" as any 
 });
 

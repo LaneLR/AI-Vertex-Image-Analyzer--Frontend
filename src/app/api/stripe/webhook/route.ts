@@ -1,11 +1,12 @@
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import User from "@/lib/models/User";
 import { connectDB } from "@/lib/db";
 import { sendEmail } from "@/lib/mail";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, { 
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "dummy_key", { 
   apiVersion: "2024-12-18.acacia" as any 
 });
 
