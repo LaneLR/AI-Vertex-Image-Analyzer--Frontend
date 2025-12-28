@@ -61,9 +61,6 @@ export default function Footer() {
           <p className="footer__copyright">
             POWERED BY GEMINI
           </p>
-          <div className="footer__social">
-            <Github className="footer__social-icon" />
-          </div>
         </div>
       </div>
     </footer>
