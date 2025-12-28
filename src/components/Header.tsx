@@ -10,6 +10,7 @@ import {
   LogOut, 
   X 
 } from "lucide-react";
+import { signOut } from "next-auth/react";
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -26,11 +27,15 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-    // Add your logout logic here (e.g., clearing cookies or calling an API)
-    console.log("Logging out...");
-    window.location.href = "/login";
-  };
+  // const handleLogout = () => {
+  //   // Add your logout logic here (e.g., clearing cookies or calling an API)
+  //   console.log("Logging out...");
+  //   window.location.href = "/login";
+  // };
+
+const handleLogout = async () => {
+  await signOut({ callbackUrl: "/login" });
+};
 
   return (
     <header className="header">

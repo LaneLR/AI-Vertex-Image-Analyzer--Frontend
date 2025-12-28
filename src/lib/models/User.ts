@@ -2,32 +2,49 @@ import { DataTypes, Model, Optional } from 'sequelize';
 import sequelize from '../db';
 import bcrypt from 'bcryptjs';
 
-// Define attributes interface
 interface UserAttributes {
   id: string;
   email: string;
   password?: string;
-  firstName?: string;
   subscriptionStatus: 'basic' | 'pro';
+  
+  // Usage tracking
   dailyScansCount: number;
   lastScanDate: string;
-  stripeCustomerId?: string;
+
+  // Unified Billing Fields
+  paymentProvider: 'stripe' | 'apple' | 'none'; // Track where they subscribed
+  providerCustomerId?: string;                // Stripe Customer ID or Apple App Account Token
+  providerSubscriptionId?: string;            // Stripe Sub ID or Apple Original Transaction ID
+  
+  // Subscription Lifecycle
+  subscriptionEndDate?: Date;                 // Unified expiry date
+  cancelAtPeriodEnd: boolean;                 // true if they toggled "cancel" but still have time left
+  
+  // Auth & Security
+  isVerified?: boolean;
+  verificationCode?: string;
 }
 
-// Define creation attributes
-interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'dailyScansCount' | 'lastScanDate' | 'subscriptionStatus'> {}
+interface UserCreationAttributes extends Optional<UserAttributes, 'id' | 'dailyScansCount' | 'lastScanDate' | 'subscriptionStatus' | 'paymentProvider' | 'cancelAtPeriodEnd'> {}
 
 class User extends Model<UserAttributes, UserCreationAttributes> implements UserAttributes {
   public id!: string;
   public email!: string;
   public password!: string;
-  public firstName!: string;
   public subscriptionStatus!: 'basic' | 'pro';
   public dailyScansCount!: number;
   public lastScanDate!: string;
-  public stripeCustomerId!: string;
+  
+  public paymentProvider!: 'stripe' | 'apple' | 'none';
+  public providerCustomerId!: string;
+  public providerSubscriptionId!: string;
+  public subscriptionEndDate!: Date;
+  public cancelAtPeriodEnd!: boolean;
 
-  // Security: Remove password from JSON responses
+  public isVerified!: boolean;
+  public verificationCode!: string;
+
   toJSON() {
     const values = { ...this.get() };
     delete values.password;
@@ -40,51 +57,38 @@ class User extends Model<UserAttributes, UserCreationAttributes> implements User
 }
 
 User.init({
-  id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
-    primaryKey: true
+  id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },
+  email: { type: DataTypes.STRING, allowNull: false, unique: true, validate: { isEmail: true } },
+  password: { type: DataTypes.STRING, allowNull: true },
+  subscriptionStatus: { type: DataTypes.ENUM('basic', 'pro'), defaultValue: 'basic' },
+  dailyScansCount: { type: DataTypes.INTEGER, defaultValue: 0 },
+  lastScanDate: { type: DataTypes.DATEONLY, defaultValue: DataTypes.NOW },
+
+  // New Billing Logic
+  paymentProvider: { 
+    type: DataTypes.ENUM('stripe', 'apple', 'none'), 
+    defaultValue: 'none' 
   },
-  email: {
-    type: DataTypes.STRING,
-    allowNull: false,
-    unique: true,
-    validate: { isEmail: true }
-  },
-  password: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  firstName: {
-    type: DataTypes.STRING,
-    allowNull: true
-  },
-  subscriptionStatus: {
-    type: DataTypes.ENUM('basic', 'pro'),
-    defaultValue: 'basic'
-  },
-  dailyScansCount: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0
-  },
-  lastScanDate: {
-    type: DataTypes.DATEONLY,
-    defaultValue: DataTypes.NOW
-  },
-  stripeCustomerId: {
-    type: DataTypes.STRING,
-    allowNull: true
-  }
+  providerCustomerId: { type: DataTypes.STRING, allowNull: true }, // Unified field for IDs
+  providerSubscriptionId: { type: DataTypes.STRING, allowNull: true },
+  subscriptionEndDate: { type: DataTypes.DATE, allowNull: true },
+  cancelAtPeriodEnd: { type: DataTypes.BOOLEAN, defaultValue: false },
+
+  isVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
+  verificationCode: { type: DataTypes.STRING, allowNull: true },
 }, {
   sequelize,
   modelName: 'User',
+  tableName: 'users',
   hooks: {
     beforeCreate: async (user: User) => {
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(user.password, salt);
+      if (user.password) {
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(user.password, salt);
+      }
     },
     beforeUpdate: async (user: User) => {
-      if (user.changed('password')) {
+      if (user.changed('password') && user.password) {
         const salt = await bcrypt.genSalt(10);
         user.password = await bcrypt.hash(user.password, salt);
       }

@@ -206,15 +206,16 @@
     width: 100%;
     margin-top: 1rem;
     border: 1px solid rgba(244, 244, 245, 0.12);
-    color: #000;
+    color: #ffffff;
     padding: 0.75rem 0;
     border-radius: 1rem;
     font-weight: bold;
     font-size: 1rem;
-    background: none;
+    background-color: #379ad3;
     transition: background 0.2s;
     &:hover {
-      background: rgba(244, 244, 245, 0.05);
+      background-color: #2e83b4;
+      cursor: pointer;
     }
   }
 
@@ -281,7 +282,7 @@
   }
   &__history-row-date {
     font-size: 10px;
-    color: rgba(244, 244, 245, 0.4);
+    color: rgba(0, 0, 0);
     text-transform: uppercase;
     letter-spacing: 0.08em;
   }

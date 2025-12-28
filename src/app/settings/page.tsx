@@ -1,24 +1,23 @@
 import SettingsClient from "@/components/SettingsClient";
-import { cookies } from "next/headers";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
-import jwt from "jsonwebtoken";
+import { useSession } from "next-auth/react";
 
 export default async function SettingsPage() {
-  const cookieStore = await cookies();
-  const token = cookieStore.get("token")?.value;
+  // 1. Get the session using NextAuth
+  // const { data: session } = useSession();
+  const session = await getServerSession(authOptions);
 
-  // 1. Security Check: Only logged-in users can see settings
-  if (!token) {
+  // 2. Security Check: Only logged-in users can see settings
+  if (!session) {
+    console.log("[settings/page.tsx] No session found. Redirecting to /login.");
     redirect("/login");
   }
 
-  try {
-    jwt.verify(token, process.env.JWT_SECRET!);
-  } catch (err) {
-    redirect("/login");
-  }
+  console.log(`[settings/page.tsx] Session verified for: ${session.user?.email}. Rendering SettingsClient.`);
 
-  // 2. Return the UI. Since we aren't using DB for these settings,
-  // we just render the client component with default values.
-  return <SettingsClient />;
+  // 3. Return the UI.
+  // You can pass session.user to SettingsClient if it needs the user's email or ID.
+  return <SettingsClient user={session.user} />;
 }

@@ -4,6 +4,7 @@
 import React, { useState } from "react";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 
 export default function LoginClient() {
   const [isLogin, setIsLogin] = useState(true);
@@ -12,6 +13,16 @@ export default function LoginClient() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const handleLogin = async (e: any) => {
+    e.preventDefault();
+    const result = await signIn("credentials", {
+      email: email,
+      password: password,
+      redirect: true,
+      callbackUrl: "/",
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -59,7 +70,7 @@ export default function LoginClient() {
 
         {error && <p className="auth__error-message" style={{color: '#ff4d4d', fontSize: '14px', marginBottom: '1rem', textAlign: 'center'}}>{error}</p>}
 
-        <form className="auth__form" onSubmit={handleSubmit}>
+        <form className="auth__form" onSubmit={handleLogin}>
           <div className="auth__field">
             <label className="auth__label">Email Address</label>
             <div className="auth__input-wrapper">

@@ -12,7 +12,17 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 
-export default function SettingsClient() {
+type User = {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+};
+
+interface SettingsClientProps {
+  user?: User;
+}
+
+export default function SettingsClient({ user }: SettingsClientProps) {
   // Since these aren't in the DB, they reset on page refresh. 
   // If you want them to persist without a DB, you could use localStorage here.
   const [highAccuracy, setHighAccuracy] = useState(true);
