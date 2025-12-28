@@ -9,27 +9,57 @@ import {
   Smartphone,
   ChevronRight,
   ArrowLeft,
+  Moon,
 } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
 
 type User = {
   name?: string | null;
   email?: string | null;
   image?: string | null;
+  darkMode?: boolean;
 };
 
 interface SettingsClientProps {
   user?: User;
 }
 
-export default function SettingsClient({ user }: SettingsClientProps) {
-  // Since these aren't in the DB, they reset on page refresh. 
-  // If you want them to persist without a DB, you could use localStorage here.
+export default function SettingsClient({ user: initialUser }: SettingsClientProps) {
+  const { data: session, update } = useSession();  
+  const user = session?.user || initialUser;
+
   const [highAccuracy, setHighAccuracy] = useState(true);
   const [saveHistory, setSaveHistory] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   const toggleAccuracy = () => setHighAccuracy(!highAccuracy);
   const toggleHistory = () => setSaveHistory(!saveHistory);
+
+  const toggleDarkMode = async () => {
+    if (isUpdating) return;
+    setIsUpdating(true);
+
+    const newDarkModeStatus = !(user?.darkMode ?? false);
+
+    try {
+      const res = await fetch("/api/user/update-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ darkMode: newDarkModeStatus }),
+      });
+
+      if (res.ok) {
+        await update({ darkMode: newDarkModeStatus });
+        
+        document.documentElement.classList.toggle("dark", newDarkModeStatus);
+      }
+    } catch (err) {
+      console.error("Failed to update dark mode", err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
     <main className="settings">
@@ -41,6 +71,30 @@ export default function SettingsClient({ user }: SettingsClientProps) {
       </nav>
 
       <div className="settings__container">
+      <section className="settings__section">
+          <h3 className="settings__section-title">Appearance</h3>
+          <div className="settings__card">
+            <div className="settings__row">
+              <div className="settings__row-info">
+                <div className="settings__row-icon-bg settings__row-icon-bg--dark">
+                  <Moon className="settings__row-icon" />
+                </div>
+                <div>
+                  <p className="settings__row-label">Dark Mode</p>
+                  <p className="settings__row-desc">Easier on the eyes in low light</p>
+                </div>
+              </div>
+              <button
+                onClick={toggleDarkMode}
+                disabled={isUpdating}
+                className={`settings__toggle ${!(user?.darkMode ?? false) ? "settings__toggle--on" : ""}`}
+                aria-pressed={!(user?.darkMode ?? false)}
+              >
+                <div className={`settings__toggle-knob ${!(user?.darkMode ?? false) ? "settings__toggle-knob--on" : ""}`} />
+              </button>
+            </div>
+          </div>
+        </section>
         <section className="settings__section">
           <h3 className="settings__section-title settings__section-title--ai">
             <Sparkles className="settings__section-title-icon" /> AI Engine Configuration

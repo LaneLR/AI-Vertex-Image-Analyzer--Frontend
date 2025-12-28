@@ -10,6 +10,7 @@ declare module "next-auth" {
   interface User {
     id?: string;
     subscriptionStatus?: string;
+    darkMode?: boolean;
   }
   interface Session {
     user: {
@@ -18,6 +19,7 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       subscriptionStatus?: string;
+      darkMode?: boolean;
     };
   }
 }
@@ -65,7 +67,8 @@ export const authOptions: NextAuthOptions = {
             email: user.email!,
             isVerified: true,
             subscriptionStatus: 'basic',
-            dailyScansCount: 0
+            dailyScansCount: 0,
+            darkMode: false,
           }
         });
         user.id = dbUser.id.toString();
@@ -86,6 +89,7 @@ export const authOptions: NextAuthOptions = {
           token.subscriptionEndDate = dbUser?.subscriptionEndDate;
           token.isVerified = dbUser?.isVerified;
           token.dailyScansCount = dbUser?.dailyScansCount;
+          token.darkMode = dbUser?.darkMode;
       }
       return token;
     },
