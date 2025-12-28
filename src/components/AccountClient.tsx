@@ -1,8 +1,9 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+// src/components/AccountClient.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useApp } from "@/context/AppContext";
+// Removed dailyScansUsed from useApp since we'll use session
+import { useApp } from "@/context/AppContext"; 
 import {
   User as UserIcon,
   History,
@@ -18,42 +19,47 @@ import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 
 interface AccountClientProps {
-  user: any; // Ideally use your User model type here
+  user: any; 
   history: any[];
 }
 
 export default function AccountClient({ user: initialUser, history }: AccountClientProps) {
-  const { dailyScansUsed, maxFreeScans } = useApp();
+  // Pull maxFreeScans from context, but we will get usage from session
+  const { maxFreeScans } = useApp(); 
   const [isNative, setIsNative] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
   const { data: session, update } = useSession();
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
 
+  // Priority: Session Data > Initial Server Data
   const user = session?.user || initialUser;
+  
+  // Get scans from session (cast to any or use your interface)
+  const dailyScansUsed = (session?.user as any)?.dailyScansCount || 0;
 
   useEffect(() => {
+    // Refresh session if coming back from successful stripe payment
     if (success === "true") {
       update();
     }
   }, [success, update]);
 
-  // Check if we are in the native app vs web browser
   useEffect(() => {
     setIsNative(Capacitor.isNativePlatform());
   }, []);
 
   const isPro = user.subscriptionStatus?.toLowerCase() === "pro";
+  
+  // Calculate percentage based on database value
   const usagePercentage = Math.min((dailyScansUsed / maxFreeScans) * 100, 100);
 
   const handleManageSubscription = async () => {
     if (isNative) {
-      // Apple Guideline: Link to the system subscription management page
       window.open("https://apps.apple.com/account/subscriptions", "_blank");
       return;
     }
 
-    // Web: Open Stripe Billing Portal
     setLoadingPortal(true);
     try {
       const res = await fetch("/api/stripe/portal", { method: "POST" });
@@ -68,6 +74,7 @@ export default function AccountClient({ user: initialUser, history }: AccountCli
 
   return (
     <main className="account">
+      {/* ... Navigation remains same ... */}
       <nav className="account__nav">
         <Link href="/" className="account__nav-back">
           <ArrowLeft className="account__nav-back-icon" />
@@ -94,6 +101,7 @@ export default function AccountClient({ user: initialUser, history }: AccountCli
           <h3 className="account__section-title">Subscription</h3>
           
           <div className={`account__plan-card ${isPro ? 'account__plan-card--pro' : 'account__plan-card--free'}`}>
+            {/* ... Plan Header remains same ... */}
             <div className="account__plan-header">
                <span className={`account__plan-badge ${isPro ? 'account__plan-badge--pro' : 'account__plan-badge--free'}`}>
                   {isPro ? 'Pro Tier' : 'Free Tier'}
@@ -126,6 +134,7 @@ export default function AccountClient({ user: initialUser, history }: AccountCli
                 <div className="account__usage-meter-header">
                   <span>Daily Usage</span>
                   <span className="account__usage-meter-count">
+                    {/* Displaying DB value from session */}
                     {dailyScansUsed} / {maxFreeScans}
                   </span>
                 </div>
@@ -136,7 +145,6 @@ export default function AccountClient({ user: initialUser, history }: AccountCli
                   ></div>
                 </div>
                 
-                {/* UPGRADE COMPONENT */}
                 <div className="account__cta-wrapper">
                    <SubscribeButton 
                     priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!} 
@@ -148,7 +156,7 @@ export default function AccountClient({ user: initialUser, history }: AccountCli
           </div>
         </section>
 
-        {/* RECENT SEARCHES */}
+        {/* ... History and Logout remain same ... */}
         <section className="account__section">
           <div className="account__section-header">
             <h3 className="account__section-title">Recent History</h3>

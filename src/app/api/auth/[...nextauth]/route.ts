@@ -95,6 +95,7 @@ export const authOptions: NextAuthOptions = {
 
         const dbUser = await User.findByPk(token.id as string);
         session.user.subscriptionStatus = dbUser?.subscriptionStatus || 'basic'; 
+        (session.user as any).dailyScansCount = dbUser?.dailyScansCount || 0;
       }
       return session;
     },
