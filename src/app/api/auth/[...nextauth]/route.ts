@@ -1,9 +1,26 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import NextAuth, { NextAuthOptions, Session } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import User from "@/lib/models/User";
 import bcrypt from "bcryptjs";
 import { connectDB } from "@/lib/db"; 
+
+declare module "next-auth" {
+  interface User {
+    id?: string;
+    subscriptionStatus?: string;
+  }
+  interface Session {
+    user: {
+      id?: string;
+      name?: string | null;
+      email?: string | null;
+      image?: string | null;
+      subscriptionStatus?: string;
+    };
+  }
+}
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -55,15 +72,29 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
+      }
+
+      if (trigger === 'update' || trigger === 'signIn') {
+        const dbUser = await User.findByPk(token.id as string);
+          token.subscriptionStatus = dbUser?.subscriptionStatus;
+          token.paymentProvider = dbUser?.paymentProvider;
+          token.providerSubscriptionId = dbUser?.providerSubscriptionId;
+          token.cancelAtPeriodEnd = dbUser?.cancelAtPeriodEnd;
+          token.subscriptionEndDate = dbUser?.subscriptionEndDate;
+          token.isVerified = dbUser?.isVerified;
+          token.dailyScansCount = dbUser?.dailyScansCount;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (token &&session.user) {
         (session.user as any).id = token.id;
+
+        const dbUser = await User.findByPk(token.id as string);
+        session.user.subscriptionStatus = dbUser?.subscriptionStatus || 'basic'; 
       }
       return session;
     },

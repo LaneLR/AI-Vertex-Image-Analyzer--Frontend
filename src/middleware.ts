@@ -1,22 +1,31 @@
 import { withAuth } from "next-auth/middleware";
+import { NextResponse } from "next/server";
 
-export default withAuth({
-  // This is the most important part to break the loop
-  secret: process.env.NEXTAUTH_SECRET,
-  pages: {
-    signIn: "/login",
+export default withAuth(
+  function middleware(req) {
+    // If it's the webhook, bypass everything and return NextResponse.next()
+    if (req.nextUrl.pathname.startsWith("/api/stripe/webhook")) {
+      return NextResponse.next();
+    }
   },
-});
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        // ALWAYS authorize the webhook route regardless of token
+        if (req.nextUrl.pathname.startsWith("/api/stripe/webhook")) {
+          return true;
+        }
+        // Otherwise, require a session token
+        return !!token;
+      },
+    },
+    pages: {
+      signIn: "/login",
+    },
+  }
+);
 
-export const config = { 
-  matcher: [
-    /*
-     * Match all request paths except:
-     * 1. /api/auth/* (NextAuth internal routes)
-     * 2. /login, /register (Auth pages)
-     * 3. /_next/* (Static files)
-     * 4. /images/*, favicon.ico (Public assets)
-     */
-    "/((?!api/auth|login|register|_next|images|favicon.ico).*)"
-  ] 
+export const config = {
+  // Use a very broad matcher and handle logic inside the function above
+  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
 };

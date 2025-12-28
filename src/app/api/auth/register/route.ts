@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { NextResponse } from "next/server";
 import User from "@/lib/models/User";
 import { connectDB } from "@/lib/db";
