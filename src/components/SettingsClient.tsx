@@ -25,13 +25,21 @@ interface SettingsClientProps {
   user?: User;
 }
 
-export default function SettingsClient({ user: initialUser }: SettingsClientProps) {
-  const { data: session, update } = useSession();  
+export default function SettingsClient({
+  user: initialUser,
+}: SettingsClientProps) {
+  const { data: session, update } = useSession();
   const user = session?.user || initialUser;
 
   const [highAccuracy, setHighAccuracy] = useState(true);
   const [saveHistory, setSaveHistory] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
+  // Local state to force re-render and reflect darkMode immediately
+  const [localDarkMode, setLocalDarkMode] = useState(user?.darkMode ?? false);
+
+  React.useEffect(() => {
+    setLocalDarkMode(user?.darkMode ?? false);
+  }, [user?.darkMode]);
 
   const toggleAccuracy = () => setHighAccuracy(!highAccuracy);
   const toggleHistory = () => setSaveHistory(!saveHistory);
@@ -40,7 +48,7 @@ export default function SettingsClient({ user: initialUser }: SettingsClientProp
     if (isUpdating) return;
     setIsUpdating(true);
 
-    const newDarkModeStatus = !(user?.darkMode ?? false);
+    const newDarkModeStatus = !localDarkMode;
 
     try {
       const res = await fetch("/api/user/update-settings", {
@@ -50,9 +58,13 @@ export default function SettingsClient({ user: initialUser }: SettingsClientProp
       });
 
       if (res.ok) {
+        setLocalDarkMode(newDarkModeStatus);
         await update({ darkMode: newDarkModeStatus });
-        
-        document.documentElement.classList.toggle("dark", newDarkModeStatus);
+        if (newDarkModeStatus) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
       }
     } catch (err) {
       console.error("Failed to update dark mode", err);
@@ -71,7 +83,7 @@ export default function SettingsClient({ user: initialUser }: SettingsClientProp
       </nav>
 
       <div className="settings__container">
-      <section className="settings__section">
+        <section className="settings__section">
           <h3 className="settings__section-title">Appearance</h3>
           <div className="settings__card">
             <div className="settings__row">
@@ -81,25 +93,34 @@ export default function SettingsClient({ user: initialUser }: SettingsClientProp
                 </div>
                 <div>
                   <p className="settings__row-label">Dark Mode</p>
-                  <p className="settings__row-desc">Easier on the eyes in low light</p>
+                  <p className="settings__row-desc">
+                    Easier on the eyes in low light
+                  </p>
                 </div>
               </div>
               <button
                 onClick={toggleDarkMode}
                 disabled={isUpdating}
-                className={`settings__toggle ${!(user?.darkMode ?? false) ? "settings__toggle--on" : ""}`}
-                aria-pressed={!(user?.darkMode ?? false)}
+                className={`settings__toggle ${
+                  localDarkMode ? "settings__toggle--on" : ""
+                }`}
+                aria-pressed={localDarkMode ? "true" : "false"}
               >
-                <div className={`settings__toggle-knob ${!(user?.darkMode ?? false) ? "settings__toggle-knob--on" : ""}`} />
+                <div
+                  className={`settings__toggle-knob ${
+                    localDarkMode ? "settings__toggle-knob--on" : ""
+                  }`}
+                />
               </button>
             </div>
           </div>
         </section>
         <section className="settings__section">
           <h3 className="settings__section-title settings__section-title--ai">
-            <Sparkles className="settings__section-title-icon" /> AI Engine Configuration
+            <Sparkles className="settings__section-title-icon" /> AI Engine
+            Configuration
           </h3>
-          
+
           <div className="settings__card">
             <div className="settings__row">
               <div className="settings__row-info">
@@ -108,14 +129,22 @@ export default function SettingsClient({ user: initialUser }: SettingsClientProp
                 </div>
                 <div>
                   <p className="settings__row-label">High Accuracy Mode</p>
-                  <p className="settings__row-desc">Uses advanced visual tiling</p>
+                  <p className="settings__row-desc">
+                    Uses advanced visual tiling
+                  </p>
                 </div>
               </div>
               <button
                 onClick={toggleAccuracy}
-                className={`settings__toggle ${highAccuracy ? "settings__toggle--on" : ""}`}
+                className={`settings__toggle ${
+                  highAccuracy ? "settings__toggle--on" : ""
+                }`}
               >
-                <div className={`settings__toggle-knob ${highAccuracy ? "settings__toggle-knob--on" : ""}`} />
+                <div
+                  className={`settings__toggle-knob ${
+                    highAccuracy ? "settings__toggle-knob--on" : ""
+                  }`}
+                />
               </button>
             </div>
 
@@ -126,14 +155,24 @@ export default function SettingsClient({ user: initialUser }: SettingsClientProp
                 </div>
                 <div>
                   <p className="settings__row-label">Cloud Save History</p>
-                  <p className="settings__row-desc">Keep logs of all scanned items</p>
+                  <p className="settings__row-desc">
+                    Keep logs of all scanned items
+                  </p>
                 </div>
               </div>
               <button
                 onClick={toggleHistory}
-                className={`settings__toggle ${saveHistory ? "settings__toggle--on settings__toggle--blue" : ""}`}
+                className={`settings__toggle ${
+                  saveHistory
+                    ? "settings__toggle--on settings__toggle--blue"
+                    : ""
+                }`}
               >
-                <div className={`settings__toggle-knob ${saveHistory ? "settings__toggle-knob--on" : ""}`} />
+                <div
+                  className={`settings__toggle-knob ${
+                    saveHistory ? "settings__toggle-knob--on" : ""
+                  }`}
+                />
               </button>
             </div>
           </div>
@@ -142,14 +181,18 @@ export default function SettingsClient({ user: initialUser }: SettingsClientProp
         <section className="settings__section">
           <h3 className="settings__section-title">Preferences</h3>
           <div className="settings__prefs-card">
-            <Link href="/privacy" className="settings__prefs-row" style={{ textDecoration: 'none', color: 'inherit' }}>
+            <Link
+              href="/privacy"
+              className="settings__prefs-row"
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
               <div className="settings__prefs-row-info">
                 <Shield className="settings__prefs-row-icon" />
                 <span>Data & Privacy</span>
               </div>
               <ChevronRight className="settings__prefs-row-chevron" />
             </Link>
-            
+
             <div className="settings__prefs-row">
               <div className="settings__prefs-row-info">
                 <Smartphone className="settings__prefs-row-icon" />
@@ -161,9 +204,11 @@ export default function SettingsClient({ user: initialUser }: SettingsClientProp
         </section>
 
         <section className="settings__section settings__section--danger">
-          <button 
-            className="settings__danger-btn" 
-            onClick={() => confirm("Are you sure? This will clear your local scan cache.")}
+          <button
+            className="settings__danger-btn"
+            onClick={() =>
+              confirm("Are you sure? This will clear your local scan cache.")
+            }
           >
             Delete All History
           </button>

@@ -100,7 +100,8 @@ export default function HistoryClient({ user }: { user: any }) {
                           <ul>
                             {item.sources.map((source, idx) => (
                               <li key={idx}>
-                                <ExternalLink size={12} /> {source}
+                                {/* <ExternalLink size={12} />  */}
+                                {source}
                               </li>
                             ))}
                           </ul>
