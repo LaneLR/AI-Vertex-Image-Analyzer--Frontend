@@ -44,11 +44,11 @@ export default function Footer() {
           </div>
 
           <div className="footer__section">
-            <h4 className="footer__label">Compliance</h4>
+            <h4 className="footer__label">LEGAL</h4>
             <ul className="footer__list">
               <li>
                 <Link href="/terms" className="footer__link">
-                  <ShieldCheck size={16} /> Terms
+                  <ShieldCheck size={16} /> Terms of Service
                 </Link>
               </li>
               <li>
@@ -63,11 +63,6 @@ export default function Footer() {
         <div className="footer__bottom">
           <div className="footer__copyright">
             © {currentYear} Flip Finder AI Studio • v1.0.4
-          </div>
-          <div className="footer__social">
-            <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
-              <Github size={18} />
-            </a>
           </div>
         </div>
       </div>
