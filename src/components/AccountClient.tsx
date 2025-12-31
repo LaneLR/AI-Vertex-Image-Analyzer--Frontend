@@ -11,7 +11,8 @@ import {
   Settings,
   Wand2,
   LogOut,
-  ShieldCheck
+  ShieldCheck,
+  HistoryIcon
 } from "lucide-react";
 import Link from "next/link";
 import SubscribeButton from "@/components/SubscribeButton";
@@ -130,11 +131,22 @@ export default function AccountClient({ user: initialUser, history }: { user: an
           </Link>
         )}
 
+        <Link href="/history" className="account-card listing-shortcut">
+          <div className="shortcut-info">
+            <HistoryIcon size={20} />
+            <div>
+              <h4>Scan History</h4>
+              <p>View your recent scans</p>
+            </div>
+          </div>
+          <ChevronRight size={18} />
+        </Link>
+
         {/* RECENT HISTORY */}
         <section className="history-preview">
           <div className="section-header">
             <h3>Recent Activity</h3>
-            <Link href="/history">View All</Link>
+            {/* <Link href="/history">View All</Link> */}
           </div>
           <div className="history-list card">
             {recentHistory.length > 0 ? recentHistory.map((item) => (
