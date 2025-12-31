@@ -1,5 +1,5 @@
 .footer {
-  background: var(--bg-card);
+  background: var(--footer-bg);
   border-top: 1px solid var(--border-color);
   padding: 4rem 1.5rem 2rem;
   margin-top: auto;
@@ -25,14 +25,12 @@
   &__logo {
     font-size: 1.4rem;
     font-weight: 800;
-    color: var(--text-primary);
     margin-bottom: 1rem;
-    .logo-accent { color: var(--primary-theme); }
   }
 
   &__tagline {
     font-size: 0.9rem;
-    color: var(--text-tertiary);
+    color: var(--footer-text-light);
     line-height: 1.6;
     margin-bottom: 1.5rem;
     max-width: 250px;
@@ -51,8 +49,8 @@
       font-size: 0.7rem;
       font-weight: 700;
       text-transform: uppercase;
-      background: var(--bg-main);
-      color: var(--text-tertiary);
+      background: var(--footer-text-light);
+      color: var(--footer-text-dark);
       padding: 6px 12px;
       border-radius: 100px;
       border: 1px solid var(--border-color);
@@ -63,7 +61,7 @@
     font-size: 0.75rem;
     font-weight: 800;
     text-transform: uppercase;
-    color: var(--text-primary);
+    color: var(--footer-text-light);
     letter-spacing: 0.05rem;
     margin-bottom: 1.25rem;
   }
@@ -79,7 +77,7 @@
     display: flex;
     align-items: center;
     gap: 10px;
-    color: var(--text-tertiary);
+    color: var(--footer-text-light);
     font-size: 0.9rem;
     text-decoration: none;
     transition: all 0.2s ease;
@@ -99,7 +97,7 @@
     justify-content: space-between;
     align-items: center;
     padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid #333333;
 
     @media (max-width: 768px) {
       flex-direction: column-reverse;
@@ -110,16 +108,16 @@
   &__copyright {
     font-size: 0.75rem;
     font-weight: 600;
-    color: var(--text-tertiary);
+    color: var(--footer-text-light);
     text-transform: uppercase;
     letter-spacing: 0.02rem;
   }
 
   &__social {
     a {
-      color: var(--text-tertiary);
+      color: var(--footer-text-light);
       transition: color 0.2s;
-      &:hover { color: var(--text-primary); }
+      &:hover { color: var(--footer-text-light); }
     }
   }
 }

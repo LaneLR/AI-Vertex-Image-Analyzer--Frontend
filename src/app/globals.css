@@ -15,7 +15,9 @@
   --bg-header: #2e2e2e;
   --bg-card: #eeeeee;
 
-  --footer-bg: #1f1f1f;
+  --footer-bg: #1e1e1e;
+  --footer-text-light: #ffffff;
+  --footer-text-dark: #1e1e1e;
   
   --error-text: #ff3333;
   --error-bg: #ff4d4d;

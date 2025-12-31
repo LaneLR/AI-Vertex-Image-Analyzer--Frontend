@@ -14,7 +14,15 @@ export default function Footer() {
           {/* Brand Info */}
           <div className="footer__section footer__section--brand">
             <div className="footer__logo">
-              <span className="logo-accent">Flip</span>Finder
+              <Link
+                href="/"
+                className="brand-link"
+              >
+                {/* <span className="brand-logo-small">FF</span> */}
+                <h1 className="brand-text">
+                  Flip<span>Finder</span>
+                </h1>
+              </Link>
             </div>
             <p className="footer__tagline">
               Professional AI vision tools for the modern reseller.
@@ -62,7 +70,7 @@ export default function Footer() {
 
         <div className="footer__bottom">
           <div className="footer__copyright">
-            © {currentYear} Flip Finder AI Studio • v1.0.4
+            © {currentYear} Flip Finder • v1.13.7
           </div>
         </div>
       </div>
