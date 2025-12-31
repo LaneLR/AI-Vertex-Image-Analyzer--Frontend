@@ -3,9 +3,10 @@
   min-height: 100vh;
 
   &__header {
-    background: var(--bg-header);
+    background: var(--bg-nav);
     padding: 2rem 1.5rem;
     color: white;
+    border-bottom: 1px solid var(--border-color);
     
     &-content {
       max-width: 1200px;

@@ -39,12 +39,24 @@
   .brand-text {
     font-size: 1.25rem;
     font-weight: 800;
-    color: var(--text-primary);
-    span { color: var(--primary-theme); }
+    color: var(--header-text-primary);
+    span { color: var(--header-text-secondary); }
   }
 }
 
-.menu-toggle, .account-quick-link {
+.menu-toggle {
+  color: var(--header-text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 12px;
+  transition: background 0.2s;
+
+  &:hover { background: rgba(var(--text-primary-rgb), 0.05); }
+}
+
+.account-quick-link {
   color: var(--text-primary);
   background: none;
   border: none;
@@ -55,6 +67,7 @@
 
   &:hover { background: rgba(var(--text-primary-rgb), 0.05); }
 }
+
 
 .avatar-placeholder {
   width: 36px;
