@@ -34,13 +34,17 @@
     line-height: 1.6;
     margin-bottom: 1.5rem;
     max-width: 250px;
-    @media (max-width: 768px) { margin: 0 auto 1.5rem; }
+    @media (max-width: 768px) {
+      margin: 0 auto 1.5rem;
+    }
   }
 
   &__badges {
     display: flex;
     gap: 10px;
-    @media (max-width: 768px) { justify-content: center; }
+    @media (max-width: 768px) {
+      justify-content: center;
+    }
 
     .badge-pill {
       display: flex;
@@ -82,14 +86,22 @@
     text-decoration: none;
     transition: all 0.2s ease;
 
-    svg { opacity: 0.6; transition: transform 0.2s; }
+    svg {
+      opacity: 0.6;
+      transition: transform 0.2s;
+    }
 
     &:hover {
       color: var(--primary-theme);
-      svg { opacity: 1; transform: translateX(2px); }
+      svg {
+        opacity: 1;
+        transform: translateX(2px);
+      }
     }
-    
-    @media (max-width: 768px) { justify-content: center; }
+
+    @media (max-width: 768px) {
+      justify-content: center;
+    }
   }
 
   &__bottom {
@@ -117,7 +129,9 @@
     a {
       color: var(--footer-text-light);
       transition: color 0.2s;
-      &:hover { color: var(--footer-text-light); }
+      &:hover {
+        color: var(--footer-text-light);
+      }
     }
   }
 }

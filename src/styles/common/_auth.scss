@@ -36,8 +36,16 @@
     margin: 0 auto 1.25rem;
   }
 
-  .auth-title { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); }
-  .auth-subtitle { font-size: 0.9rem; color: var(--text-tertiary); margin-top: 0.5rem; }
+  .auth-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--text-primary);
+  }
+  .auth-subtitle {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    margin-top: 0.5rem;
+  }
 }
 
 .auth-error-pill {
@@ -89,7 +97,9 @@
   font-weight: 600;
   color: var(--primary-theme);
   margin: -0.5rem 0 1.5rem;
-  background: none; border: none; cursor: pointer;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .auth-submit-btn {
@@ -107,8 +117,13 @@
   cursor: pointer;
   transition: transform 0.2s;
 
-  &:active { transform: scale(0.98); }
-  &:disabled { opacity: 0.7; cursor: not-allowed; }
+  &:active {
+    transform: scale(0.98);
+  }
+  &:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+  }
 }
 
 .auth-divider {
@@ -120,12 +135,15 @@
   font-size: 0.75rem;
   font-weight: 700;
 
-  &::before, &::after {
-    content: '';
+  &::before,
+  &::after {
+    content: "";
     flex: 1;
     border-bottom: 1px solid var(--border-color);
   }
-  span { padding: 0 1rem; }
+  span {
+    padding: 0 1rem;
+  }
 }
 
 .google-auth-btn {
@@ -163,7 +181,11 @@
 .otp-container {
   text-align: center;
   margin-bottom: 1.5rem;
-  p { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 1rem; }
+  p {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
   .otp-input {
     width: 100%;
     text-align: center;

@@ -45,7 +45,7 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/about" className="footer__link">
-                  <Info size={16} /> About Studio
+                  <Info size={16} /> About Us
                 </Link>
               </li>
             </ul>

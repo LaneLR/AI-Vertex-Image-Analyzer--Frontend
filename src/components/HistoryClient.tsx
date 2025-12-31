@@ -46,6 +46,7 @@ export default function HistoryClient({ user }: { user: any }) {
           <ArrowLeft size={24} />
         </Link>
         <h1 className="history-page__nav-title">Scan History</h1>
+        <div />
       </nav>
 
       <div className="history-page__container">

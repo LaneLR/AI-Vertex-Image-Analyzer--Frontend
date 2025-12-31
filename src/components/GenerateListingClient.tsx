@@ -11,8 +11,10 @@ import {
   RefreshCcw,
   Layout,
   ListChecks,
+  ArrowLeft,
 } from "lucide-react";
 import Loading from "./Loading";
+import Link from "next/link";
 
 interface GenerateListingProps {
   user: any;
@@ -63,6 +65,9 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
   return (
     <main className="listing-page">
       <header className="listing-page__header">
+        <Link href="/" className="back-btn">
+          <ArrowLeft size={20} />
+        </Link>
         <div className="listing-page__header-content">
           <Wand2 className="icon-primary" />
           <div>
@@ -70,6 +75,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
             <p>AI-Optimized Marketplace Metadata</p>
           </div>
         </div>
+        <div />
       </header>
 
       <div className="listing-grid">
@@ -203,12 +209,14 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     <ListChecks size={14} /> Tags
                   </label>
                 </div>
-                <br />
+<div className="tags-container--tags">
+
+
                 {result.tags?.map((tag: string) => (
                   <span key={tag} className="tag">
                     #{tag}
                   </span>
-                ))}
+                ))}</div>
               </div>
             </div>
           )}

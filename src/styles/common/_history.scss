@@ -6,16 +6,17 @@
   &__nav {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     padding: 1rem 1.5rem;
     background-color: var(--bg-nav);
     border-bottom: 1px solid var(--border-color);
-    position: sticky;
+    // position: sticky;
     top: 0;
     z-index: 10;
     box-shadow: var(--shadow);
 
     &-back {
-      color: var(--text-on-brand);
+      color: var(--text-primary);
       margin-right: 1rem;
       display: flex;
       align-items: center;
@@ -27,7 +28,7 @@
     }
 
     &-title {
-      color: var(--text-on-brand);
+      color: var(--text-primary);
       font-size: 1.25rem;
       font-weight: 700;
       text-transform: uppercase;

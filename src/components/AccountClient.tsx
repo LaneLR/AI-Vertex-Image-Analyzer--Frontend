@@ -67,9 +67,10 @@ export default function AccountClient({ user: initialUser, history }: { user: an
           <ArrowLeft size={20} />
         </Link>
         <h1>Account Settings</h1>
-        <button className="logout-icon-btn" onClick={() => signOut({ callbackUrl: '/' })}>
+        {/* <button className="logout-icon-btn" onClick={() => signOut({ callbackUrl: '/' })}>
           <LogOut size={20} />
-        </button>
+        </button> */}
+        <div />
       </header>
 
       <div className="account-page__content">

@@ -8,8 +8,12 @@
     justify-content: space-between;
     padding: 1.5rem;
     background: var(--bg-nav);
-    color: white;
-    h1 { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
+    color: var(--text-primary);
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
   }
 
   &__content {
@@ -52,7 +56,7 @@
 
 .about-section {
   margin-bottom: 3rem;
-  
+
   .section-label {
     display: flex;
     align-items: center;
@@ -84,12 +88,14 @@
   border-radius: 20px;
   border: 1px solid var(--border-color);
 
-  &--featured {
-    border-color: var(--primary-theme);
-    background: var(--bg-header);
-    color: white;
-    p { color: rgba(255, 255, 255, 0.7); }
-  }
+  // &--featured {
+  //   border-color: var(--bg-card);
+  //   background: var(--bg-header);
+  //   color: var(--text-primary);
+  //   p {
+  //     color: rgba(255, 255, 255, 0.7);
+  //   }
+  // }
 
   &__icon {
     width: 40px;
@@ -99,14 +105,33 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 1rem;
-    
-    &.icon-blue { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
-    &.icon-gold { background: rgba(255, 215, 0, 0.1); color: #ffd700; }
-    &.icon-green { background: rgba(34, 197, 94, 0.1); color: #22c55e; }
+        border: 1px solid var(--border-color);
+
+
+    &.icon-blue {
+      background: rgba(0, 0, 0, 0.15);
+      color: #3b82f6;
+    }
+    &.icon-gold {
+      background: rgba(0, 0, 0, 0.15);
+      color: #ff6000;
+    }
+    &.icon-green {
+      background: rgba(0, 0, 0, 0.15);
+      color: #22c55e;
+    }
   }
 
-  h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
-  p { font-size: 0.9rem; line-height: 1.5; color: var(--text-tertiary); }
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  p {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--text-tertiary);
+  }
 }
 
 .about-footer {
@@ -133,7 +158,9 @@
       color: var(--text-tertiary);
       line-height: 1.5;
       margin-bottom: 0.5rem;
-      &:last-child { margin-bottom: 0; }
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
 
