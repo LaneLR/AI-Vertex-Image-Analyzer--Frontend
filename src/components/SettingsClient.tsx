@@ -47,7 +47,6 @@ export default function SettingsClient({
     try {
       const res = await fetch("/api/user/clear-history", { method: "DELETE" });
       if (res.ok) {
-        // You might want to refresh history or update local state here
         setIsModalOpen(false);
       }
     } catch (err) {
@@ -59,6 +58,11 @@ export default function SettingsClient({
 
   useEffect(() => {
     setLocalDarkMode(user?.darkMode ?? false);
+    if (user?.darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, [user?.darkMode]);
 
   const toggleDarkMode = async () => {
@@ -76,7 +80,11 @@ export default function SettingsClient({
       if (res.ok) {
         setLocalDarkMode(newDarkModeStatus);
         await update({ darkMode: newDarkModeStatus });
-        document.documentElement.classList.toggle("dark", newDarkModeStatus);
+        if (newDarkModeStatus) {
+          document.documentElement.classList.add("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+        }
       }
     } catch (err) {
       console.error("Failed to update dark mode", err);
@@ -190,7 +198,7 @@ export default function SettingsClient({
                 </div>
                 <p className="item-label">App Version</p>
               </div>
-              <span className="version-tag">V 1.0.4</span>
+              <span className="version-tag">1.13.7</span>
             </div>
           </div>
         </section>

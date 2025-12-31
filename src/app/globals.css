@@ -2,6 +2,9 @@
   --primary-theme: #ff6000;
   --secondary-theme: #3387b7;
   --tertiary-theme: #000;
+
+  --header-text-primary: #ffffff;
+  --header-text-secondary: #ff6000;
   
   --text-primary: #1a1a1a;
   --text-secondary: #333;
@@ -20,7 +23,19 @@
   --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
-@media (prefers-color-scheme: dark) {
+:root.dark {
+  --text-primary: #ffffff;
+  --text-secondary: #a1a1a1;
+  --text-tertiary: #666666;
+  
+  --bg-main: #121212;
+  --bg-card: #1e1e1e;
+  --bg-header: #1a1a1a;
+  
+  --border-color: #333333;
+}
+
+/* @media (prefers-color-scheme: dark) {
   :root {
     --text-primary: #ffffff;
     --text-secondary: #a1a1a1;
@@ -32,7 +47,7 @@
     
     --border-color: #333333;
   }
-}
+} */
 
 * {
   box-sizing: border-box;

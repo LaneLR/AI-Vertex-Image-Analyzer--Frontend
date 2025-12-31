@@ -11,5 +11,5 @@ export default async function Page() {
     redirect("/login");
   }
 
-  return <HomeClient initialUser={session.user?.email} />;
+  return <HomeClient user={session.user?.email} />;
 }
