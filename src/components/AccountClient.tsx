@@ -20,8 +20,7 @@ import { Capacitor } from "@capacitor/core";
 import { useSession, signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 
-export default function AccountClient({ user: initialUser, history }: { user: any, history: any[] }) {
-  const { maxFreeScans } = useApp(); 
+export default function AccountClient({ user: initialUser, history }: { user: any, history: any[] }) {  const { maxFreeScans } = useApp(); 
   const [isNative, setIsNative] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
   const { data: session, update } = useSession();
@@ -41,7 +40,9 @@ export default function AccountClient({ user: initialUser, history }: { user: an
 
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const usagePercentage = Math.min((dailyScansUsed / maxFreeScans) * 100, 100);
-  const recentHistory = history.slice(0, 3);
+  const recentHistory = [...history]
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .slice(0, 3);
 
   const handleManageSubscription = async () => {
     if (isNative) {
@@ -144,31 +145,38 @@ export default function AccountClient({ user: initialUser, history }: { user: an
         </Link>
 
         {/* RECENT HISTORY */}
-        <section className="history-preview">
+        {/* <section className="history-preview">
           <div className="section-header">
-            <h3>Recent Activity</h3>
-            {/* <Link href="/history">View All</Link> */}
+            <h3>Recent Scans</h3>
+            <Link href="/history" className="view-all-link">
+              View All <ChevronRight size={14} />
+            </Link>
           </div>
-          <div className="history-list card">
-            {recentHistory.length > 0 ? recentHistory.map((item) => (
-              <Link href="/history" key={item.id} className="history-item">
-                <div className="history-item__main">
-                   <div className="item-icon"><History size={16} /></div>
-                   <div className="item-text">
-                     <p className="item-title">{item.itemTitle}</p>
-                     <p className="item-date">{new Date(item.createdAt).toLocaleDateString()}</p>
-                   </div>
-                </div>
-                <div className="item-meta">
-                  <span className="item-price">{item.priceRange}</span>
-                  <ChevronRight size={16} />
-                </div>
-              </Link>
-            )) : (
-              <div className="empty-history">Your recent appraisals will appear here.</div>
+
+          <div className="history-preview__list">
+            {recentHistory.length > 0 ? (
+              recentHistory.map((item) => (
+                <Link 
+                  href={`/history`} 
+                  key={item.id} 
+                  className="history-preview__item"
+                >
+                  <div className="item-details">
+                    <p className="item-name">{item.itemTitle || "Unnamed Appraisal"}</p>
+                    <span className="price-label">EST. VALUE</span>
+                    <span className="price-value">{item.priceRange || "N/A"}</span>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="history-preview__empty">
+                <History size={24} />
+                <p>No recent appraisals found.</p>
+                <Link href="/">Start Scanning</Link>
+              </div>
             )}
           </div>
-        </section>
+        </section> */}
       </div>
     </main>
   );
