@@ -25,7 +25,7 @@
 //       },
 //     });
 
-//     const prompt = `
+//     const APPRAISAL_PROMPT = `
 // You are an expert in item identification and resale value. 
 // When provided an image or images, you provide in this format the potential resale price range of the item, a title of the item, and a short 3 to 5 sentence description of what the item is and what it last sold for (be as descriptive as possible).
 
@@ -70,7 +70,7 @@
 //     `;
 
 //     const result = await model.generateContent([
-//       { text: prompt },
+//       { text: APPRAISAL_PROMPT },
 //       {
 //         inlineData: {
 //           data: buffer.toString("base64"),
@@ -109,48 +109,27 @@ import SearchHistory from "@/lib/models/SearchHistory";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-export async function POST(req: Request) {
-  try {
-    await connectDB();
-    const session = await getServerSession(authOptions);
+const LISTING_PROMPT = `
+You are a professional e-commerce copywriter for eBay, Poshmark, and Amazon. 
+Analyze the image and create a high-converting product listing.
 
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+OUTPUT FORMAT:
+Return a valid JSON object:
+{
+  "title": "SEO-optimized title (max 80 chars)",
+  "description": "Professional, bulleted description including features, condition, and specs.",
+  "category": "Suggested marketplace category",
+  "tags": ["tag1", "tag2", "tag3", "tag4", "tag5"],
+  "specs": {
+    "Brand": "Name",
+    "Model": "Name/Number",
+    "Condition": "Visual assessment",
+    "Material/Type": "Details"
+  }
+}
+`;
 
-    // 1. Fetch the latest user data from DB
-    const user = await User.findByPk(session.user.id);
-    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
-
-    // 2. Limit Check Logic
-    const today = new Date().toISOString().split('T')[0];
-    
-    // Reset count if it's a new day
-    if (user.lastScanDate !== today) {
-      await user.update({ dailyScansCount: 0, lastScanDate: today });
-    }
-
-    // Block basic users who reached the limit (5 scans)
-    if (user.subscriptionStatus === 'basic' && user.dailyScansCount >= 5) {
-      return NextResponse.json({ 
-        error: "Daily scan limit reached. Please upgrade to Pro for unlimited scans." 
-      }, { status: 429 }); // 429 is Too Many Requests
-    }
-
-    const data = await req.formData();
-    const file = data.get("image") as File;
-    if (!file) return NextResponse.json({ error: "No image provided" }, { status: 400 });
-
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
-    // ... [Your existing Gemini logic remains the same] ...
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash", // Use 1.5-flash as 2.5 is not yet a standard release
-      generationConfig: { responseMimeType: "application/json" },
-    });
-
-    const prompt = `
+    const APPRAISAL_PROMPT = `
 You are an expert in item identification and resale value. 
 When provided an image or images, you provide in this format the potential resale price range of the item, a title of the item, and a short 3 to 5 sentence description of what the item is and what it last sold for (be as descriptive as possible).
 
@@ -193,9 +172,57 @@ Do not ask questions or offer extra help.
 Provide statements only.
 Prioritize checking eBay, Facebook Marketplace, Craigslist, and WhatNot first before checking other sites online.
     `;
+
+export async function POST(req: Request) {
+  try {
+    await connectDB();
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const user = await User.findByPk(session.user.id);
+    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+
+    // Limit Check Logic
+    const today = new Date().toISOString().split('T')[0];
+    if (user.lastScanDate !== today) {
+      await user.update({ dailyScansCount: 0, lastScanDate: today });
+    }
+
+    if (user.subscriptionStatus === 'basic' && user.dailyScansCount >= 5) {
+      return NextResponse.json({ 
+        error: "Daily scan limit reached. Please upgrade to Pro for unlimited scans." 
+      }, { status: 429 });
+    }
+
+    const data = await req.formData();
+    const mode = data.get("mode") || "appraisal";
+    const file = data.get("image") as File;
+    if (!file) return NextResponse.json({ error: "No image provided" }, { status: 400 });
+
+    // FIX 1: Correct variable names and logic
+    let activePrompt = APPRAISAL_PROMPT; 
+    if (mode === "listing") {
+      if (user.subscriptionStatus !== 'pro') {
+        return NextResponse.json({ error: "Listing generation is a Pro feature." }, { status: 403 });
+      }
+      activePrompt = LISTING_PROMPT;
+    }
+
+    const bytes = await file.arrayBuffer();
+    const buffer = Buffer.from(bytes);
+
+    // FIX 2: Correct model version
+    const model = genAI.getGenerativeModel({
+      model: "gemini-2.5-flash", 
+      generationConfig: { responseMimeType: "application/json" },
+    });
     
+    // FIX 3: Use activePrompt variable here
     const result = await model.generateContent([
-      { text: prompt },
+      { text: activePrompt },
       { inlineData: { data: buffer.toString("base64"), mimeType: file.type } },
     ]);
 
@@ -206,16 +233,18 @@ Prioritize checking eBay, Facebook Marketplace, Craigslist, and WhatNot first be
       return NextResponse.json({ error: jsonResponse.error }, { status: 422 });
     }
 
-  await SearchHistory.create({
-    userId: user.id,
-    itemTitle: jsonResponse.title,
-    priceRange: jsonResponse.priceRange,
-    description: jsonResponse.description,
-    platform: jsonResponse.platform || "Resale Market",
-    sources: jsonResponse.sources || [],
-  });
+    // Only save to history if it's an appraisal (optional: you could save listings too)
+    if (mode === "appraisal") {
+      await SearchHistory.create({
+        userId: user.id,
+        itemTitle: jsonResponse.title,
+        priceRange: jsonResponse.priceRange,
+        description: jsonResponse.description,
+        platform: jsonResponse.platform || "Resale Market",
+        sources: jsonResponse.sources || [],
+      });
+    }
 
-    // 3. Increment scan count ONLY on successful analysis
     await user.increment('dailyScansCount');
 
     return NextResponse.json(jsonResponse);

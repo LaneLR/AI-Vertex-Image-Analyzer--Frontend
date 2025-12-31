@@ -2,60 +2,92 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Eye, Lock, FileText, ChevronRight } from "lucide-react";
 
 export default function PrivacyClient() {
   return (
     <main className="privacy-page">
-      {/* Navigation Header */}
-      <nav className="account__nav">
-        <Link href="/" className="account__nav-back">
-          <ArrowLeft className="account__nav-back-icon" />
-        </Link>
-        <h1 className="account__nav-title">PRIVACY</h1>
-      </nav>
-
-      {/* Hero / Header Section */}
+      {/* Navigation */}
       <header className="privacy-page__header">
-        <h1 className="privacy-page__title">Privacy Policy</h1>
-        <p className="privacy-page__last-updated">Last Updated: December 2025</p>
+        <Link href="/" className="back-btn">
+          <ArrowLeft size={20} />
+        </Link>
+        <h1>Privacy & Security</h1>
+        <div className="header-spacer" />
       </header>
 
-      {/* Main Content */}
-      <section className="privacy-page__content">
-        <div className="privacy-page__section">
-          <h2 className="privacy-page__section-title">1. Information We Collect</h2>
-          <p className="privacy-page__text">
-            When you use Flip Finder, we collect images you upload for AI appraisal, 
-            as well as basic account information to provide you with market insights.
-            This data is encrypted in transit and at rest.
+      <div className="privacy-page__content">
+        {/* Hero Section */}
+        <section className="privacy-hero">
+          <div className="privacy-hero__icon">
+            <ShieldCheck size={48} />
+          </div>
+          <h2 className="privacy-hero__title">Your Data, Protected</h2>
+          <p className="privacy-hero__subtitle">
+            We believe in transparency. Here is how Flip Finder handles your information.
           </p>
+          <span className="last-updated-tag">Version 2.1 • Dec 2025</span>
+        </section>
+
+        <div className="privacy-grid">
+          {/* Section 1 */}
+          <section className="privacy-section">
+            <div className="privacy-section__header">
+              <div className="section-icon"><Eye size={18} /></div>
+              <h3>1. Information We Collect</h3>
+            </div>
+            <div className="privacy-card">
+              <p>
+                When you use Flip Finder, we collect images you upload for AI appraisal, 
+                as well as basic account information to provide you with market insights.
+              </p>
+              <div className="data-pill">
+                <Lock size={12} />
+                Encrypted at rest & in transit
+              </div>
+            </div>
+          </section>
+
+          {/* Section 2 */}
+          <section className="privacy-section">
+            <div className="privacy-section__header">
+              <div className="section-icon"><FileText size={18} /></div>
+              <h3>2. How We Use Data</h3>
+            </div>
+            <div className="privacy-card">
+              <p>
+                Your data helps improve our AI models to provide more accurate valuations. 
+                We do <strong>not</strong> sell your personal identification, contact information, or 
+                uploaded images to third parties for marketing purposes.
+              </p>
+            </div>
+          </section>
         </div>
 
-        <div className="privacy-page__section">
-          <h2 className="privacy-page__section-title">2. How We Use Data</h2>
-          <p className="privacy-page__text">
-            Your data helps improve our AI models to provide more accurate valuations. 
-            We do not sell your personal identification, contact information, or 
-            uploaded images to third parties for marketing purposes.
-          </p>
-        </div>
-
-        {/* Footer Navigation within Privacy */}
-        <div className="privacy-page__navigation">
-          <p className="privacy-page__nav-text">
-            Have questions about how we handle your data?
-          </p>
-          <div className="privacy-page__links">
-            <Link href="/terms" className="privacy-page__link">
-              Terms of Service
+        {/* Footer Navigation */}
+        <footer className="privacy-footer">
+          <h4 className="privacy-footer__title">Have questions?</h4>
+          <p>We’re here to help you understand your rights.</p>
+          
+          <div className="privacy-footer__links">
+            <Link href="/terms" className="footer-link-card">
+              <div className="footer-link-card__content">
+                <FileText size={18} />
+                <span>Terms of Service</span>
+              </div>
+              <ChevronRight size={16} />
             </Link>
-            <Link href="/help" className="privacy-page__link">
-              Help & FAQ
+            
+            <Link href="/help" className="footer-link-card">
+              <div className="footer-link-card__content">
+                <ShieldCheck size={18} />
+                <span>Help & FAQ</span>
+              </div>
+              <ChevronRight size={16} />
             </Link>
           </div>
-        </div>
-      </section>
+        </footer>
+      </div>
     </main>
   );
 }

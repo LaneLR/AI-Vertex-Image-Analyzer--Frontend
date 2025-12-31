@@ -38,7 +38,7 @@
   }
 
   &__title-first-word {
-    font-size: 1.5rem;
+    font-size: 28px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: -0.02em;
@@ -48,12 +48,12 @@
     -webkit-text-fill-color: transparent;
 
     @media (max-width: 440px) {
-      font-size: 1.25rem;
+      font-size: 24px;
     }
   }
 
   &__title-second-word {
-    font-size: 1.5rem;
+    font-size: 28px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: -0.02em;
@@ -63,7 +63,7 @@
     -webkit-text-fill-color: transparent;
 
     @media (max-width: 440px) {
-      font-size: 1.25rem;
+      font-size: 24px;
     }
   }
 

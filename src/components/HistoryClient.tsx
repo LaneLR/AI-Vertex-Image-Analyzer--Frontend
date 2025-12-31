@@ -59,7 +59,7 @@ export default function HistoryClient({ user }: { user: any }) {
             <Search size={48} className="history-page__empty-icon" />
             <h3>No Scans Yet</h3>
             <p>Items you appraise will appear here.</p>
-            <Link href="/" className="btn-primary">Start Scanning</Link>
+            <Link href="/" className="generate-btn">Start Scanning</Link>
           </div>
         ) : (
           <div className="history-page__list">

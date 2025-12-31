@@ -1,8 +1,6 @@
-// src/components/AccountClient.tsx
 "use client";
 
 import React, { useEffect, useState } from "react";
-// Removed dailyScansUsed from useApp since we'll use session
 import { useApp } from "@/context/AppContext"; 
 import {
   User as UserIcon,
@@ -11,20 +9,17 @@ import {
   Zap,
   ArrowLeft,
   Settings,
+  Wand2,
+  LogOut,
+  ShieldCheck
 } from "lucide-react";
 import Link from "next/link";
 import SubscribeButton from "@/components/SubscribeButton";
 import { Capacitor } from "@capacitor/core";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 
-interface AccountClientProps {
-  user: any; 
-  history: any[];
-}
-
-export default function AccountClient({ user: initialUser, history }: AccountClientProps) {
-  // Pull maxFreeScans from context, but we will get usage from session
+export default function AccountClient({ user: initialUser, history }: { user: any, history: any[] }) {
   const { maxFreeScans } = useApp(); 
   const [isNative, setIsNative] = useState(false);
   const [loadingPortal, setLoadingPortal] = useState(false);
@@ -32,34 +27,26 @@ export default function AccountClient({ user: initialUser, history }: AccountCli
   const searchParams = useSearchParams();
   const success = searchParams.get("success");
 
-  // Priority: Session Data > Initial Server Data
   const user = session?.user || initialUser;
-  
-  // Get scans from session (cast to any or use your interface)
-  const dailyScansUsed = (session?.user as any)?.dailyScansCount || 0;
+  const dailyScansUsed = (user as any)?.dailyScansCount || 0;
 
   useEffect(() => {
-    // Refresh session if coming back from successful stripe payment
-    if (success === "true") {
-      update();
-    }
+    if (success === "true") update();
   }, [success, update]);
 
   useEffect(() => {
     setIsNative(Capacitor.isNativePlatform());
   }, []);
 
-  const isPro = user.subscriptionStatus?.toLowerCase() === "pro";
-  
-  // Calculate percentage based on database value
+  const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const usagePercentage = Math.min((dailyScansUsed / maxFreeScans) * 100, 100);
+  const recentHistory = history.slice(0, 3);
 
   const handleManageSubscription = async () => {
     if (isNative) {
       window.open("https://apps.apple.com/account/subscriptions", "_blank");
       return;
     }
-
     setLoadingPortal(true);
     try {
       const res = await fetch("/api/stripe/portal", { method: "POST" });
@@ -73,123 +60,102 @@ export default function AccountClient({ user: initialUser, history }: AccountCli
   };
 
   return (
-    <main className="account">
-      {/* ... Navigation remains same ... */}
-      <nav className="account__nav">
-        <Link href="/" className="account__nav-back">
-          <ArrowLeft className="account__nav-back-icon" />
+    <main className="account-page">
+      <header className="account-page__header">
+        <Link href="/" className="back-btn">
+          <ArrowLeft size={20} />
         </Link>
-        <h1 className="account__nav-title">ACCOUNT</h1>
-      </nav>
-
-      <div className="account__container">
-        {/* PROFILE SECTION */}
-        <div className="account__profile">
-          <div className="account__profile-avatar">
-            <UserIcon className="account__profile-avatar-icon" />
-          </div>
-          <div>
-            <h2 className="account__profile-name">{user.email}</h2>
-            <p className="account__profile-tier">
-              {isPro ? "Pro Member" : "Basic Member"}
-            </p>
-          </div>
-        </div>
-
-        {/* SUBSCRIPTION STATUS CARD */}
-        <section className="account__section">
-          <h3 className="account__section-title">Subscription</h3>
-          
-          <div className={`account__plan-card ${isPro ? 'account__plan-card--pro' : 'account__plan-card--free'}`}>
-            {/* ... Plan Header remains same ... */}
-            <div className="account__plan-header">
-               <span className={`account__plan-badge ${isPro ? 'account__plan-badge--pro' : 'account__plan-badge--free'}`}>
-                  {isPro ? 'Pro Tier' : 'Free Tier'}
-               </span>
-                <Zap
-                  fill={isPro ? "#3b82f6" : "#94a3b8"}
-                  className={`account__plan-icon ${isPro ? "account__plan-icon--pro" : ""}`}
-                />
-            </div>
-
-            {isPro ? (
-              <div className="account__pro-details">
-                <p className="account__pro-msg">Unlimited AI Appraisals Active</p>
-                {user.cancelAtPeriodEnd && user.subscriptionEndDate && (
-                  <p className="account__cancel-notice">
-                    Ends on: {new Date(user.subscriptionEndDate).toLocaleDateString()}
-                  </p>
-                )}
-                <button 
-                  className="account__manage-btn" 
-                  onClick={handleManageSubscription}
-                  disabled={loadingPortal}
-                >
-                  <Settings size={16} />{" "}
-                  {loadingPortal ? "Loading..." : "Manage Subscription"}
-                </button>
-              </div>
-            ) : (
-              <div className="account__usage-meter">
-                <div className="account__usage-meter-header">
-                  <span>Daily Usage</span>
-                  <span className="account__usage-meter-count">
-                    {/* Displaying DB value from session */}
-                    {dailyScansUsed} / {maxFreeScans}
-                  </span>
-                </div>
-                <div className="account__usage-meter-bar-bg">
-                  <div 
-                    className="account__usage-meter-bar" 
-                    style={{ width: `${usagePercentage}%` }}
-                  ></div>
-                </div>
-                
-                <div className="account__cta-wrapper">
-                   <SubscribeButton 
-                    priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!} 
-                    isPro={isPro} 
-                  />
-                </div>
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* ... History and Logout remain same ... */}
-        <section className="account__section">
-          <div className="account__section-header">
-            <h3 className="account__section-title">Recent History</h3>
-            <Link href="/history" className="account__view-all-btn">VIEW ALL</Link>
-          </div>
-          <div className="account__history-card">
-            {history.length > 0 ? history.map((search) => (
-              <div key={search.id} className="account__history-row">
-                <div className="account__history-row-info">
-                  <div className="account__history-row-icon-bg">
-                    <History className="account__history-row-icon" />
-                  </div>
-                  <div>
-                    <p className="account__history-row-label">{search.itemName}</p>
-                    <p className="account__history-row-date">
-                      {new Date(search.createdAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                </div>
-                <div className="account__history-row-meta">
-                  <span className="account__history-row-price">${search.estimatedValue}</span>
-                  <ChevronRight className="account__history-row-chevron" />
-                </div>
-              </div>
-            )) : (
-              <p className="account__no-history">No appraisals yet.</p>
-            )}
-          </div>
-        </section>
-
-        <button className="account__logout-btn" onClick={() => window.location.href = '/api/auth/signout'}>
-          Log Out
+        <h1>Account Settings</h1>
+        <button className="logout-icon-btn" onClick={() => signOut({ callbackUrl: '/' })}>
+          <LogOut size={20} />
         </button>
+      </header>
+
+      <div className="account-page__content">
+        {/* PROFILE IDENTIFIER */}
+        <section className="profile-hero">
+          <div className="profile-hero__avatar">
+            <UserIcon size={32} />
+            {isPro && <div className="pro-badge-dot"><Zap size={10} fill="currentColor" /></div>}
+          </div>
+          <div className="profile-hero__info">
+            <h2>{user?.email}</h2>
+            <span className={`status-pill ${isPro ? 'status-pill--pro' : ''}`}>
+              {isPro ? <ShieldCheck size={12} /> : null}
+              {isPro ? "Pro Member" : "Basic Account"}
+            </span>
+          </div>
+        </section>
+
+        {/* SUBSCRIPTION CARD */}
+        <section className="account-card subscription-card">
+          <div className="account-card__header">
+            <h3>{isPro ? "Your Subscription" : "Upgrade to Pro"}</h3>
+            <Zap size={18} className={isPro ? "icon-gold" : "icon-gray"} />
+          </div>
+          
+          {isPro ? (
+            <div className="subscription-content">
+              <p>You have full access to Unlimited Appraisals and the Listing Studio.</p>
+              <button className="secondary-btn" onClick={handleManageSubscription} disabled={loadingPortal}>
+                <Settings size={14} /> {loadingPortal ? "Loading..." : "Billing Settings"}
+              </button>
+            </div>
+          ) : (
+            <div className="usage-content">
+              <div className="usage-stats">
+                <span>Daily Scans Used</span>
+                <span className="usage-count">{dailyScansUsed} / {maxFreeScans}</span>
+              </div>
+              <div className="progress-bar">
+                <div className="progress-fill" style={{ width: `${usagePercentage}%` }} />
+              </div>
+              <p className="usage-hint">Get unlimited scans and the listing generator with Pro.</p>
+              <SubscribeButton priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!} isPro={isPro} />
+            </div>
+          )}
+        </section>
+
+        {/* PRO TOOLS SHORTCUT */}
+        {isPro && (
+          <Link href="/listing" className="account-card listing-shortcut">
+            <div className="shortcut-info">
+              <Wand2 size={20} />
+              <div>
+                <h4>Listing Studio</h4>
+                <p>Generate SEO marketplace details</p>
+              </div>
+            </div>
+            <ChevronRight size={18} />
+          </Link>
+        )}
+
+        {/* RECENT HISTORY */}
+        <section className="history-preview">
+          <div className="section-header">
+            <h3>Recent Activity</h3>
+            <Link href="/history">View All</Link>
+          </div>
+          <div className="history-list card">
+            {recentHistory.length > 0 ? recentHistory.map((item) => (
+              <Link href="/history" key={item.id} className="history-item">
+                <div className="history-item__main">
+                   <div className="item-icon"><History size={16} /></div>
+                   <div className="item-text">
+                     <p className="item-title">{item.itemTitle}</p>
+                     <p className="item-date">{new Date(item.createdAt).toLocaleDateString()}</p>
+                   </div>
+                </div>
+                <div className="item-meta">
+                  <span className="item-price">{item.priceRange}</span>
+                  <ChevronRight size={16} />
+                </div>
+              </Link>
+            )) : (
+              <div className="empty-history">Your recent appraisals will appear here.</div>
+            )}
+          </div>
+        </section>
       </div>
     </main>
   );
