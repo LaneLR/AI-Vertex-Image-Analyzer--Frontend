@@ -1,66 +1,74 @@
 "use client";
+
+import React from "react";
 import Link from "next/link";
-import { HelpCircle, ShieldCheck, Info, Github } from "lucide-react";
-import "../styles/common/_footer.scss";
+import { HelpCircle, ShieldCheck, Info, Github, Sparkles } from "lucide-react";
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="footer">
       <div className="footer__container">
-        {/* Main Footer Links */}
-        <div className="footer__links">
+        <div className="footer__grid">
+          {/* Brand Info */}
+          <div className="footer__section footer__section--brand">
+            <div className="footer__logo">
+              <span className="logo-accent">Flip</span>Finder
+            </div>
+            <p className="footer__tagline">
+              Professional AI vision tools for the modern reseller.
+            </p>
+            <div className="footer__badges">
+              <span className="badge-pill">
+                <Sparkles size={12} /> Powered by Gemini
+              </span>
+            </div>
+          </div>
+
+          {/* Navigation Links */}
           <div className="footer__section">
-            <h4 className="footer__section-title">Support</h4>
+            <h4 className="footer__label">Resources</h4>
             <ul className="footer__list">
               <li>
-                <Link
-                  href="/help"
-                  className="footer__link footer__link--support"
-                >
-                  <HelpCircle className="footer__icon" /> Help Center
+                <Link href="/help" className="footer__link">
+                  <HelpCircle size={16} /> Help Center
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/about"
-                  className="footer__link footer__link--support"
-                >
-                  <Info className="footer__icon" /> About Flip Finder
+                <Link href="/about" className="footer__link">
+                  <Info size={16} /> About Studio
                 </Link>
               </li>
             </ul>
           </div>
+
           <div className="footer__section">
-            <h4 className="footer__section-title">Legal</h4>
+            <h4 className="footer__label">Compliance</h4>
             <ul className="footer__list">
               <li>
-                <Link
-                  href="/terms"
-                  className="footer__link footer__link--legal"
-                >
-                  <ShieldCheck className="footer__icon" /> Terms of Service
+                <Link href="/terms" className="footer__link">
+                  <ShieldCheck size={16} /> Terms
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/privacy"
-                  className="footer__link footer__link--legal"
-                >
-                  <ShieldCheck className="footer__icon" /> Privacy Policy
+                <Link href="/privacy" className="footer__link">
+                  <ShieldCheck size={16} /> Privacy
                 </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Branding & Copyright */}
-        <div className="footer__branding">
-          <p className="footer__copyright">
-            © 2025 FLIP FINDER AI • VERSION 1.0.4
-          </p>
-          <p className="footer__copyright">
-            POWERED BY GEMINI
-          </p>
+        <div className="footer__bottom">
+          <div className="footer__copyright">
+            © {currentYear} Flip Finder AI Studio • v1.0.4
+          </div>
+          <div className="footer__social">
+            <a href="https://github.com" target="_blank" rel="noreferrer" aria-label="GitHub">
+              <Github size={18} />
+            </a>
+          </div>
         </div>
       </div>
     </footer>
