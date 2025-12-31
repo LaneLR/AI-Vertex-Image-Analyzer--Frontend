@@ -26,7 +26,7 @@ export default function PrivacyClient() {
           <p className="privacy-hero__subtitle">
             We believe in transparency. Here is how Flip Finder handles your information.
           </p>
-          <span className="last-updated-tag">Version 2.1 • Dec 2025</span>
+          <span className="last-updated-tag">Last updated December 2025</span>
         </section>
 
         <div className="privacy-grid">
@@ -41,10 +41,10 @@ export default function PrivacyClient() {
                 When you use Flip Finder, we collect images you upload for AI appraisal, 
                 as well as basic account information to provide you with market insights.
               </p>
-              <div className="data-pill">
+              {/* <div className="data-pill">
                 <Lock size={12} />
                 Encrypted at rest & in transit
-              </div>
+              </div> */}
             </div>
           </section>
 
