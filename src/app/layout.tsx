@@ -3,9 +3,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "@/styles/main.scss";
 import ClientWrapper from "../components/ClientWrapper";
-// 1. Remove this line: import { SessionProvider } from "next-auth/react";
-// 2. Import your custom provider instead
-import Providers from "@/components/SessionProvider"; 
+import Providers from "@/components/SessionProvider";
 
 export const metadata: Metadata = {
   title: "Flip Finder | AI Thrift Appraisal",
@@ -18,7 +16,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="global">
+    <html lang="en" className="global" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  const darkMode = localStorage.getItem('darkMode');
+                  if (darkMode === 'true' || (!darkMode && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                    document.documentElement.classList.add('dark');
+                  } else {
+                    document.documentElement.classList.remove('dark');
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
+      </head>
       <body>
         {/* 3. Wrap everything in your custom Providers component */}
         <Providers>

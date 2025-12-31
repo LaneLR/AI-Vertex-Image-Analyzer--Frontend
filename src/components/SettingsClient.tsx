@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Sparkles,
   Eye,
@@ -9,111 +9,254 @@ import {
   Smartphone,
   ChevronRight,
   ArrowLeft,
+  Moon,
+  Trash2,
+  Cpu,
+  AlertTriangle,
 } from "lucide-react";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+import InfoModal from "./InfoModal";
 
 type User = {
   name?: string | null;
   email?: string | null;
   image?: string | null;
+  darkMode?: boolean;
 };
 
 interface SettingsClientProps {
   user?: User;
 }
 
-export default function SettingsClient({ user }: SettingsClientProps) {
-  // Since these aren't in the DB, they reset on page refresh. 
-  // If you want them to persist without a DB, you could use localStorage here.
+export default function SettingsClient({
+  user: initialUser,
+}: SettingsClientProps) {
+  const { data: session, update } = useSession();
+  const user = session?.user || initialUser;
+
   const [highAccuracy, setHighAccuracy] = useState(true);
   const [saveHistory, setSaveHistory] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [localDarkMode, setLocalDarkMode] = useState(user?.darkMode ?? false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const toggleAccuracy = () => setHighAccuracy(!highAccuracy);
-  const toggleHistory = () => setSaveHistory(!saveHistory);
+  const handleDeleteAll = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch("/api/user/clear-history", { method: "DELETE" });
+      if (res.ok) {
+        setIsModalOpen(false);
+      }
+    } catch (err) {
+      console.error("Failed to clear history", err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  useEffect(() => {
+    setLocalDarkMode(user?.darkMode ?? false);
+    if (user?.darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [user?.darkMode]);
+
+  const toggleDarkMode = async () => {
+    if (isUpdating) return;
+    setIsUpdating(true);
+    const newDarkModeStatus = !localDarkMode;
+
+    setLocalDarkMode(newDarkModeStatus);
+    localStorage.setItem('darkMode', newDarkModeStatus ? 'true' : 'false'); 
+
+    if (newDarkModeStatus) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
+    try {
+      const res = await fetch("/api/user/update-settings", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ darkMode: newDarkModeStatus }),
+      });
+
+      if (res.ok) {
+        await update({ darkMode: newDarkModeStatus });
+      }
+    } catch (err) {
+      console.error("Failed to sync dark mode to DB", err);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
 
   return (
-    <main className="settings">
-      <nav className="settings__nav">
-        <Link href="/account" className="settings__nav-back">
-          <ArrowLeft className="settings__nav-back-icon" />
+    <main className="settings-page">
+      <header className="settings-page__header">
+        <Link href="/account" className="back-circle">
+          <ArrowLeft size={20} />
         </Link>
-        <h1 className="settings__nav-title">SETTINGS</h1>
-      </nav>
+        <h1>Settings</h1>
+        <div className="header-spacer" />
+      </header>
 
-      <div className="settings__container">
-        <section className="settings__section">
-          <h3 className="settings__section-title settings__section-title--ai">
-            <Sparkles className="settings__section-title-icon" /> AI Engine Configuration
-          </h3>
-          
-          <div className="settings__card">
-            <div className="settings__row">
-              <div className="settings__row-info">
-                <div className="settings__row-icon-bg settings__row-icon-bg--ai">
-                  <Eye className="settings__row-icon settings__row-icon--ai" />
+      <div className="settings-page__content">
+        {/* APPEARANCE GROUP */}
+        <section className="settings-group">
+          <h2 className="settings-group__title">Appearance</h2>
+          <div className="settings-list">
+            <div className="settings-item">
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--moon">
+                  <Moon size={18} />
                 </div>
                 <div>
-                  <p className="settings__row-label">High Accuracy Mode</p>
-                  <p className="settings__row-desc">Uses advanced visual tiling</p>
+                  <p className="item-label">Dark Mode</p>
+                  <p className="item-desc">Easier on the eyes in low light</p>
                 </div>
               </div>
               <button
-                onClick={toggleAccuracy}
-                className={`settings__toggle ${highAccuracy ? "settings__toggle--on" : ""}`}
+                onClick={toggleDarkMode}
+                disabled={isUpdating}
+                className={`ios-toggle ${localDarkMode ? "active" : ""}`}
+                aria-pressed={localDarkMode}
               >
-                <div className={`settings__toggle-knob ${highAccuracy ? "settings__toggle-knob--on" : ""}`} />
-              </button>
-            </div>
-
-            <div className="settings__row settings__row--border">
-              <div className="settings__row-info">
-                <div className="settings__row-icon-bg">
-                  <Database className="settings__row-icon settings__row-icon--db" />
-                </div>
-                <div>
-                  <p className="settings__row-label">Cloud Save History</p>
-                  <p className="settings__row-desc">Keep logs of all scanned items</p>
-                </div>
-              </div>
-              <button
-                onClick={toggleHistory}
-                className={`settings__toggle ${saveHistory ? "settings__toggle--on settings__toggle--blue" : ""}`}
-              >
-                <div className={`settings__toggle-knob ${saveHistory ? "settings__toggle-knob--on" : ""}`} />
+                <div className="ios-toggle__knob" />
               </button>
             </div>
           </div>
         </section>
 
-        <section className="settings__section">
-          <h3 className="settings__section-title">Preferences</h3>
-          <div className="settings__prefs-card">
-            <Link href="/privacy" className="settings__prefs-row" style={{ textDecoration: 'none', color: 'inherit' }}>
-              <div className="settings__prefs-row-info">
-                <Shield className="settings__prefs-row-icon" />
-                <span>Data & Privacy</span>
+        {/* AI ENGINE GROUP */}
+        <section className="settings-group">
+          <h2 className="settings-group__title">
+            <Sparkles size={14} /> AI Engine Configuration
+          </h2>
+          <div className="settings-list">
+            <div className="settings-item">
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--eye">
+                  <Eye size={18} />
+                </div>
+                <div>
+                  <p className="item-label">High Accuracy Mode</p>
+                  <p className="item-desc">Advanced visual tiling for detail</p>
+                </div>
               </div>
-              <ChevronRight className="settings__prefs-row-chevron" />
+              <button
+                onClick={() => setHighAccuracy(!highAccuracy)}
+                className={`ios-toggle ${highAccuracy ? "active" : ""}`}
+              >
+                <div className="ios-toggle__knob" />
+              </button>
+            </div>
+
+            <div className="settings-item">
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--db">
+                  <Database size={18} />
+                </div>
+                <div>
+                  <p className="item-label">Cloud Save History</p>
+                  <p className="item-desc">Sync scans across all devices</p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSaveHistory(!saveHistory)}
+                className={`ios-toggle ${saveHistory ? "active" : ""}`}
+              >
+                <div className="ios-toggle__knob" />
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* PREFERENCES GROUP */}
+        <section className="settings-group">
+          <h2 className="settings-group__title">Preferences</h2>
+          <div className="settings-list">
+            <Link
+              href="/privacy"
+              className="settings-item settings-item--clickable"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <Shield size={18} />
+                </div>
+                <p className="item-label">Data & Privacy</p>
+              </div>
+              <ChevronRight size={18} className="chevron" />
             </Link>
-            
-            <div className="settings__prefs-row">
-              <div className="settings__prefs-row-info">
-                <Smartphone className="settings__prefs-row-icon" />
-                <span>App Version</span>
+
+            <div className="settings-item">
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--phone">
+                  <Smartphone size={18} />
+                </div>
+                <p className="item-label">App Version</p>
               </div>
-              <span className="settings__prefs-version">V 1.0.4</span>
+              <span className="version-tag">1.13.7</span>
             </div>
           </div>
         </section>
 
-        <section className="settings__section settings__section--danger">
-          <button 
-            className="settings__danger-btn" 
-            onClick={() => confirm("Are you sure? This will clear your local scan cache.")}
-          >
-            Delete All History
-          </button>
+        {/* DANGER ZONE SECTION */}
+        <section className="settings-group">
+          <div className="settings-list settings-list--danger">
+            <button
+              className="settings-item settings-item--btn"
+              onClick={() => setIsModalOpen(true)}
+            >
+              <div className="settings-item__info">
+                <Trash2 size={18} color="#ef4444" />
+                <span className="text-danger">Clear All Scan History</span>
+              </div>
+            </button>
+          </div>
         </section>
+
+        {/* CONFIRMATION MODAL */}
+        <InfoModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          title="Clear History"
+        >
+          <div className="delete-modal">
+            <div className="delete-modal__warning">
+              <div className="warning-icon-bg">
+                <AlertTriangle size={32} />
+              </div>
+              <h3>Are you sure?</h3>
+              <p>
+                All scanned items and valuations will be permanently removed.
+                <strong> This cannot be undone.</strong>
+              </p>
+            </div>
+
+            <div className="delete-modal__actions">
+              <button
+                className="modal-btn modal-btn--secondary"
+                onClick={() => setIsModalOpen(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                className="modal-btn modal-btn--danger"
+                onClick={handleDeleteAll}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Clearing..." : "Delete Everything"}
+              </button>
+            </div>
+          </div>
+        </InfoModal>
       </div>
     </main>
   );

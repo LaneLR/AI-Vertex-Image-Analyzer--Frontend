@@ -1,83 +1,149 @@
 .privacy-page {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 0 20px 40px;
-  color: #e5e5e5;
-  line-height: 1.6;
-  background-color: transparent;
-  font-family: 'Inter', Arial, sans-serif;
+  background: var(--bg-main);
+  min-height: 100vh;
 
   &__header {
-    margin-bottom: 60px;
-    border-bottom: 1px solid #000;
-    padding-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    background: var(--bg-nav);
+    border-bottom: 1px solid var(--border-color);
+    color: white;
+    h1 { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
+  }
+
+  &__content {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+  }
+}
+
+.privacy-hero {
+  text-align: center;
+  margin-bottom: 4rem;
+
+  &__icon {
+    color: var(--primary-theme);
+    margin-bottom: 1.5rem;
+    filter: drop-shadow(0 0 10px rgba(var(--primary-rgb), 0.3));
   }
 
   &__title {
-    font-size: 2.5rem;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+  }
+
+  &__subtitle {
+    font-size: 1rem;
+    color: var(--text-tertiary);
+    line-height: 1.5;
+    max-width: 400px;
+    margin: 0 auto 1.5rem;
+  }
+
+  .last-updated-tag {
+    font-size: 0.7rem;
     font-weight: 700;
-    color: #000;
-    margin-bottom: 8px;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    background: var(--bg-card);
+    padding: 4px 12px;
+    border-radius: 100px;
+    border: 1px solid var(--border-color);
+  }
+}
 
-    @media (max-width: 440px) {
-      font-size: 2rem;
+.privacy-section {
+  margin-bottom: 2.5rem;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1rem;
+
+    .section-icon {
+      width: 32px; height: 32px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary-theme);
     }
+
+    h3 { font-size: 1rem; font-weight: 800; color: var(--text-primary); }
+  }
+}
+
+.privacy-card {
+  background: var(--bg-card);
+  padding: 1.5rem;
+  border-radius: 20px;
+  border: 1px solid var(--border-color);
+  
+  p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+    &:last-child { margin-bottom: 0; }
   }
 
-  &__last-updated {
-    font-size: 0.9rem;
-    color: #666;
+  .data-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #22c55e;
+    background: rgba(34, 197, 94, 0.1);
+    padding: 6px 12px;
+    border-radius: 8px;
   }
+}
 
-  &__section {
-    margin-bottom: 40px;
+.privacy-footer {
+  margin-top: 5rem;
+  text-align: center;
 
-    &-title {
-      font-size: 1.25rem;
-      color: #000;
-      margin-bottom: 16px;
-      font-weight: 600;
-    }
-  }
-
-  &__text {
-    color: #666;
-    margin-bottom: 20px;
-  }
-
-  &__navigation {
-    margin-top: 80px;
-    padding: 40px;
-    background-color: #0a0a0a;
-    border: 1px solid #1a1a1a;
-    border-radius: 12px;
-    text-align: center;
-  }
-
-  &__nav-text {
-    margin-bottom: 20px;
-    font-size: 1.1rem;
-  }
+  &__title { font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem; }
+  p { font-size: 0.9rem; color: var(--text-tertiary); margin-bottom: 2rem; }
 
   &__links {
     display: flex;
-    justify-content: center;
-    gap: 24px;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
 
-    @media (max-width: 440px) {
-      flex-direction: column;
-      gap: 16px;
-    }
+.footer-link-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-card);
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &__content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--text-primary);
+    span { font-weight: 700; font-size: 0.95rem; }
+    svg { color: var(--text-tertiary); }
   }
 
-  &__link {
-    color: #ffffff;
-    text-decoration: underline;
-    text-underline-offset: 4px;
-    transition: color 0.2s ease;
+  .chevron { color: var(--text-tertiary); }
 
-    &:hover {
-      color: #888; // Or your brand accent color
-    }
+  &:hover {
+    border-color: var(--primary-theme);
+    transform: translateY(-2px);
   }
 }

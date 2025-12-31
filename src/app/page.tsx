@@ -8,9 +8,8 @@ export default async function Page() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    console.log("[page.tsx] No session found. Redirecting to /login.");
     redirect("/login");
   }
 
-  return <HomeClient initialUser={session.user?.email} />;
+  return <HomeClient user={session.user?.email} />;
 }

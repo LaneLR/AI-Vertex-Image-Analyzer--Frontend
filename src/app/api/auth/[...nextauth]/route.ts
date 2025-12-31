@@ -4,12 +4,13 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 import User from "@/lib/models/User";
 import bcrypt from "bcryptjs";
-import { connectDB } from "@/lib/db"; 
+import { connectDB } from "@/lib/db";
 
 declare module "next-auth" {
   interface User {
     id?: string;
     subscriptionStatus?: string;
+    darkMode?: boolean;
   }
   interface Session {
     user: {
@@ -18,6 +19,7 @@ declare module "next-auth" {
       email?: string | null;
       image?: string | null;
       subscriptionStatus?: string;
+      darkMode?: boolean;
     };
   }
 }
@@ -32,41 +34,48 @@ export const authOptions: NextAuthOptions = {
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Password", type: "password" }
+        password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        await connectDB(); 
+        await connectDB();
         if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await User.findOne({ where: { email: credentials.email } });
+        const user = await User.findOne({
+          where: { email: credentials.email },
+        });
 
         if (!user) throw new Error("No user found with that email");
-        if (!user.isVerified) throw new Error("Please verify your email before logging in");
+        if (!user.isVerified)
+          throw new Error("Please verify your email before logging in");
         if (!user.password) throw new Error("Please sign in with Google");
 
-        const isValid = await bcrypt.compare(credentials.password, user.password);
+        const isValid = await bcrypt.compare(
+          credentials.password,
+          user.password
+        );
         if (!isValid) throw new Error("Invalid password");
 
-        return { 
-          id: user.id.toString(), 
-          email: user.email 
+        return {
+          id: user.id.toString(),
+          email: user.email,
         };
-      }
-    })
+      },
+    }),
   ],
   session: { strategy: "jwt" },
   callbacks: {
     async signIn({ user, account }) {
-      await connectDB(); 
+      await connectDB();
       if (account?.provider === "google") {
         const [dbUser] = await User.findOrCreate({
           where: { email: user.email! },
           defaults: {
             email: user.email!,
             isVerified: true,
-            subscriptionStatus: 'basic',
-            dailyScansCount: 0
-          }
+            subscriptionStatus: "basic",
+            dailyScansCount: 0,
+            darkMode: false,
+          },
         });
         user.id = dbUser.id.toString();
       }
@@ -77,33 +86,34 @@ export const authOptions: NextAuthOptions = {
         token.id = user.id;
       }
 
-      if (trigger === 'update' || trigger === 'signIn') {
+      if (trigger === "update" || trigger === "signIn") {
         const dbUser = await User.findByPk(token.id as string);
-          token.subscriptionStatus = dbUser?.subscriptionStatus;
-          token.paymentProvider = dbUser?.paymentProvider;
-          token.providerSubscriptionId = dbUser?.providerSubscriptionId;
-          token.cancelAtPeriodEnd = dbUser?.cancelAtPeriodEnd;
-          token.subscriptionEndDate = dbUser?.subscriptionEndDate;
-          token.isVerified = dbUser?.isVerified;
-          token.dailyScansCount = dbUser?.dailyScansCount;
+        token.subscriptionStatus = dbUser?.subscriptionStatus;
+        token.paymentProvider = dbUser?.paymentProvider;
+        token.providerSubscriptionId = dbUser?.providerSubscriptionId;
+        token.cancelAtPeriodEnd = dbUser?.cancelAtPeriodEnd;
+        token.subscriptionEndDate = dbUser?.subscriptionEndDate;
+        token.isVerified = dbUser?.isVerified;
+        token.dailyScansCount = dbUser?.dailyScansCount;
+        token.darkMode = dbUser?.darkMode;
       }
       return token;
     },
     async session({ session, token }) {
-      if (token &&session.user) {
+      if (token && session.user) {
         (session.user as any).id = token.id;
-
         const dbUser = await User.findByPk(token.id as string);
-        session.user.subscriptionStatus = dbUser?.subscriptionStatus || 'basic'; 
+        session.user.subscriptionStatus = dbUser?.subscriptionStatus || "basic";
         (session.user as any).dailyScansCount = dbUser?.dailyScansCount || 0;
+        session.user.darkMode = dbUser?.darkMode ?? false;
       }
       return session;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,
-  pages: { 
+  pages: {
     signIn: "/login",
-    error: "/login" 
+    error: "/login",
   },
 };
 

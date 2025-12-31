@@ -1,130 +1,159 @@
-.header {
+.main-header {
   position: sticky;
   top: 0;
-  z-index: 100;
-  background-color: #2E2E2E;
-  border-bottom: 1px solid rgba(white, 0.1);
-  height: 60px;
+  z-index: 1000;
+  background: rgba(var(--bg-header-rgb), 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  height: 70px;
+  display: flex;
+  align-items: center;
+}
 
-  &__container {
-    max-width: 1200px;
-    margin: 0 auto;
-    height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 1.5rem;
-    position: relative;
-  }
+.header-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+}
 
-  &__account-icon {
-    color: #3387b7;
-  }
+.brand-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
 
-  &__menu-btn, &__account-btn {
-    background: none;
-    border: none;
+  .brand-logo-small {
+    background: var(--primary-theme);
     color: white;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    transition: color 0.2s;
-
-    &:hover { color: #ff6000; }
+    font-weight: 900;
+    padding: 4px 8px;
+    border-radius: 8px;
+    font-size: 0.8rem;
   }
 
-  &__brand {
-    text-decoration: none;
-  }
-
-  &__title-first-word {
-    font-size: 1.5rem;
+  .brand-text {
+    font-size: 1.25rem;
     font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    background-color: #ff6000;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-
-    @media (max-width: 440px) {
-      font-size: 1.25rem;
-    }
-  }
-
-  &__title-second-word {
-    font-size: 1.5rem;
-    font-weight: 800;
-    text-transform: uppercase;
-    letter-spacing: -0.02em;
-    background-color: #fff;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-
-    @media (max-width: 440px) {
-      font-size: 1.25rem;
-    }
-  }
-
-  // Dropdown Styles
-  &__dropdown {
-    position: absolute;
-    top: 60px;
-    left: 1.5rem;
-    width: 200px;
-    background: #1a1a1a;
-    border: 1px solid rgba(white, 0.1);
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    animation: slideDown 0.2s ease-out;
-  }
-
-  &__list {
-    list-style: none;
-    padding: 0.5rem 0;
-    margin: 0;
-  }
-
-  &__item {
-    display: block;
-  }
-
-  &__link {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 0.75rem 1rem;
-    color: rgba(white, 0.8);
-    text-decoration: none;
-    font-size: 0.875rem;
-    font-weight: 500;
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    cursor: pointer;
-
-    &:hover {
-      background: rgba(white, 0.05);
-      color: #ff6000;
-    }
-
-    &--logout {
-      color: #ff4d4d;
-      &:hover { color: #ff3333; background: rgba(#ff4d4d, 0.05); }
-    }
-  }
-
-  &__divider {
-    height: 1px;
-    background: rgba(white, 0.1);
-    margin: 0.5rem 0;
+    color: var(--header-text-primary);
+    span { color: var(--header-text-secondary); }
   }
 }
 
-@keyframes slideDown {
-  from { opacity: 0; transform: translateY(-10px); }
-  to { opacity: 1; transform: translateY(0); }
+.menu-toggle {
+  color: var(--header-text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 12px;
+  transition: background 0.2s;
+
+  &:hover { background: rgba(var(--text-primary-rgb), 0.05); }
+}
+
+.account-quick-link {
+  color: var(--text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 12px;
+  transition: background 0.2s;
+
+  &:hover { background: rgba(var(--text-primary-rgb), 0.05); }
+}
+
+
+.avatar-placeholder {
+  width: 36px;
+  height: 36px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+}
+
+// DROPDOWN NAVIGATION
+.nav-overlay {
+  position: absolute;
+  top: 70px;
+  left: 1.5rem;
+  width: 280px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.is-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+}
+
+.dropdown-nav {
+  padding: 1rem;
+
+  .nav-header {
+    font-size: 0.7rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    padding: 0.5rem 0.75rem;
+    letter-spacing: 0.05rem;
+  }
+}
+
+.nav-list {
+  list-style: none;
+  
+  .nav-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 0.5rem 0.75rem;
+  }
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.75rem;
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--text-secondary);
+  transition: background 0.2s;
+
+  &:hover {
+    background: var(--bg-main);
+    color: var(--primary-theme);
+  }
+
+  .nav-item-content {
+    display: flex;
+    flex-direction: column;
+    .nav-label { font-weight: 700; font-size: 0.95rem; color: var(--text-primary); }
+    .nav-desc { font-size: 0.75rem; color: var(--text-tertiary); }
+  }
+
+  &.logout-btn {
+    width: 100%;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: #ef4444;
+    .nav-label { color: #ef4444; }
+  }
 }

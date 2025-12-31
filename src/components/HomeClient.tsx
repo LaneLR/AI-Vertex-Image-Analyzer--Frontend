@@ -1,169 +1,142 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 "use client";
 
-import React, { useState, useRef } from "react";
-import { Camera, Upload } from "lucide-react";
-import { useApp } from "@/context/AppContext";
-import { resizeImage } from "@/utils/imageUtils";
-import InfoModal from "@/components/InfoModal";
+import React, { useState } from "react";
+import { Camera, Zap, BarChart3, History, Search, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
 import Loading from "./Loading";
 
-interface GeminiResult {
-  sources: string[];
-  title: string;
-  description: string;
-  priceRange: string;
-  platform: string;
-}
+export default function HomeClient({ user: initialUser }: { user: any }) {
+  const [image, setImage] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [result, setResult] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  
+  // status can be "loading", "authenticated", or "unauthenticated"
+  const { data: session, status } = useSession();
+  
+  // Use session user if available, otherwise fallback to the initial user from server
+  const user = session?.user || initialUser;
 
-export default function HomeClient({ initialUser }: { initialUser: any }) {
-  const [image, setImage] = useState<string | null>(null);
-  const [resultData, setResultData] = useState<GeminiResult | null>(null);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [showResult, setShowResult] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [modalConfig, setModalConfig] = useState({
-    isOpen: false,
-    title: "",
-    message: "",
-  });
-  const { isSubscriber, dailyScansUsed, maxFreeScans, incrementScans } =
-    useApp();
-
-  const openModal = (title: string, message: string) => {
-    setModalConfig({ isOpen: true, title, message });
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImage(file);
+      setPreview(URL.createObjectURL(file));
+    }
   };
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    // Security: Client-side check before burning AI credits
-    if (!isSubscriber && dailyScansUsed >= maxFreeScans) {
-      openModal(
-        "Limit Reached",
-        "You've used all your free scans for today. Upgrade to Pro for unlimited appraisals!"
-      );
-      return;
-    }
-
-    setImage(URL.createObjectURL(file));
-    setIsAnalyzing(true);
+  const analyzeItem = async () => {
+    if (!image) return;
+    setLoading(true);
+    const formData = new FormData();
+    formData.append("image", image);
+    formData.append("mode", "appraisal");
 
     try {
-      const optimizedBlob = await resizeImage(file, 768);
-      const formData = new FormData();
-      formData.append("image", optimizedBlob); // Using optimized image
-
-      const res = await fetch("/api/analyze", {
-        method: "POST",
-        body: formData,
-      });
-
+      const res = await fetch("/api/analyze", { method: "POST", body: formData });
       const data = await res.json();
-      if (res.ok) {
-        setResultData(data);
-        incrementScans();
-      } else {
-        openModal(
-          "Analysis Error",
-          data.error ||
-            "We couldn't identify this item. Please try a clearer photo."
-        );
-      }
+      setResult(data);
     } catch (err) {
-      openModal(
-        "Connection Error",
-        "Could not reach the AI server. Check your internet connection."
-      );
+      console.error(err);
     } finally {
-      setIsAnalyzing(false);
-      setShowResult(true);
-      setTimeout(() => {
-        window.scrollTo({
-          top: document.body.scrollHeight,
-          behavior: "smooth",
-        });
-      }, 100);
+      setLoading(false);
     }
   };
 
-  const triggerFileInput = () => fileInputRef.current?.click();
+  // 1. Prevent crash while session is mounting
+  if (status === "loading" && !initialUser) {
+    return <Loading />;
+  }
 
   return (
-    <main className="landing">
-      <div className="landing__container">
-        {/* IMAGE VIEWPORT */}
-        <div className="landing__viewport">
-          {image ? (
-            <>
-              <img src={image} alt="Uploaded Item" className="landing__image" />
-              {isAnalyzing && (
-                <div className="landing__analyzing-overlay">
-                  {/* <Loading message="AI Analyzing Item..." />{" "} */}
-                  <p className="landing__analyzing-text">AI Analyzing...</p>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="landing__placeholder">
-              <Camera className="landing__placeholder-icon" />
-              <p className="landing__placeholder-text">
-                Preview will appear here
-              </p>
+    <main className="home-screen">
+      <section className="home-stats">
+        <div className="home-stats__item">
+          <Zap size={16} className="icon-gold" />
+          {/* 2. Added optional chaining user?. to safely check status */}
+          <span>{user?.subscriptionStatus === 'pro' ? 'Pro Plan' : 'Basic Plan'}</span>
+        </div>
+        <div className="home-stats__item">
+          <BarChart3 size={16} />
+          <span className="home-stats__item">
+            {user?.dailyScansCount || 0} / {user?.subscriptionStatus === 'pro' ? '∞' : '5'} daily scans
+          </span>
+        </div>
+      </section>
+
+      <div className="home-container">
+        <section className="home-hero">
+          <h1>Identify & Appraise <span className="text-gradient">Instantly</span></h1>
+          <p>Snapshot any item to get real-world resale values and market data.</p>
+        </section>
+
+        <div className="home-upload card">
+          {preview ? (
+            <div className="home-upload__preview">
+              <img src={preview} alt="Preview" />
+              <button className="btn-reset" onClick={() => {setPreview(null); setImage(null); setResult(null);}}>
+                Clear
+              </button>
             </div>
+          ) : (
+            <label className="home-upload__dropzone">
+              <input type="file" onChange={handleFile} accept="image/*" hidden />
+              <div className="dropzone-ui">
+                <div className="camera-icon-wrapper">
+                  <Camera size={32} />
+                </div>
+                <h3>Capture or Upload</h3>
+                <p>Take a clear photo of the item's front</p>
+              </div>
+            </label>
           )}
+
+          <button 
+            className={`generate-btn ${loading ? 'loading' : ''}`}
+            disabled={!image || loading}
+            onClick={analyzeItem}
+          >
+            {loading ? <Sparkles className="animate-spin" /> : <Search size={20} />}
+            {loading ? "Analyzing..." : " Appraise Item"}
+          </button>
         </div>
 
-        {/* INPUT ACTIONS */}
-        <div className="landing__actions">
-          <button
-            onClick={triggerFileInput}
-            className="landing__action landing__action--photo"
-          >
-            <Camera className="landing__action-icon" /> TAKE PHOTO
-          </button>
-          <button
-            onClick={triggerFileInput}
-            className="landing__action landing__action--gallery"
-          >
-            <Upload className="landing__action-icon" /> GALLERY
-          </button>
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleUpload}
-            accept="image/*"
-            className="landing__file-input"
-          />
-        </div>
+        {result && (
+          <section className="home-result animate-fade-in">
+            <div className="card result-card">
+              <div className="result-card__price-tag">
+                <label>Estimated Value</label>
+                <h2>{result.priceRange}</h2>
+              </div>
+              
+              <div className="result-card__body">
+                <h3>{result.title}</h3>
+                <p>{result.description}</p>
+              </div>
 
-        {showResult && resultData && (
-          <div className="landing__result-animate">
-            <div className="landing__result-badge">AI Appraisal Complete!</div>
-            <div className="landing__result-card">
-              <p className="landing__result-label">Estimated Value</p>
-              <h2 className="landing__result-value">
-                {resultData.priceRange}{" "}
-                <span className="landing__result-currency">USD</span>
-              </h2>
-
-              <div className="landing__result-details">
-                <h3 className="landing__result-title">{resultData.title}</h3>
-                <p className="landing__result-desc">{resultData.description}</p>
-
-                <div className="landing__sources-list">
-                  <p className="landing__sources-header">Market Sources:</p>
-                  {resultData.sources?.map((source: string, index: number) => (
-                    <div key={index} className="landing__source-item">
-                      {source}
-                    </div>
+              {result.sources && (
+                <div className="result-card__sources">
+                  <h4>Market Evidence</h4>
+                  {result.sources.map((s: string, i: number) => (
+                    <div key={i} className="source-pill">{s}</div>
                   ))}
                 </div>
-              </div>
+              )}
             </div>
-          </div>
+          </section>
         )}
+
+        <nav className="home-nav-grid">
+          <Link href="/history" className="nav-card">
+            <History />
+            <span>History</span>
+          </Link>
+          <Link href="/listing" className="nav-card nav-card--pro">
+            <Zap />
+            <span>Listing Studio</span>
+          </Link>
+        </nav>
       </div>
     </main>
   );

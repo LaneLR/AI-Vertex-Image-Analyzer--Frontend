@@ -2,21 +2,30 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, ChevronRight } from "lucide-react";
+import { 
+  ArrowLeft, 
+  ChevronRight, 
+  BookOpen, 
+  CreditCard, 
+  AlertCircle, 
+  Mail, 
+  Search,
+  MessageCircle
+} from "lucide-react";
 import InfoModal from "./InfoModal";
 
 export default function HelpClient() {
   const [activeModal, setActiveModal] = useState<{ title: string; content: string } | null>(null);
 
-  // Structured data for all help topics
   const categories = [
     {
       id: "getting-started",
       title: "Getting Started",
+      icon: <BookOpen size={20} />,
       items: [
         { 
           title: "How to value your first item", 
-          content: "Simply upload a clear photo of your item or type in the name and brand. Our AI will scan the web and provide an estimated resale value within seconds." 
+          content: "Simply upload a clear photo of your item. Our AI will scan the web and provide an estimated resale value within seconds." 
         },
         { 
           title: "Setting up your profile", 
@@ -31,6 +40,7 @@ export default function HelpClient() {
     {
       id: "billing",
       title: "Account & Billing",
+      icon: <CreditCard size={20} />,
       items: [
         { 
           title: "Manage your subscription", 
@@ -49,6 +59,7 @@ export default function HelpClient() {
     {
       id: "troubleshooting",
       title: "Troubleshooting",
+      icon: <AlertCircle size={20} />,
       alert: true,
       items: [
         { 
@@ -69,73 +80,86 @@ export default function HelpClient() {
 
   return (
     <main className="help-page">
-      {/* Navigation */}
-      <nav className="account__nav">
-        <Link href="/" className="account__nav-back">
-          <ArrowLeft className="account__nav-back-icon" />
+      <header className="help-page__header">
+        <Link href="/" className="back-btn">
+          <ArrowLeft size={20} />
         </Link>
-        <h1 className="account__nav-title">HELP</h1>
-      </nav>
+        <h1>Support Center</h1>
+        <div className="header-spacer" />
+      </header>
 
-      {/* Hero Section */}
-      <section className="help-page__hero">
-        <h1 className="help-page__title">How can we help?</h1>
-      </section>
+      <div className="help-page__content">
+        <section className="help-hero">
+          <h2>How can we help?</h2>
+          {/* <div className="help-hero__search">
+            <Search size={18} />
+            <input type="text" placeholder="Search for articles..." />
+          </div> */}
+        </section>
 
-      {/* Help Categories */}
-      <section className="help-page__categories">
-        <div className="help-page__grid">
+        <div className="help-grid">
           {categories.map((cat) => (
-            <div 
-              key={cat.id} 
-              className={`help-page__category-card ${cat.alert ? 'help-page__category-card--alert' : ''}`}
-            >
-              <h3 className="help-page__category-title">{cat.title}</h3>
-              <ul className="help-page__list">
+            <section key={cat.id} className="help-group">
+              <div className="help-group__header">
+                <div className={`icon-box ${cat.alert ? 'icon-box--alert' : ''}`}>
+                  {cat.icon}
+                </div>
+                <h3>{cat.title}</h3>
+              </div>
+
+              <div className="settings-list">
                 {cat.items.map((item) => (
-                  <li 
+                  <button 
                     key={item.title} 
-                    className="help-page__list-item"
+                    className="settings-item settings-item--btn"
                     onClick={() => setActiveModal({ title: item.title, content: item.content })}
                   >
-                    <span>{item.title}</span>
-                    <ChevronRight size={16} className="help-page__chevron" />
-                  </li>
+                    <span className="item-label">{item.title}</span>
+                    <ChevronRight size={18} className="chevron" />
+                  </button>
                 ))}
-                {/* Special case for Contact Support in Troubleshooting */}
-                {cat.id === "troubleshooting" && (
-                  <li className="help-page__list-item" onClick={handleSupportClick}>
-                    <span>Contact support</span>
-                    <ChevronRight size={16} className="help-page__chevron" />
-                  </li>
-                )}
-              </ul>
-            </div>
+                
+                {/* {cat.id === "troubleshooting" && (
+                  <button className="settings-item settings-item--btn contact-trigger" onClick={handleSupportClick}>
+                    <span className="item-label">Still having issues? Contact support</span>
+                    <Mail size={16} />
+                  </button>
+                )} */}
+              </div>
+            </section>
           ))}
         </div>
-      </section>
 
-      {/* Bottom Contact Section */}
-      <footer className="help-page__footer">
-        <p className="help-page__footer-text">Still need help?</p>
-        <button 
-          className="help-page__btn help-page__btn--primary"
-          onClick={handleSupportClick}
-        >
-          Contact Support
-        </button>
-      </footer>
+        <footer className="help-footer">
+          <div className="help-footer__card">
+            <div className="footer-info">
+              <MessageCircle size={24} />
+              <div>
+                <h4>Didn't find an answer?</h4>
+                <p>Our team usually responds within 24 hours.</p>
+              </div>
+            </div>
+            <button className="help-btn" onClick={handleSupportClick}>
+              Email Support
+            </button>
+          </div>
+        </footer>
+      </div>
 
-      {/* Reusable Modal */}
       <InfoModal 
         isOpen={!!activeModal} 
         onClose={() => setActiveModal(null)} 
         title={activeModal?.title || ""}
       >
-        <div className="help-modal-content">
-          <p style={{ color: "#333" }}>
-            {activeModal?.content}
-          </p>
+        <div className="help-article">
+          <p>{activeModal?.content}</p>
+          <div className="help-article__feedback">
+            <span>Was this helpful?</span>
+            <div className="feedback-btns">
+              <button onClick={() => setActiveModal(null)}>Yes</button>
+              <button onClick={() => setActiveModal(null)}>No</button>
+            </div>
+          </div>
         </div>
       </InfoModal>
     </main>
