@@ -70,6 +70,15 @@ export default function SettingsClient({
     setIsUpdating(true);
     const newDarkModeStatus = !localDarkMode;
 
+    setLocalDarkMode(newDarkModeStatus);
+    localStorage.setItem('darkMode', newDarkModeStatus ? 'true' : 'false'); 
+
+    if (newDarkModeStatus) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+
     try {
       const res = await fetch("/api/user/update-settings", {
         method: "PATCH",
@@ -78,16 +87,10 @@ export default function SettingsClient({
       });
 
       if (res.ok) {
-        setLocalDarkMode(newDarkModeStatus);
         await update({ darkMode: newDarkModeStatus });
-        if (newDarkModeStatus) {
-          document.documentElement.classList.add("dark");
-        } else {
-          document.documentElement.classList.remove("dark");
-        }
       }
     } catch (err) {
-      console.error("Failed to update dark mode", err);
+      console.error("Failed to sync dark mode to DB", err);
     } finally {
       setIsUpdating(false);
     }
