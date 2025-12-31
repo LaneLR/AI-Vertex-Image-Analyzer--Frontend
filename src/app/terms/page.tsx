@@ -6,7 +6,5 @@ export const metadata = {
 };
 
 export default function TermsPage() {
-  // Logic: This is a pure Server Component. 
-  // It passes no sensitive data, just renders the UI.
   return <TermsClient />;
 }
