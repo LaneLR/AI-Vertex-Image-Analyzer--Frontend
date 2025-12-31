@@ -6,17 +6,25 @@ import { useRouter } from "next/navigation";
 import { Mail, Lock, ArrowRight, Chrome } from "lucide-react";
 import InfoModal from "./InfoModal";
 import Loading from "./Loading";
+import Image from "next/image";
+import logo from "../../public/images/FlipFinderLogo.png";
 
 export default function UnifiedAuthPage() {
   const { data: session, status } = useSession();
-  const [view, setView] = useState<"login" | "register" | "verify" | "forgot">("login");
+  const [view, setView] = useState<"login" | "register" | "verify" | "forgot">(
+    "login"
+  );
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: "", message: "" });
+  const [modalConfig, setModalConfig] = useState({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
 
   useEffect(() => {
     if (status === "authenticated" && window.location.pathname === "/login") {
@@ -35,7 +43,11 @@ export default function UnifiedAuthPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-    const res = await signIn("credentials", { email, password, redirect: false });
+    const res = await signIn("credentials", {
+      email,
+      password,
+      redirect: false,
+    });
     if (res?.error) {
       setError(res.error);
       setLoading(false);
@@ -68,7 +80,15 @@ export default function UnifiedAuthPage() {
     <main className="auth-page">
       <div className="auth-container">
         <header className="auth-header">
-          <div className="auth-logo">FF</div>
+          <div >
+            <Image
+              width={125}
+              height={125}
+              alt="FlipFinder Logo"
+              src={logo}
+              priority
+            />
+          </div>
           <h1 className="auth-title">
             {view === "login" && "Welcome Back"}
             {view === "register" && "Join the Hunt"}
@@ -76,16 +96,24 @@ export default function UnifiedAuthPage() {
             {view === "forgot" && "Reset Password"}
           </h1>
           <p className="auth-subtitle">
-            {view === "login" && "Enter your details to access your studio."}
-            {view === "register" && "Start valuing your finds with AI power."}
+            {view === "login" &&
+              "Enter your details to log in to your account."}
+            {view === "register" &&
+              "Start valuing your finds with artificial intelligence."}
           </p>
         </header>
 
         {error && <div className="auth-error-pill">{error}</div>}
 
-        <form 
-          className="auth-form" 
-          onSubmit={view === "login" ? handleLogin : view === "register" ? handleRegister : handleRegister}
+        <form
+          className="auth-form"
+          onSubmit={
+            view === "login"
+              ? handleLogin
+              : view === "register"
+              ? handleRegister
+              : handleRegister
+          }
         >
           {view !== "verify" && (
             <div className="input-wrapper">
@@ -114,14 +142,20 @@ export default function UnifiedAuthPage() {
           )}
 
           {view === "login" && (
-            <button type="button" className="forgot-btn" onClick={() => setView("forgot")}>
+            <button
+              type="button"
+              className="forgot-btn"
+              onClick={() => setView("forgot")}
+            >
               Forgot password?
             </button>
           )}
 
           {view === "verify" && (
             <div className="otp-container">
-              <p>Sent to <strong>{email}</strong></p>
+              <p>
+                Sent to <strong>{email}</strong>
+              </p>
               <input
                 className="otp-input"
                 type="text"
@@ -134,14 +168,26 @@ export default function UnifiedAuthPage() {
           )}
 
           <button type="submit" className="auth-submit-btn" disabled={loading}>
-            {loading ? "Processing..." : view === "login" ? "Login" : view === "register" ? "Create Account" : "Verify"}
+            {loading
+              ? "Processing..."
+              : view === "login"
+              ? "Login"
+              : view === "register"
+              ? "Create Account"
+              : "Verify"}
             {!loading && <ArrowRight size={18} />}
           </button>
 
           {(view === "login" || view === "register") && (
             <>
-              <div className="auth-divider"><span>OR</span></div>
-              <button type="button" className="google-auth-btn" onClick={() => signIn("google", { callbackUrl: "/" })}>
+              <div className="auth-divider">
+                <span>OR</span>
+              </div>
+              <button
+                type="button"
+                className="google-auth-btn"
+                onClick={() => signIn("google", { callbackUrl: "/" })}
+              >
                 <Chrome size={18} />
                 Continue with Google
               </button>
@@ -155,8 +201,12 @@ export default function UnifiedAuthPage() {
           ) : (
             view !== "verify" && (
               <p>
-                {view === "login" ? "New here?" : "Joined us before?"}
-                <button onClick={() => setView(view === "login" ? "register" : "login")}>
+                {view === "login" ? "New here?" : "Already have an account?"}
+                <button
+                  onClick={() =>
+                    setView(view === "login" ? "register" : "login")
+                  }
+                >
                   {view === "login" ? "Create an account" : "Log in"}
                 </button>
               </p>
