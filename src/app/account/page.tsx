@@ -13,14 +13,6 @@ export default async function AccountPage() {
     redirect("/login");
   }
 
-  // 3. session.user contains the logged-in user data
-  console.log("[account/page.tsx] Session found for:", session.user?.email);
-
-  const mockHistory = [
-    { id: 1, item: "Vintage Levi's 501", price: "$45-60", date: "2h ago" },
-    { id: 2, item: "Nike Air Max 97", price: "$110-140", date: "Yesterday" },
-  ];
-
   // Pass session.user to your client component
-  return <AccountClient user={session.user} history={mockHistory} />;
+  return <AccountClient user={session.user} />;
 }
