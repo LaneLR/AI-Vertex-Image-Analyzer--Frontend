@@ -100,6 +100,7 @@
   background: none;
   border: none;
   cursor: pointer;
+  text-decoration: underline;
 }
 
 .auth-submit-btn {
@@ -178,6 +179,23 @@
   }
 }
 
+.resend-cont {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.resend-button {
+  margin-top: 10px;
+  background: none;
+  border: none;
+  color: var(--primary-theme);
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .otp-container {
   text-align: center;
   margin-bottom: 1.5rem;
@@ -196,5 +214,6 @@
     background: var(--bg-main);
     border: 1px solid var(--border-color);
     border-radius: 14px;
+    color: var(--text-primary);
   }
 }

@@ -47,18 +47,17 @@
     align-items: center;
     justify-content: center;
     color: var(--primary-theme);
-    position: relative;
 
-    .pro-badge-dot {
-      position: absolute;
-      bottom: -5px;
-      right: -5px;
-      background: var(--primary-theme);
-      color: var(--text-primary);
-      padding: 4px;
-      border-radius: 50%;
-      border: 3px solid var(--bg-main);
-    }
+    // .pro-badge-dot {
+    //   position: relative;
+    //   bottom: -5px;
+    //   right: -5px;
+    //   background: var(--primary-theme);
+    //   color: var(--text-primary);
+    //   padding: 4px;
+    //   border-radius: 50%;
+    //   border: 3px solid var(--bg-main);
+    // }
   }
 
   h2 {
@@ -101,6 +100,9 @@
     h3 {
       font-size: 1rem;
       font-weight: 700;
+    }
+    svg {
+      color: var(--primary-theme);
     }
   }
 }

@@ -1,6 +1,6 @@
 .history-page {
   min-height: 100vh;
-  background-color: transparent;
+  background-color: var(--bg-main);
   padding-bottom: 2rem;
 
   &__nav {
@@ -84,7 +84,7 @@
   border: 1px solid transparent;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
-  position: relative;
+  // position: relative;
   box-shadow: var(--shadow);
 
   @media (prefers-color-scheme: dark) {

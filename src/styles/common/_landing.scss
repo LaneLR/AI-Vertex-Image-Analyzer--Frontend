@@ -194,3 +194,16 @@
     }
   }
 }
+
+.too-many-scans-cont {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+  width: 100%;
+}
+
+.upgrade-btn-cont {
+  width: 100%;
+  color: var(--text-primary)
+}
