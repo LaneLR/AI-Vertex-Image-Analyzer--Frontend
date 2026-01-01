@@ -20,8 +20,7 @@ import { Capacitor } from "@capacitor/core";
 import { useSession, signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 
-export default function AccountClient({ user: initialUser, history }: { user: any, history: any[] }) {  const { maxFreeScans } = useApp(); 
-  const [isNative, setIsNative] = useState(false);
+export default function AccountClient({ user: initialUser }: { user: any }) {  const { maxFreeScans } = useApp(); 
   const [loadingPortal, setLoadingPortal] = useState(false);
   const { data: session, update } = useSession();
   const searchParams = useSearchParams();
@@ -29,35 +28,35 @@ export default function AccountClient({ user: initialUser, history }: { user: an
 
   const user = session?.user || initialUser;
   const dailyScansUsed = (user as any)?.dailyScansCount || 0;
-
+  const [platform, setPlatform] = useState<string>("web");
+  
   useEffect(() => {
-    if (success === "true") update();
-  }, [success, update]);
-
-  useEffect(() => {
-    setIsNative(Capacitor.isNativePlatform());
+    // This returns 'ios', 'android', or 'web'
+    const currentPlatform = Capacitor.getPlatform();
+    setPlatform(currentPlatform);
   }, []);
+
+  const isIOS = platform === 'ios';
+  const isAndroid = platform === 'android';
+  const isNative = platform !== 'web';
 
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const usagePercentage = Math.min((dailyScansUsed / maxFreeScans) * 100, 100);
-  const recentHistory = [...history]
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, 3);
 
   const handleManageSubscription = async () => {
-    if (isNative) {
+    if (user.paymentProvider === 'stripe') {
+      try {
+        const res = await fetch("/api/stripe/portal", { method: "POST" });
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+      } catch (err) {
+        console.error("Failed to open portal", err);
+      } finally {
+        setLoadingPortal(false);
+      }
+    } else if (user.paymentProvider === 'apple') {
       window.open("https://apps.apple.com/account/subscriptions", "_blank");
       return;
-    }
-    setLoadingPortal(true);
-    try {
-      const res = await fetch("/api/stripe/portal", { method: "POST" });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-    } catch (err) {
-      console.error("Failed to open portal", err);
-    } finally {
-      setLoadingPortal(false);
     }
   };
 
@@ -79,13 +78,13 @@ export default function AccountClient({ user: initialUser, history }: { user: an
         <section className="profile-hero">
           <div className="profile-hero__avatar">
             <UserIcon size={32} />
-            {isPro && <div className="pro-badge-dot"><Zap size={10} fill="currentColor" /></div>}
+            {/* {isPro && <div className="pro-badge-dot"><Zap size={10} fill="currentColor" /></div>} */}
           </div>
           <div className="profile-hero__info">
             <h2>{user?.email}</h2>
             <span className={`status-pill ${isPro ? 'status-pill--pro' : ''}`}>
               {isPro ? <ShieldCheck size={12} /> : null}
-              {isPro ? "Pro Member" : "Basic Account"}
+              {isPro ? "Pro Member" : "Basic Member"}
             </span>
           </div>
         </section>
@@ -101,7 +100,7 @@ export default function AccountClient({ user: initialUser, history }: { user: an
             <div className="subscription-content">
               <p>You have full access to Unlimited Appraisals and the Listing Studio.</p>
               <button className="secondary-btn" onClick={handleManageSubscription} disabled={loadingPortal}>
-                <Settings size={14} /> {loadingPortal ? "Loading..." : "Billing Settings"}
+                <Settings size={14} /> {loadingPortal ? "Loading..." : "Manage Billing Settings"}
               </button>
             </div>
           ) : (
