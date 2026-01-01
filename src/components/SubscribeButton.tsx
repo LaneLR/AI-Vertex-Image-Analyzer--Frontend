@@ -3,8 +3,7 @@
 
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { useSession } from "next-auth/react";
-import Loading from "./Loading"; // Using the component we created
+import Loading from "./Loading"; 
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -57,7 +56,7 @@ export default function SubscribeButton({ priceId, isPro = false }: SubscribeBut
       ) : (
         <>
           <button
-            className={`account__upgrade-btn`}
+            className={`generate-btn`}
             onClick={handleSubscribe}
             disabled={isPro || loading}
           >

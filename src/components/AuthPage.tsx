@@ -76,11 +76,52 @@ export default function UnifiedAuthPage() {
     }
   };
 
+  const handleVerify = async (e: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    setLoading(true);
+    setError("");
+    try {
+
+      const res = await fetch("/api/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        const result = await signIn("credentials", {
+          redirect: false,
+          email: email,
+          password: password,
+        });
+
+        if (result?.error) {
+          setError("Account verified! Please log in manually.");
+          setView("login");
+        } else {
+          router.push("/");
+        }
+      } else {
+        setError(data.error || "Invalid verification code.");
+      }
+    } catch (err) {
+      console.error("Error occurred while verifying account: ", err);
+      setError("Verification failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="auth-page">
       <div className="auth-container">
         <header className="auth-header">
-          <div >
+          <div>
             <Image
               width={125}
               height={125}
@@ -112,7 +153,7 @@ export default function UnifiedAuthPage() {
               ? handleLogin
               : view === "register"
               ? handleRegister
-              : handleRegister
+              : handleVerify
           }
         >
           {view !== "verify" && (
@@ -163,7 +204,17 @@ export default function UnifiedAuthPage() {
                 maxLength={6}
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
+                required
+                autoFocus
               />
+
+              <button
+                type="button"
+                className="resend-button"
+                onClick={handleRegister}
+              >
+                Didn't get a code? Resend
+              </button>
             </div>
           )}
 
@@ -174,7 +225,7 @@ export default function UnifiedAuthPage() {
               ? "Login"
               : view === "register"
               ? "Create Account"
-              : "Verify"}
+              : "Verify Account"}
             {!loading && <ArrowRight size={18} />}
           </button>
 

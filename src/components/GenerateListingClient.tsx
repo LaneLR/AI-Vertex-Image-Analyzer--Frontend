@@ -50,6 +50,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       const data = await res.json();
       setResult(data);
     } catch (err) {
+      //replace with InfoModal
       alert("Error generating listing");
     } finally {
       setLoading(false);

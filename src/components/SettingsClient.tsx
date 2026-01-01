@@ -13,6 +13,8 @@ import {
   Trash2,
   Cpu,
   AlertTriangle,
+  History,
+  Wand2,
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -134,7 +136,7 @@ export default function SettingsClient({
         </section>
 
         {/* AI ENGINE GROUP */}
-        <section className="settings-group">
+        {/* <section className="settings-group">
           <h2 className="settings-group__title">
             <Sparkles size={14} /> AI Engine Configuration
           </h2>
@@ -174,6 +176,38 @@ export default function SettingsClient({
                 <div className="ios-toggle__knob" />
               </button>
             </div>
+          </div>
+        </section> */}
+
+        {/* TOOLS GROUP */}
+        <section className="settings-group">
+          <h2 className="settings-group__title">TOOLS</h2>
+          <div className="settings-list">
+            <Link
+              href="/listing"
+              className="settings-item settings-item--clickable"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <Wand2 size={18} />
+                </div>
+                <p className="item-label">Listing Studio</p>
+              </div>
+              <ChevronRight size={18} className="chevron" />
+            </Link>
+
+            <Link
+              href="/history"
+              className="settings-item settings-item--clickable"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <History size={18} />
+                </div>
+                <p className="item-label">Scan History</p>
+              </div>
+              <ChevronRight size={18} className="chevron" />
+            </Link>
           </div>
         </section>
 
