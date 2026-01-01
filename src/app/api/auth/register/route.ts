@@ -5,27 +5,32 @@ import { connectDB } from "@/lib/db";
 import { sendVerificationEmail } from "@/lib/mail";
 
 export async function POST(req: Request) {
-  let newUser;
   try {
-    // Ensure DB is connected and synced
     await connectDB();
     const { email, password } = await req.json();
 
-    
+    const existingUser = await User.findOne({ where: { email }});
 
-    // 1. Check if user already exists
-    const existingUser = await User.findOne({ where: { email } });
     if (existingUser) {
-      return NextResponse.json(
-        { error: "Email already in use" },
-        { status: 400 }
-      );
+      if (existingUser.isVerified) {
+        return NextResponse.json(
+          { error: "Email already in use" },
+          { status: 400 }
+        );
+      }
+
+      const newOtpCode = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      existingUser.password = password; // Update in case they changed it
+      existingUser.verificationCode = newOtpCode;
+      await existingUser.save();
+
+      await sendVerificationEmail(email, newOtpCode);
+      return NextResponse.json({ message: "New verification code sent to your email" });
     }
 
     const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-
-    // 2. Create unverified user (firstName removed)
-    newUser = await User.create({
+    await User.create({
       email,
       password,
       verificationCode: otpCode,
@@ -34,19 +39,13 @@ export async function POST(req: Request) {
       dailyScansCount: 0,
     });
 
-    // 3. Send Email
     await sendVerificationEmail(email, otpCode);
-
     return NextResponse.json({ message: "Verification code sent" });
-    } catch (error: any) {
-    // 4. CLEANUP: If the email fails, delete the user so they can try again
-    if (newUser) {
-      await newUser.destroy();
-    }
-    
+
+  } catch (error: any) {
     console.error("REGISTRATION_ERROR:", error);
     return NextResponse.json({ 
-      error: "Failed to send verification email. Please check your email address." 
+      error: "An error occurred during registration. Please try again." 
     }, { status: 500 });
   }
 }
