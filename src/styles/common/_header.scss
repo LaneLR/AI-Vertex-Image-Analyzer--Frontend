@@ -37,11 +37,15 @@
   }
 
   .brand-text {
-    font-size: 1.25rem;
+    font-size: 24px;
     font-weight: 800;
     color: var(--header-text-primary);
     span {
       color: var(--header-text-secondary);
+    }
+
+    @media (min-width: 440px) {
+      font-size: 28px;
     }
   }
 }
