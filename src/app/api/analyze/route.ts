@@ -131,7 +131,7 @@ Return a valid JSON object:
 
     const APPRAISAL_PROMPT = `
 You are an expert in item identification and resale value. 
-When provided an image or images, you provide in this format the potential resale price range of the item, a title of the item, and a short 3 to 5 sentence description of what the item is and what it last sold for (be as descriptive as possible).
+When provided an image or images, you provide in this format the potential resale price range of the item, a title of the item, a short 3 to 5 sentence description of what the item is and what it last sold for (be as descriptive as possible), and an estimated shipping cost.
 
 If there is not enough information you can get from the images to determine its worth based on its condition or you cannot determine the item based on the images, you can respond with the message "Could not determine value. Please provide another image of the item with more detail.". 
 You can curate the message to what it is you need for information or details about, for example "Please provide another image of the item with better lighting.". You can also follow up the response with another question for better determining the valuation if needed, "Take a picture of the serial number for more accurate valuation." or "Take a picture of the book's Copyright Page for a more accurate valuation.". 
@@ -162,15 +162,16 @@ You must return a valid JSON object. Do not include any markdown formatting.
     "Marketplace Name - sold for $Price (Condition)",
     "Marketplace Name - listed for $Price (Condition)",
     "Marketplace Name - listed for $Price (Condition)"
-  ]
+  ],
+  "estimatedShippingCost": "$X"
 }
 
 DATA SOURCING:
 Search marketplaces like eBay, WhatNot, Facebook Marketplace, and other resale sites and auction sites. 
-List 1-3 real-world sold or listed examples in the 'sources' array. 
+List 1-4 real-world sold or listed examples in the 'sources' array. 
 Do not ask questions or offer extra help. 
 Provide statements only.
-Prioritize checking eBay, Facebook Marketplace, Craigslist, and WhatNot first before checking other sites online.
+Prioritize checking eBay, Facebook Marketplace, and Craigslist first before checking other sites online.
     `;
 
 export async function POST(req: Request) {
