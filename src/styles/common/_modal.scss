@@ -106,6 +106,9 @@
 
   &__warning {
     margin-bottom: 2rem;
+      > p {
+    text-align: left;
+  }
 
     .warning-icon-bg {
       width: 64px;

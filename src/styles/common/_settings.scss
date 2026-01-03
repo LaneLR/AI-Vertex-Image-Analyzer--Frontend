@@ -52,6 +52,10 @@
     display: flex;
     align-items: center;
     gap: 6px;
+
+    &--danger {
+      color: #ef4444;
+    }
   }
 }
 
@@ -63,6 +67,7 @@
 
   &--danger {
     border-color: rgba(239, 68, 68, 0.2);
+    margin: 0 0 10px 0;
   }
 }
 
