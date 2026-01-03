@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useApp } from "@/context/AppContext"; 
+import { useApp } from "@/context/AppContext";
 import {
   User as UserIcon,
   History,
@@ -12,42 +12,51 @@ import {
   Wand2,
   LogOut,
   ShieldCheck,
-  HistoryIcon
+  HistoryIcon,
 } from "lucide-react";
 import Link from "next/link";
 import SubscribeButton from "@/components/SubscribeButton";
 import { Capacitor } from "@capacitor/core";
 import { useSession, signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import InfoModal from "./InfoModal";
 
-export default function AccountClient({ user: initialUser }: { user: any }) {  const { maxFreeScans } = useApp(); 
+export default function AccountClient({ user: initialUser }: { user: any }) {
+  const { maxFreeScans } = useApp();
   const [loadingPortal, setLoadingPortal] = useState(false);
   const { data: session, update } = useSession();
   const searchParams = useSearchParams();
+  const [errorModal, setErrorModal] = useState(false);
   const success = searchParams.get("success");
 
   const user = session?.user || initialUser;
   const dailyScansUsed = (user as any)?.dailyScansCount || 0;
   const [platform, setPlatform] = useState<string>("web");
-  
+
   useEffect(() => {
     // This returns 'ios', 'android', or 'web'
     const currentPlatform = Capacitor.getPlatform();
     setPlatform(currentPlatform);
   }, []);
 
-  const isIOS = platform === 'ios';
-  const isAndroid = platform === 'android';
-  const isNative = platform !== 'web';
+  const isIOS = platform === "ios";
+  const isAndroid = platform === "android";
+  const isNative = platform !== "web";
 
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const usagePercentage = Math.min((dailyScansUsed / maxFreeScans) * 100, 100);
 
   const handleManageSubscription = async () => {
-    if (user.paymentProvider === 'stripe') {
+    console.log("START");
+    console.log("USER OBJECT:", user); // Check if paymentProvider exists here
+    console.log("PAYMENT PROVIDER:", user?.paymentProvider);
+    if (user?.paymentProvider === 'stripe') {
+      console.log("PAYMENT IS STRIPE")
       try {
         const res = await fetch("/api/stripe/portal", { method: "POST" });
+        console.log("RESPONSE --->", res)
         const data = await res.json();
+        console.log("DATA --->", data)
         if (data.url) window.location.href = data.url;
       } catch (err) {
         console.error("Failed to open portal", err);
@@ -82,7 +91,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {  c
           </div>
           <div className="profile-hero__info">
             <h2>{user?.email}</h2>
-            <span className={`status-pill ${isPro ? 'status-pill--pro' : ''}`}>
+            <span className={`status-pill ${isPro ? "status-pill--pro" : ""}`}>
               {isPro ? <ShieldCheck size={12} /> : null}
               {isPro ? "Pro Member" : "Basic Member"}
             </span>
@@ -95,25 +104,43 @@ export default function AccountClient({ user: initialUser }: { user: any }) {  c
             <h3>{isPro ? "Your Subscription" : "Upgrade to Pro"}</h3>
             <Zap size={18} className={isPro ? "icon-gold" : "icon-gray"} />
           </div>
-          
+
           {isPro ? (
             <div className="subscription-content">
-              <p>You have full access to Unlimited Appraisals and the Listing Studio.</p>
-              <button className="secondary-btn" onClick={handleManageSubscription} disabled={loadingPortal}>
-                <Settings size={14} /> {loadingPortal ? "Loading..." : "Manage Billing Settings"}
+              <p>
+                You have full access to Unlimited Appraisals and the Listing
+                Studio.
+              </p>
+              <button
+                className="secondary-btn"
+                onClick={handleManageSubscription}
+                disabled={loadingPortal}
+              >
+                <Settings size={14} />{" "}
+                {loadingPortal ? "Loading..." : "Manage Billing Settings"}
               </button>
             </div>
           ) : (
             <div className="usage-content">
               <div className="usage-stats">
                 <span>Daily Scans Used</span>
-                <span className="usage-count">{dailyScansUsed} / {maxFreeScans}</span>
+                <span className="usage-count">
+                  {dailyScansUsed} / {maxFreeScans}
+                </span>
               </div>
               <div className="progress-bar">
-                <div className="progress-fill" style={{ width: `${usagePercentage}%` }} />
+                <div
+                  className="progress-fill"
+                  style={{ width: `${usagePercentage}%` }}
+                />
               </div>
-              <p className="usage-hint">Get unlimited scans and the listing generator with Pro.</p>
-              <SubscribeButton priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!} isPro={isPro} />
+              <p className="usage-hint">
+                Get unlimited scans and the listing generator with Pro.
+              </p>
+              <SubscribeButton
+                priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
+                isPro={isPro}
+              />
             </div>
           )}
         </section>
@@ -177,6 +204,21 @@ export default function AccountClient({ user: initialUser }: { user: any }) {  c
           </div>
         </section> */}
       </div>
+
+      <InfoModal
+        isOpen={!!errorModal}
+        onClose={() => setErrorModal(false)}
+        title={"Could not open billing settings"}
+      >
+        <div className="too-many-scans-cont">
+          <div className="errorModal-cont">
+            <div className="errorModal-text">
+              There was an error trying to open the billing settings. Please try
+              again later.
+            </div>
+          </div>
+        </div>
+      </InfoModal>
     </main>
   );
 }

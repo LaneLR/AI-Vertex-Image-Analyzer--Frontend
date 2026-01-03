@@ -11,6 +11,7 @@ declare module "next-auth" {
     id?: string;
     subscriptionStatus?: string;
     darkMode?: boolean;
+    paymentProvider?: string;
   }
   interface Session {
     user: {
@@ -20,6 +21,7 @@ declare module "next-auth" {
       image?: string | null;
       subscriptionStatus?: string;
       darkMode?: boolean;
+      paymentProvider?: string;
     };
   }
 }
@@ -106,6 +108,7 @@ export const authOptions: NextAuthOptions = {
         session.user.subscriptionStatus = dbUser?.subscriptionStatus || "basic";
         (session.user as any).dailyScansCount = dbUser?.dailyScansCount || 0;
         session.user.darkMode = dbUser?.darkMode ?? false;
+        session.user.paymentProvider = dbUser?.paymentProvider;
       }
       return session;
     },
