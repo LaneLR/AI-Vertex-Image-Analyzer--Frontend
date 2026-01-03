@@ -47,16 +47,10 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
   const usagePercentage = Math.min((dailyScansUsed / maxFreeScans) * 100, 100);
 
   const handleManageSubscription = async () => {
-    console.log("START");
-    console.log("USER OBJECT:", user); // Check if paymentProvider exists here
-    console.log("PAYMENT PROVIDER:", user?.paymentProvider);
     if (user?.paymentProvider === 'stripe') {
-      console.log("PAYMENT IS STRIPE")
       try {
         const res = await fetch("/api/stripe/portal", { method: "POST" });
-        console.log("RESPONSE --->", res)
         const data = await res.json();
-        console.log("DATA --->", data)
         if (data.url) window.location.href = data.url;
       } catch (err) {
         console.error("Failed to open portal", err);
