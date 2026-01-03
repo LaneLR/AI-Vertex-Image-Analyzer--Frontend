@@ -12,6 +12,8 @@ import {
   Layout,
   ListChecks,
   ArrowLeft,
+  X,
+  Camera,
 } from "lucide-react";
 import Loading from "./Loading";
 import Link from "next/link";
@@ -21,25 +23,55 @@ interface GenerateListingProps {
 }
 
 export default function GenerateListingClient({ user }: GenerateListingProps) {
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  const [images, setImages] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
+  const isPro = user?.subscriptionStatus === "pro";
+  const maxPhotos = isPro ? 3 : 1;
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    const selectedFiles = files.slice(0, maxPhotos);
+    setImages(selectedFiles);
+
+    // Clean up old URLs
+    previews.forEach((url) => URL.revokeObjectURL(url));
+    const newPreviews = selectedFiles.map((file) => URL.createObjectURL(file));
+    setPreviews(newPreviews);
+    setResult(null);
+  };
+
+  const handleAddMore = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
-      setResult(null); // Reset result on new image
+    if (file && images.length < maxPhotos) {
+      setImages((prev) => [...prev, file]);
+      setPreviews((prev) => [...prev, URL.createObjectURL(file)]);
     }
   };
 
+  const removeImage = (index: number) => {
+    const newImages = [...images];
+    const newPreviews = [...previews];
+    URL.revokeObjectURL(newPreviews[index]);
+    newImages.splice(index, 1);
+    newPreviews.splice(index, 1);
+    setImages(newImages);
+    setPreviews(newPreviews);
+  };
+
   const generateListing = async () => {
+    if (images.length === 0) return;
     setLoading(true);
     const formData = new FormData();
-    formData.append("image", image!);
+    
+    images.forEach((img) => {
+      formData.append("image", img);
+    });
     formData.append("mode", "listing");
 
     try {
@@ -48,9 +80,12 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
         body: formData,
       });
       const data = await res.json();
-      setResult(data);
+      if (res.ok) {
+        setResult(data);
+      } else {
+        alert(data.error || "Error generating listing");
+      }
     } catch (err) {
-      //replace with InfoModal
       alert("Error generating listing");
     } finally {
       setLoading(false);
@@ -84,20 +119,40 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
         <section className="listing-grid__input">
           <div className="card listing-card--sticky">
             <h3 className="card-title">
-              <Package size={18} /> Source Image
+              <Package size={18} /> Source Images
             </h3>
-            <div className={`upload-zone ${preview ? "has-image" : ""}`}>
-              {preview ? (
-                <div className="preview-container">
-                  <img src={preview} alt="Item Preview" />
+            
+            <div className={`upload-zone ${previews.length > 0 ? "has-image" : ""}`}>
+              {previews.length > 0 ? (
+                <div className="multi-preview-wrapper">
+                  <div className="preview-grid-system">
+                    {previews.map((src, idx) => (
+                      <div key={idx} className="preview-slot">
+                        <img src={src} alt={`Preview ${idx + 1}`} />
+                        <button className="remove-btn" onClick={() => removeImage(idx)}>
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                    
+                    {isPro && previews.length < 3 && (
+                      <label className="add-slot-btn">
+                        <input type="file" onChange={handleAddMore} accept="image/*" hidden />
+                        <Camera size={20} />
+                        <span>Add</span>
+                      </label>
+                    )}
+                  </div>
+                  
                   <button
                     className="change-img-btn"
                     onClick={() => {
-                      setImage(null);
-                      setPreview(null);
+                      setImages([]);
+                      setPreviews([]);
+                      setResult(null);
                     }}
                   >
-                    <RefreshCcw size={16} /> Change Photo
+                    <RefreshCcw size={16} /> Clear All
                   </button>
                 </div>
               ) : (
@@ -106,23 +161,25 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     type="file"
                     onChange={handleImageChange}
                     accept="image/*"
+                    multiple={isPro}
                     hidden
                   />
                   <div className="dropzone-content">
                     <div className="icon-circle">
                       <Package />
                     </div>
-                    <span>Tap to upload item photo JPG, PNG or WebP</span>
+                    <span>{isPro ? "Tap to upload up to 3 photos" : "Tap to upload item photo"}</span>
                   </div>
                 </label>
               )}
             </div>
+
             <button
-              disabled={!image || loading}
+              disabled={images.length === 0 || loading}
               onClick={generateListing}
               className={`generate-btn ${loading ? "loading" : ""}`}
             >
-              {loading ? "AI is writing..." : "Generate Listing Details"}
+              {loading ? "AI is writing..." : `Generate Details (${images.length} Photo${images.length !== 1 ? 's' : ''})`}
             </button>
           </div>
         </section>
@@ -134,7 +191,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
               <Layout size={48} />
               <h3>Your listing will appear here</h3>
               <p>
-                Upload a clear photo of your item to generate SEO-friendly
+                Upload {isPro ? "different angles" : "a clear photo"} of your item to generate SEO-friendly
                 titles and descriptions.
               </p>
             </div>
@@ -153,9 +210,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   <label>
                     <Tag size={14} /> Optimized Title
                   </label>
-                  <button
-                    onClick={() => copyToClipboard(result.title, "title")}
-                  >
+                  <button onClick={() => copyToClipboard(result.title, "title")}>
                     {copiedField === "title" ? (
                       <Check size={16} color="#22c55e" />
                     ) : (
@@ -172,9 +227,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   <label>
                     <Info size={14} /> Product Description
                   </label>
-                  <button
-                    onClick={() => copyToClipboard(result.description, "desc")}
-                  >
+                  <button onClick={() => copyToClipboard(result.description, "desc")}>
                     {copiedField === "desc" ? (
                       <Check size={16} color="#22c55e" />
                     ) : (
@@ -182,7 +235,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     )}
                   </button>
                 </div>
-                <div className="result-value--desc">{result.description}</div>
+                <div className="result-value--desc whitespace-pre-wrap">{result.description}</div>
               </div>
 
               {/* Specs Grid */}
@@ -203,21 +256,19 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
               </div>
 
               {/* Tags */}
-
-              <div className="tags-container">
+              <div className="tags-container card">
                 <div className="result-group__header">
                   <label>
-                    <ListChecks size={14} /> Tags
+                    <Tag size={14} /> Search Tags
                   </label>
                 </div>
-<div className="tags-container--tags">
-
-
-                {result.tags?.map((tag: string) => (
-                  <span key={tag} className="tag">
-                    #{tag}
-                  </span>
-                ))}</div>
+                <div className="tags-container--tags">
+                  {result.tags?.map((tag: string) => (
+                    <span key={tag} className="tag">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
               </div>
             </div>
           )}
