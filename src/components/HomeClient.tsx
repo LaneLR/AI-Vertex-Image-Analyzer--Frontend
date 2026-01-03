@@ -1,14 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import {
-  Camera,
-  Zap,
-  BarChart3,
-  History,
-  Search,
-  Sparkles,
-} from "lucide-react";
+import { Camera, Zap, BarChart3, History, Search, Sparkles, X } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import Loading from "./Loading";
@@ -16,8 +9,10 @@ import InfoModal from "./InfoModal";
 import SubscribeButton from "./SubscribeButton";
 
 export default function HomeClient({ user: initialUser }: { user: any }) {
-  const [image, setImage] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
+  // --- State Updates for Multi-Image Support ---
+  const [images, setImages] = useState<File[]>([]);
+  const [previews, setPreviews] = useState<string[]>([]);
+  
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [scansCount, setScansCount] = useState<number>(0);
@@ -35,6 +30,9 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
     }
   }, [user?.dailyScansCount]);
 
+  const isPro = user?.subscriptionStatus === "pro";
+  const maxPhotos = isPro ? 3 : 1;
+
   // --- 1. Robust Extraction Helper ---
   const extractFirstNumber = (val: any): number => {
     if (typeof val === "number") return val;
@@ -48,24 +46,34 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
   const calculateNet = (value: any, cost: string, shippingVal: any) => {
     const cleanValue = extractFirstNumber(value);
     const numericCost = parseFloat(cost) || 0;
-    const shipping = extractFirstNumber(shippingVal); // Now dynamic
+    const shipping = extractFirstNumber(shippingVal); 
     const fees = cleanValue * 0.13;
     return cleanValue - fees - shipping - numericCost;
   };
 
-  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
-    }
-  };
+  // --- Updated File Handler ---
+const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const selectedFiles = Array.from(e.target.files || []);
+  if (selectedFiles.length === 0) return;
+
+  const limitedFiles = selectedFiles.slice(0, maxPhotos);
+  
+  setImages(limitedFiles);
+  
+  previews.forEach(url => URL.revokeObjectURL(url));
+  
+  const newPreviews = limitedFiles.map(file => URL.createObjectURL(file));
+  setPreviews(newPreviews);
+};
 
   const analyzeItem = async () => {
-    if (!image) return;
+    if (images.length === 0) return;
     setLoading(true);
+    
     const formData = new FormData();
-    formData.append("image", image);
+    images.forEach((img) => {
+      formData.append("image", img);
+    });
     formData.append("mode", "appraisal");
 
     try {
@@ -91,13 +99,32 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
     }
   };
 
-  const isPro = user?.subscriptionStatus === "pro";
-
   if (status === "loading" && !initialUser) {
     return <Loading />;
   }
 
-  // --- 3. Pre-calculate values for display ---
+  const handleAdditionalFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const file = e.target.files?.[0];
+  if (file && images.length < 3) {
+    setImages(prev => [...prev, file]);
+    setPreviews(prev => [...prev, URL.createObjectURL(file)]);
+  }
+};
+
+const handleRemoveImage = (index: number) => {
+  const newImages = [...images];
+  const newPreviews = [...previews];
+  
+  // Revoke the URL to save memory
+  URL.revokeObjectURL(newPreviews[index]);
+  
+  newImages.splice(index, 1);
+  newPreviews.splice(index, 1);
+  
+  setImages(newImages);
+  setPreviews(newPreviews);
+};
+
   const rawValue = result?.priceRange || result?.estimatedValue || "0";
   const cleanEstimatedValue = extractFirstNumber(rawValue);
   const platformFees = cleanEstimatedValue * 0.13;
@@ -125,44 +152,78 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
           <p>Snapshot any item to get resale values and profit estimates.</p>
         </section>
 
-        <div className="home-upload card">
-          {preview ? (
-            <div className="home-upload__preview">
-              <img src={preview} alt="Preview" />
-              <button
-                className="btn-reset"
-                onClick={() => {
-                  setPreview(null);
-                  setImage(null);
-                  setResult(null);
-                  setItemCost("");
-                }}
-              >
-                Clear
-              </button>
-            </div>
-          ) : (
-            <label className="home-upload__dropzone">
-              <input type="file" onChange={handleFile} accept="image/*" hidden />
-              <div className="dropzone-ui">
-                <div className="camera-icon-wrapper">
-                  <Camera size={32} />
-                </div>
-                <h3>Capture or Upload</h3>
-                <p>Take a clear photo of the item's front</p>
-              </div>
-            </label>
-          )}
+<div className="home-upload card">
+  {previews.length > 0 ? (
+    <div className="home-upload__preview-container">
+      <div className="preview-grid multi">
+        {/* Render existing previews */}
+        {previews.map((src, idx) => (
+          <div key={idx} className="preview-item">
+            <img src={src} alt="Preview" className="preview-img" />
+            <button 
+              className="remove-single" 
+              onClick={() => handleRemoveImage(idx)}
+            >
+              <X size={12} />
+            </button>
+          </div>
+        ))}
 
-          <button
-            className={`generate-btn ${loading ? "loading" : ""}`}
-            disabled={!image || loading}
-            onClick={analyzeItem}
-          >
-            {loading ? <Sparkles className="animate-spin" /> : <Search size={20} />}
-            {loading ? "Analyzing..." : " Appraise Item"}
-          </button>
+        {/* Show empty slots for Pro users to add more (up to 3) */}
+        {isPro && previews.length < 3 && (
+          <label className="add-more-slot">
+            <input 
+              type="file" 
+              onChange={handleAdditionalFile} 
+              accept="image/*" 
+              hidden 
+            />
+            <Camera size={20} />
+            <span>Add Photo</span>
+          </label>
+        )}
+      </div>
+
+      <button
+        className="btn-reset"
+        onClick={() => {
+          setPreviews([]);
+          setImages([]);
+          setResult(null);
+        }}
+      >
+        Clear All
+      </button>
+    </div>
+  ) : (
+    /* Standard Dropzone for the first upload */
+    <label className="home-upload__dropzone">
+      <input 
+        type="file" 
+        onChange={handleFile} 
+        accept="image/*" 
+        multiple={isPro} 
+        hidden 
+      />
+      <div className="dropzone-ui">
+        <div className="camera-icon-wrapper">
+          <Camera size={32} />
         </div>
+        <h3>{isPro ? "Upload up to 3 photos" : "Capture or Upload"}</h3>
+        <p>Show different angles for better accuracy</p>
+      </div>
+    </label>
+  )}
+
+  <button
+    className={`generate-btn ${loading ? "loading" : ""}`}
+    disabled={images.length === 0 || loading}
+    onClick={analyzeItem}
+  >
+    {loading ? <Sparkles className="animate-spin" /> : <Search size={20} />}
+    {loading ? "Analyzing..." : `Appraise ${images.length} Photo${images.length > 1 ? 's' : ''}`}
+  </button>
+</div>
 
         {result && (
           <section className="home-result animate-fade-in">
