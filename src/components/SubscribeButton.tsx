@@ -4,6 +4,7 @@
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import Loading from "./Loading"; 
+import { getApiUrl } from "@/lib/api-config";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -23,7 +24,7 @@ export default function SubscribeButton({ priceId, isPro = false }: SubscribeBut
     setError(null);
 
     try {
-      const response = await fetch("/api/stripe/checkout", {
+      const response = await fetch(getApiUrl("/api/stripe/checkout"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ priceId }),

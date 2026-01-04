@@ -20,6 +20,7 @@ import {
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import InfoModal from "./InfoModal";
+import { getApiUrl } from "@/lib/api-config";
 
 type User = {
   name?: string | null;
@@ -51,7 +52,7 @@ export default function SettingsClient({
   const handleDeleteAll = async () => {
     setIsDeleting(true);
     try {
-      const res = await fetch("/api/user/clear-history", { method: "DELETE" });
+      const res = await fetch(getApiUrl("/api/user/clear-history"), { method: "DELETE" });
       if (res.ok) {
         setIsModalOpen(false);
       }
@@ -86,7 +87,7 @@ export default function SettingsClient({
     }
 
     try {
-      const res = await fetch("/api/user/update-settings", {
+      const res = await fetch(getApiUrl("/api/user/update-settings"), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ darkMode: newDarkModeStatus }),
@@ -105,7 +106,7 @@ export default function SettingsClient({
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
     try {
-      const res = await fetch("/api/user/delete-account", { method: "POST" });
+      const res = await fetch(getApiUrl("/api/user/delete-account"), { method: "POST" });
       const data = await res.json();
 
       if (!res.ok && data.error === "ACTIVE_SUBSCRIPTION") {

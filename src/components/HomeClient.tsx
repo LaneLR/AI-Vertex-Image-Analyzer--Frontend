@@ -7,6 +7,7 @@ import { useSession } from "next-auth/react";
 import Loading from "./Loading";
 import InfoModal from "./InfoModal";
 import SubscribeButton from "./SubscribeButton";
+import { getApiUrl } from "@/lib/api-config";
 
 export default function HomeClient({ user: initialUser }: { user: any }) {
   // --- State Updates for Multi-Image Support ---
@@ -77,7 +78,7 @@ const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     formData.append("mode", "appraisal");
 
     try {
-      const res = await fetch("/api/analyze", {
+      const res = await fetch(getApiUrl("/api/analyze"), {
         method: "POST",
         body: formData,
       });

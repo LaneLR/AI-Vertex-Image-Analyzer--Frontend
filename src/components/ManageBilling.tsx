@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import InfoModal from "@/components/InfoModal";
+import { getApiUrl } from "@/lib/api-config";
 
 export default function ManageBilling() {
   const [loading, setLoading] = useState(false);
@@ -11,7 +12,7 @@ export default function ManageBilling() {
   const handleManageBilling = async () => {
     setLoading(true);
     try {
-      const response = await fetch("/api/stripe/portal", { method: "POST" });
+      const response = await fetch(getApiUrl("/api/stripe/portal"), { method: "POST" });
       const data = await response.json();
 
       if (data.url) {

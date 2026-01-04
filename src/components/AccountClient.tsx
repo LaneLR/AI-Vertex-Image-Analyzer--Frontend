@@ -20,6 +20,7 @@ import { Capacitor } from "@capacitor/core";
 import { useSession, signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import InfoModal from "./InfoModal";
+import { getApiUrl } from "@/lib/api-config";
 
 export default function AccountClient({ user: initialUser }: { user: any }) {
   const { maxFreeScans } = useApp();
@@ -49,7 +50,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
   const handleManageSubscription = async () => {
     if (user?.paymentProvider === 'stripe') {
       try {
-        const res = await fetch("/api/stripe/portal", { method: "POST" });
+        const res = await fetch(getApiUrl("/api/stripe/portal"), { method: "POST" });
         const data = await res.json();
         if (data.url) window.location.href = data.url;
       } catch (err) {

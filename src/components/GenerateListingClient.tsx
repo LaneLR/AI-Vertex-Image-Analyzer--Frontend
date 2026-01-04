@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import Loading from "./Loading";
 import Link from "next/link";
+import { getApiUrl } from "@/lib/api-config";
 
 interface GenerateListingProps {
   user: any;
@@ -75,7 +76,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
     formData.append("mode", "listing");
 
     try {
-      const res = await fetch("/api/analyze", {
+      const res = await fetch(getApiUrl("/api/analyze"), {
         method: "POST",
         body: formData,
       });

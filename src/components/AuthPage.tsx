@@ -8,6 +8,7 @@ import InfoModal from "./InfoModal";
 import Loading from "./Loading";
 import Image from "next/image";
 import logo from "../../public/images/FlipFinderLogo.png";
+import { getApiUrl } from "@/lib/api-config";
 
 export default function UnifiedAuthPage() {
   const { status } = useSession();
@@ -46,7 +47,7 @@ export default function UnifiedAuthPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/auth/register", {
+      const res = await fetch(getApiUrl("/api/auth/register"), {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
@@ -69,7 +70,7 @@ export default function UnifiedAuthPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/auth/reset-password", {
+      const res = await fetch(getApiUrl("/api/auth/reset-password"), {
         method: "POST",
         body: JSON.stringify({ email, action: "request" }),
       });
@@ -96,7 +97,7 @@ export default function UnifiedAuthPage() {
     const isResetPath = sourceView === "forgot";
 
     try {
-      const res = await fetch("/api/verify", {
+      const res = await fetch(getApiUrl("/api/verify"), {
         method: "POST",
         body: JSON.stringify({
           email,
@@ -140,7 +141,7 @@ export default function UnifiedAuthPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/reset-password", {
+      const res = await fetch(getApiUrl("/api/auth/reset-password"), {
         method: "POST",
         body: JSON.stringify({ email, otp, newPassword, action: "reset" }),
       });

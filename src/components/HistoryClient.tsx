@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from "react";
 import { ArrowLeft, Search, Clock, ChevronDown, ChevronUp, Tag, ExternalLink } from "lucide-react";
 import Link from "next/link";
+import { getApiUrl } from "@/lib/api-config";
 
 interface HistoryItem {
   id: string;
@@ -23,7 +24,7 @@ export default function HistoryClient({ user }: { user: any }) {
   useEffect(() => {
     async function fetchHistory() {
       try {
-        const res = await fetch("/api/user/history");
+        const res = await fetch(getApiUrl("/api/user/history"));
         const data = await res.json();
         if (Array.isArray(data)) setHistory(data);
       } catch (err) {
