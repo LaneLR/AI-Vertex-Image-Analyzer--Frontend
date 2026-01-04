@@ -14,7 +14,7 @@ interface UserAttributes {
   lastScanDate: string;
 
   // Unified Billing Fields
-  paymentProvider: "stripe" | "apple" | "none"; // Track where they subscribed
+  paymentProvider: "stripe" | "apple" | "google" | "none"; // Track where they subscribed
   providerCustomerId?: string; // Stripe Customer ID or Apple App Account Token
   providerSubscriptionId?: string; // Stripe Sub ID or Apple Original Transaction ID
 

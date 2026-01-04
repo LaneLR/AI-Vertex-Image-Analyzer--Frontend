@@ -10,7 +10,7 @@ import SearchHistory from "@/lib/models/SearchHistory";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 const LISTING_PROMPT = `
-You are a professional e-commerce copywriter for eBay, Poshmark, and Amazon. 
+You are a professional e-commerce copywriter for eBay, Poshmark, and Amazon, and an expert in writing details for item listings with optimized for SEO. 
 Analyze the image and create a high-converting product listing.
 If multiple images are uploaded and each or all of the photos are not related to the same item, for example three photos are uploaded and two are of a stuffed animal and third of a sofa, return a response like "Images are not for the same item. Please select photos of the same item."  
 

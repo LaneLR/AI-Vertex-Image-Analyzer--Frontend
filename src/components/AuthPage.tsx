@@ -10,21 +10,22 @@ import Image from "next/image";
 import logo from "../../public/images/FlipFinderLogo.png";
 
 export default function UnifiedAuthPage() {
-  const { data: session, status } = useSession();
-  const [view, setView] = useState<"login" | "register" | "verify" | "forgot">(
-    "login"
-  );
+  const { status } = useSession();
+  const [view, setView] = useState<"login" | "register" | "verify" | "forgot">("login");
+  // TRACKER: This remembers if we entered 'verify' from 'register' or 'forgot'
+  const [sourceView, setSourceView] = useState<"register" | "forgot" | null>(null);
+  
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(""); // Plain password for Registration
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const [modalConfig, setModalConfig] = useState({
-    isOpen: false,
-    title: "",
-    message: "",
-  });
+
+  const [modalConfig, setModalConfig] = useState({ isOpen: false, title: "", message: "" });
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showResetModal, setShowResetModal] = useState(false);
 
   useEffect(() => {
     if (status === "authenticated" && window.location.pathname === "/login") {
@@ -37,25 +38,8 @@ export default function UnifiedAuthPage() {
   };
 
   if (status === "loading") return <Loading />;
-  if (status === "authenticated") return null;
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    const res = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
-    if (res?.error) {
-      setError(res.error);
-      setLoading(false);
-      if (res.error.includes("verify")) setView("verify");
-    } else {
-      window.location.href = "/";
-    }
-  };
+  // --- HANDLERS ---
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,8 +51,12 @@ export default function UnifiedAuthPage() {
         body: JSON.stringify({ email, password }),
       });
       const data = await res.json();
-      if (res.ok) setView("verify");
-      else setError(data.error || "Registration failed");
+      if (res.ok) {
+        setSourceView("register"); // SET SOURCE
+        setView("verify");
+      } else {
+        setError(data.error || "Registration failed");
+      }
     } catch (err) {
       setError("An unexpected error occurred.");
     } finally {
@@ -76,201 +64,192 @@ export default function UnifiedAuthPage() {
     }
   };
 
-  const handleVerify = async (e: React.FormEvent) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+  const handleForgotPasswordRequest = async (e: React.FormEvent) => {
+    e.preventDefault();
     setLoading(true);
     setError("");
     try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({ email, action: "request" }),
+      });
+      if (res.ok) {
+        setSourceView("forgot"); // SET SOURCE
+        setView("verify");
+      } else {
+        const data = await res.json();
+        setError(data.error || "Email not found.");
+      }
+    } catch (err) {
+      setError("Failed to send reset code.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  const handleVerify = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    // FIX: Use sourceView instead of checking !password
+    const isResetPath = sourceView === "forgot";
+
+    try {
       const res = await fetch("/api/verify", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, otp }),
+        body: JSON.stringify({
+          email,
+          otp,
+          type: isResetPath ? "reset" : "verify",
+        }),
       });
 
       const data = await res.json();
 
       if (res.ok) {
-        const result = await signIn("credentials", {
-          redirect: false,
-          email: email,
-          password: password,
-        });
-
-        if (result?.error) {
-          setError("Account verified! Please log in manually.");
-          setView("login");
+        if (isResetPath) {
+          setShowResetModal(true);
         } else {
-          router.push("/");
+          // Attempt login for new registrations
+          const result = await signIn("credentials", {
+            redirect: false,
+            email,
+            password,
+          });
+          if (result?.error) {
+            setError("Account verified! Please log in.");
+            setView("login");
+          } else {
+            router.push("/");
+          }
         }
       } else {
-        setError(data.error || "Invalid verification code.");
+        setError(data.error || "Invalid code.");
       }
     } catch (err) {
-      console.error("Error occurred while verifying account: ", err);
-      setError("Verification failed. Please try again.");
+      setError("Verification failed.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFinalReset = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) return setError("Passwords do not match");
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        body: JSON.stringify({ email, otp, newPassword, action: "reset" }),
+      });
+      if (res.ok) {
+        setShowResetModal(false);
+        setOtp("");
+        setNewPassword("");
+        setConfirmPassword("");
+        setSourceView(null);
+        openModal("Success", "Password updated. You can now log in.");
+        setView("login");
+      } else {
+        const data = await res.json();
+        setError(data.error || "Update failed.");
+      }
+    } catch (err) {
+      setError("An error occurred.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getSubmitHandler = () => {
+    if (view === "login") return (e: React.FormEvent) => {
+        e.preventDefault();
+        setLoading(true);
+        signIn("credentials", { email, password, redirect: false }).then(res => {
+            if (res?.error) { setError(res.error); setLoading(false); if (res.error.includes("verify")) setView("verify"); }
+            else window.location.href = "/";
+        });
+    };
+    if (view === "register") return handleRegister;
+    if (view === "forgot") return handleForgotPasswordRequest;
+    return handleVerify;
   };
 
   return (
     <main className="auth-page">
       <div className="auth-container">
         <header className="auth-header">
-          <div>
-            <Image
-              width={125}
-              height={125}
-              alt="FlipFinder Logo"
-              src={logo}
-              priority
-            />
-          </div>
+          <Image width={125} height={125} alt="Logo" src={logo} priority />
           <h1 className="auth-title">
             {view === "login" && "Welcome Back"}
             {view === "register" && "Join the Hunt"}
-            {view === "verify" && "Verify Email"}
-            {view === "forgot" && "Reset Password"}
+            {view === "verify" && "Enter Code"}
+            {view === "forgot" && "Find Account"}
           </h1>
-          <p className="auth-subtitle">
-            {view === "login" &&
-              "Enter your details to log in to your account."}
-            {view === "register" &&
-              "Start valuing your finds with artificial intelligence."}
-          </p>
         </header>
 
         {error && <div className="auth-error-pill">{error}</div>}
 
-        <form
-          className="auth-form"
-          onSubmit={
-            view === "login"
-              ? handleLogin
-              : view === "register"
-              ? handleRegister
-              : handleVerify
-          }
-        >
+        <form className="auth-form" onSubmit={getSubmitHandler()}>
           {view !== "verify" && (
             <div className="input-wrapper">
               <Mail className="input-icon" size={18} />
-              <input
-                type="email"
-                placeholder="Email Address"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
+              <input type="email" placeholder="Email Address" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
           )}
 
           {(view === "login" || view === "register") && (
             <div className="input-wrapper">
               <Lock className="input-icon" size={18} />
-              <input
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
             </div>
           )}
 
           {view === "login" && (
-            <button
-              type="button"
-              className="forgot-btn"
-              onClick={() => setView("forgot")}
-            >
+            <button type="button" className="forgot-btn" onClick={() => { setView("forgot"); setError(""); }}>
               Forgot password?
             </button>
           )}
 
           {view === "verify" && (
             <div className="otp-container">
-              <p>
-                Sent to <strong>{email}</strong>
-              </p>
-              <input
-                className="otp-input"
-                type="text"
-                placeholder="000000"
-                maxLength={6}
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                required
-                autoFocus
-              />
-
-              <button
-                type="button"
-                className="resend-button"
-                onClick={handleRegister}
-              >
-                Didn't get a code? Resend
-              </button>
+               <p style={{fontSize: '14px', marginBottom: '10px', color: '#666'}}>Enter the 6-digit code sent to your email.</p>
+              <input className="otp-input" type="text" placeholder="000000" maxLength={6} value={otp} onChange={(e) => setOtp(e.target.value)} required autoFocus />
             </div>
           )}
 
           <button type="submit" className="auth-submit-btn" disabled={loading}>
-            {loading
-              ? "Processing..."
-              : view === "login"
-              ? "Login"
-              : view === "register"
-              ? "Create Account"
-              : "Verify Account"}
+            {loading ? "Processing..." : view === "forgot" ? "Send Reset Link" : view === "verify" ? "Verify Code" : "Continue"}
             {!loading && <ArrowRight size={18} />}
           </button>
-
-          {(view === "login" || view === "register") && (
-            <>
-              <div className="auth-divider">
-                <span>OR</span>
-              </div>
-              <button
-                type="button"
-                className="google-auth-btn"
-                onClick={() => signIn("google", { callbackUrl: "/" })}
-              >
-                <Chrome size={18} />
-                Continue with Google
-              </button>
-            </>
-          )}
         </form>
 
         <footer className="auth-footer">
-          {view === "forgot" ? (
-            <button onClick={() => setView("login")}>Back to Login</button>
-          ) : (
-            view !== "verify" && (
-              <p>
-                {view === "login" ? "New here?" : "Already have an account?"}
-                <button
-                  onClick={() =>
-                    setView(view === "login" ? "register" : "login")
-                  }
-                >
-                  {view === "login" ? "Create an account" : "Log in"}
-                </button>
-              </p>
-            )
-          )}
+          <button onClick={() => { setView(view === "login" ? "register" : "login"); setError(""); setSourceView(null); }}>
+            {view === "login" ? "Create an account" : "Back to login"}
+          </button>
         </footer>
       </div>
 
-      <InfoModal
-        isOpen={modalConfig.isOpen}
-        onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
-        title={modalConfig.title}
-      >
+      <InfoModal isOpen={showResetModal} onClose={() => setShowResetModal(false)} title="Reset Password">
+        <form onSubmit={handleFinalReset} className="auth-form">
+          <div className="input-wrapper">
+            <Lock className="input-icon" size={18} />
+            <input type="password" placeholder="New Password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required />
+          </div>
+          <div className="input-wrapper">
+            <Lock className="input-icon" size={18} />
+            <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
+          </div>
+          <button type="submit" className="auth-submit-btn" disabled={loading}>
+            {loading ? "Updating..." : "Update Password"}
+          </button>
+        </form>
+      </InfoModal>
+
+      <InfoModal isOpen={modalConfig.isOpen} onClose={() => setModalConfig({ ...modalConfig, isOpen: false })} title={modalConfig.title}>
         <p className="modal-text">{modalConfig.message}</p>
       </InfoModal>
     </main>
