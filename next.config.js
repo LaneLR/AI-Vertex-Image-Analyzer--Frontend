@@ -18,7 +18,6 @@ const nextConfig = {
     }
     return config;
   },
-  output: 'export', 
   trailingSlash: true,
 };
 
