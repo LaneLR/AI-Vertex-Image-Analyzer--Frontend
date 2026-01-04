@@ -150,7 +150,7 @@ export default function UnifiedAuthPage() {
         setNewPassword("");
         setConfirmPassword("");
         setSourceView(null);
-        openModal("Success", "Password updated. You can now log in.");
+        openModal("Password updated", "You password has been updated. You can now log in.");
         setView("login");
       } else {
         const data = await res.json();

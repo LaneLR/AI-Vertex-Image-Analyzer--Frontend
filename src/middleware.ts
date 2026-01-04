@@ -3,19 +3,33 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req) {
-    // If it's the webhook, bypass everything and return NextResponse.next()
-    if (req.nextUrl.pathname.startsWith("/api/stripe/webhook")) {
+    const { pathname } = req.nextUrl;
+    const userAgent = req.headers.get("user-agent") || "";
+    const isMobileApp = userAgent.includes("FlipFinder-Mobile-App");
+
+    if (pathname.startsWith("/api/stripe/webhook")) {
       return NextResponse.next();
     }
+
+    if (isMobileApp && pathname === "/") {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    return NextResponse.next();
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // ALWAYS authorize the webhook route regardless of token
-        if (req.nextUrl.pathname.startsWith("/api/stripe/webhook")) {
-          return true;
+        const { pathname } = req.nextUrl;
+        const userAgent = req.headers.get("user-agent") || "";
+        const isMobileApp = userAgent.includes("FlipFinder-Mobile-App");
+
+        if (pathname.startsWith("/api/stripe/webhook")) return true;
+
+        if (pathname === "/") {
+          return isMobileApp ? !!token : true;
         }
-        // Otherwise, require a session token
+
         return !!token;
       },
     },
@@ -26,6 +40,17 @@ export default withAuth(
 );
 
 export const config = {
-  // Use a very broad matcher and handle logic inside the function above
-  matcher: ["/((?!api/auth|api/auth/register|api/verify|_next/static|_next/image|favicon.ico|images).*)",],
+  matcher: [
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api/auth (NextAuth internals)
+     * - api/auth/register (Public registration)
+     * - api/verify (Public verification)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - images (your public images folder)
+     * - favicon.ico (favicon file)
+     */
+    "/((?!api/auth|api/auth/register|api/verify|_next/static|_next/image|favicon.ico|images).*)",
+  ],
 };

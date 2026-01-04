@@ -1,15 +1,29 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-import HomeClient from "../components/HomeClient";
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { authOptions } from "./api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import WebHome from "@/components/WebHomepageClient";
 
 export default async function Page() {
   const session = await getServerSession(authOptions);
+  const headerList = await headers();
+  const userAgent = headerList.get("user-agent") || "";
 
-  if (!session) {
+  // 1. If the user is already logged in, take them to the app dashboard
+  if (session) {
+    redirect("/dashboard"); // or wherever your main app lives
+  }
+
+  // 2. Detection Logic
+  // Capacitor apps usually contain 'Capacitor' in the UA if configured, 
+  // or we can check for mobile devices to force the login view.
+  const isMobileApp = userAgent.includes("FlipFinder-Mobile-App");
+
+  if (isMobileApp) {
+    // Mobile users (App) go straight to login
     redirect("/login");
   }
 
-  return <HomeClient user={session.user?.email} />;
+  // 3. Web users see the Landing Page
+  return <WebHome />;
 }
