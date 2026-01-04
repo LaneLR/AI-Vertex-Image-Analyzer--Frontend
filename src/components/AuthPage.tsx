@@ -13,7 +13,6 @@ import { getApiUrl } from "@/lib/api-config";
 export default function UnifiedAuthPage() {
   const { status } = useSession();
   const [view, setView] = useState<"login" | "register" | "verify" | "forgot">("login");
-  // TRACKER: This remembers if we entered 'verify' from 'register' or 'forgot'
   const [sourceView, setSourceView] = useState<"register" | "forgot" | null>(null);
   
   const [email, setEmail] = useState("");
@@ -40,8 +39,6 @@ export default function UnifiedAuthPage() {
 
   if (status === "loading") return <Loading />;
 
-  // --- HANDLERS ---
-
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -53,7 +50,7 @@ export default function UnifiedAuthPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setSourceView("register"); // SET SOURCE
+        setSourceView("register"); 
         setView("verify");
       } else {
         setError(data.error || "Registration failed");
