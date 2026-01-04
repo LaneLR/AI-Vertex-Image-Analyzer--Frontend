@@ -129,7 +129,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
                 />
               </div>
               <p className="usage-hint">
-                Get unlimited scans and the listing generator with Pro.
+                Get unlimited scans and access to Listing Generator with FlipFinder Pro!
               </p>
               <SubscribeButton
                 priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
