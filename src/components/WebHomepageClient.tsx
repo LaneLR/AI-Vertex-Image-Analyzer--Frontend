@@ -1,15 +1,8 @@
-import React from "react";
-import {
-  Camera,
-  Zap,
-  BarChart3,
-  ShieldCheck,
-  ArrowRight,
-  Check,
-} from "lucide-react";
-import Link from "next/link";
+import React from 'react';
+import { Camera, Zap, BarChart3, ArrowRight, Check, PlayCircle } from 'lucide-react';
+import Image from 'next/image';
 
-export default async function WebHome() {
+export default function WebHome() {
   const proFeatures = [
     "Unlimited AI Scans",
     "Real-time Market Analytics",
@@ -25,113 +18,89 @@ export default async function WebHome() {
     "Community Support",
   ];
 
-  return (
+ return (
     <div className="web">
-      {/* Hero Section */}
       <section className="web__hero">
         <div className="web__container">
-          <h1 className="web__title">
-            Find the Value in{" "}
-            <span className="web__title--highlight">Every Find.</span>
-          </h1>
-          <p className="web__subtitle">
-            Flip Finder uses advanced AI to instantly value items from thrift
-            stores, garage sales, and marketplaces. Stop guessing, start
-            flipping.
-          </p>
-          <div className="web__actions">
-            <Link href={"/login"}>
-              <button className="web__btn web__btn--primary">
-                Get Started <ArrowRight size={18} />
+          <div className="web__heroContent">
+            <span className="web__tag">The Hunter's AI Companion</span>
+            <h1 className="web__title">
+              Turn "Wait, what's this?" into 
+              <span className="web__titleHighlight">
+                {" "}"Sold for $200."
+              </span>
+            </h1>
+            <p className="web__subtitle">
+              Scan items instantly. Analyze market value. Flip with confidence.
+              The most powerful tool for thrift hunters and resellers.
+            </p>
+            <div className="web__actions">
+              <button className="web__btn web__btnPrimary">
+                Start Hunting Free
               </button>
-            </Link>
-            <Link href={"/app"}>
-              <button className="web__btn web__btn--secondary">
-                Download App
+              <button className="web__btn web__btnText">
+                <PlayCircle size="20" /> See how it works
               </button>
-            </Link>
+            </div>
+          </div>
+
+          <div className="web__heroVisual">
+            <div className="web__imageWrapper">
+              <div className="web__placeholderImg">App Preview</div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="web__features">
+      <section className="web__how">
         <div className="web__container">
-          <h2 className="web__section-title">How It Works</h2>
-          <div className="web__grid">
-            <div className="feature-card">
-              <div className="feature-card__icon">
-                <Camera />
-              </div>
-              <h3 className="feature-card__title">Snap a Photo</h3>
-              <p className="feature-card__text">
-                Just point your camera at any item. Our AI identifies exactly
-                what you're looking at.
-              </p>
+          <div className="web__sectionHeader">
+            <h2 className="web__sectionTitle">The 3-Second Workflow</h2>
+            <p>Scanning to selling in three intuitive steps.</p>
+          </div>
+
+          <div className="web__steps">
+            <div className="stepItem">
+              <div className="stepItem__number">01</div>
+              <h3 className="stepItem__title">Point & Scan</h3>
+              <p className="stepItem__text">Our AI identifies the item, brand, and condition automatically.</p>
             </div>
-            <div className="feature-card">
-              <div className="feature-card__icon">
-                <Zap />
-              </div>
-              <h3 className="feature-card__title">Instant Valuation</h3>
-              <p className="feature-card__text">
-                Get estimated resale values across eBay, Poshmark, and Facebook
-                Marketplace in seconds.
-              </p>
+            <div className="stepItem">
+              <div className="stepItem__number">02</div>
+              <h3 className="stepItem__title">Real-Time Data</h3>
+              <p className="stepItem__text">View live comps from eBay, Poshmark, and Marketplace.</p>
             </div>
-            <div className="feature-card">
-              <div className="feature-card__icon">
-                <BarChart3 />
-              </div>
-              <h3 className="feature-card__title">Track Profits</h3>
-              <p className="feature-card__text">
-                Log your purchases and sales to see your growth and ROI over
-                time.
-              </p>
+            <div className="stepItem">
+              <div className="stepItem__number">03</div>
+              <h3 className="stepItem__title">Instant Logic</h3>
+              <p className="stepItem__text">We calculate net profit after fees and shipping for you.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Pricing Section */}
       <section className="web__pricing">
         <div className="web__container">
-          <h2 className="web__section-title">Choose Your Hunt</h2>
-          <div className="web__grid">
-            {/* Basic Plan */}
-            <div className="pricing-card">
-              <h3 className="pricing-card__name">Basic</h3>
-              <div className="pricing-card__price">
-                $0<span>/mo</span>
-              </div>
-              <ul className="pricing-card__list">
-                {basicFeatures.map((feat, i) => (
-                  <li key={i} className="pricing-card__item">
-                    <Check size={16} /> {feat}
-                  </li>
-                ))}
+          <h2 className="web__sectionTitle">Choose Your Plan</h2>
+          <div className="web__pricingWrapper">
+            <div className="planCard">
+              <h3 className="planCard__name">Basic</h3>
+              <div className="planCard__price">0</div>
+              <ul className="planCard__list">
+                <li><Check size="14" /> 5 Scans per day</li>
               </ul>
-              <button className="pricing-card__btn pricing-card__btn--outline">
-                Current Plan
-              </button>
+              <button className="planCard__btn">Stay Basic</button>
             </div>
 
-            {/* Pro Plan */}
-            <div className="pricing-card pricing-card--featured">
-              <div className="pricing-card__badge">Recommended</div>
-              <h3 className="pricing-card__name">Pro Hunter</h3>
-              <div className="pricing-card__price">
-                $5.99<span>/mo</span>
-              </div>
-              <ul className="pricing-card__list">
-                {proFeatures.map((feat, i) => (
-                  <li key={i} className="pricing-card__item">
-                    <Check size={16} /> {feat}
-                  </li>
-                ))}
+            <div className="planCard planCardPro">
+              <div className="planCard__badge">Most Popular</div>
+              <h3 className="planCard__name">Pro Hunter</h3>
+              <div className="planCard__price">9.99<span>/mo</span></div>
+              <ul className="planCard__list">
+                <li><Check size="14" /> Unlimited AI Scans</li>
               </ul>
-              <button className="pricing-card__btn pricing-card__btn--solid">
-                Go Pro Now
+              <button className="planCard__btn planCard__btnHighlight">
+                Unlock Pro
               </button>
             </div>
           </div>

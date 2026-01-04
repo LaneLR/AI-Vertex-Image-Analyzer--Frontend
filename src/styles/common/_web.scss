@@ -1,8 +1,9 @@
-// BEM: landing
 .web {
-  background-color: var(--bg-main);
-  color: var(--text-primary);
-  transition: var(--transition);
+  --primary-theme: #ff6000;
+  --bg-main: #ffffff;
+  --bg-card: #f9f9f9;
+  --text-secondary: #666;
+  --transition: 0.3s ease;
 
   &__container {
     max-width: 1200px;
@@ -10,235 +11,138 @@
     padding: 0 20px;
   }
 
-  // Hero Section
   &__hero {
-    padding: 100px 0;
-    text-align: center;
-    background: linear-gradient(
-      180deg, 
-      var(--bg-header) 0%, 
-      var(--bg-main) 100%
-    );
+    padding: 120px 0 80px;
+    background: radial-gradient(circle at 10% 20%, rgba(255, 96, 0, 0.05) 0%, transparent 40%), var(--bg-main);
+    
+    .web__container {
+      display: flex;
+      align-items: center;
+      gap: 60px;
+      @media (max-width: 992px) { flex-direction: column; text-align: center; }
+    }
+  }
+
+  &__heroContent { flex: 1; }
+
+  &__tag {
+    display: inline-block;
+    padding: 6px 16px;
+    background: white;
+    color: var(--primary-theme);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    border: 1px solid var(--primary-theme);
   }
 
   &__title {
-    font-size: clamp(2.5rem, 5vw, 4rem);
-    font-weight: 800;
+    font-size: 3.5rem;
+    line-height: 1.1;
     margin-bottom: 20px;
-    color: var(--header-text-primary);
-
-    &--highlight {
-      color: var(--primary-theme); // Orange #ff6000
-    }
+    color: black;
   }
 
   &__subtitle {
     font-size: 1.2rem;
     color: var(--text-secondary);
-    max-width: 700px;
-    margin: 0 auto 40px;
-    line-height: 1.6;
+    margin-bottom: 32px;
   }
 
   &__actions {
     display: flex;
     gap: 16px;
-    justify-content: center;
-    flex-wrap: wrap;
+    @media (max-width: 992px) { justify-content: center; }
   }
 
-  // Global Button Logic
   &__btn {
-    padding: 14px 32px;
-    border-radius: var(--border-radius);
-    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
-    transition: var(--transition);
-    display: inline-flex;
-    align-items: center;
-    gap: 10px;
     border: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 
-    &--primary {
-      background-color: var(--primary-theme);
-      color: var(--text-on-brand);
-      box-shadow: var(--shadow);
-      
-      &:hover {
-        filter: brightness(1.1);
-        transform: translateY(-2px);
-      }
-    }
-
-    &--secondary {
-      background-color: var(--bg-card);
-      color: var(--text-primary);
-      border: 1px solid var(--border-color, #333);
-      
-      &:hover {
-        background-color: var(--bg-nav);
-      }
-    }
+    &Primary { background: var(--primary-theme); color: white; }
+    &Text { background: transparent; color: black; }
   }
 
-  &__section-title {
+  &__heroVisual { flex: 1; perspective: 1000px; }
+
+  &__imageWrapper {
+    transform: rotateY(-10deg) rotateX(5deg);
+    &:hover { transform: rotateY(0) rotateX(0); }
+  }
+
+  &__placeholderImg {
+    width: 100%;
+    max-width: 400px;
+    aspect-ratio: 9/16;
+    background: #333;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+  }
+
+  &__how { padding: 100px 0; }
+
+  &__sectionTitle {
     font-size: 2.5rem;
     text-align: center;
-    margin-bottom: 60px;
-    color: var(--primary-theme);
+    margin-bottom: 40px;
   }
 
-  &__grid {
+  &__steps {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    @media (max-width: 768px) { grid-template-columns: 1fr; }
   }
 
-  &__features, &__pricing {
-    padding: 80px 0;
-  }
-
-  &__pricing {
-    background-color: var(--bg-nav);
-  }
-}
-
-// Feature Cards
-.feature-card {
-  padding: 40px;
-  background-color: var(--bg-card);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow);
-  text-align: center;
-  border: 1px solid transparent;
-
-  &__icon {
-    width: 64px;
-    height: 64px;
-    background-color: var(--bg-header);
-    color: var(--primary-theme);
-    border-radius: 50%;
+  &__pricingWrapper {
     display: flex;
-    align-items: center;
     justify-content: center;
-    margin: 0 auto 24px;
-    border: 1px solid var(--primary-theme);
-  }
-
-  &__title {
-    margin-bottom: 12px;
-    font-size: 1.5rem;
-    color: var(--text-primary);
-  }
-
-  &__text {
-    color: var(--text-secondary);
+    gap: 24px;
+    @media (max-width: 768px) { flex-direction: column; align-items: center; }
   }
 }
 
-// Pricing Cards
-.pricing-card {
-  background-color: var(--bg-card);
-  padding: 48px 32px;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border-color, #e2e8f0);
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  transition: var(--transition);
+// Separate components within the module
+.stepItem {
+  &__number { font-size: 3rem; font-weight: 800; color: rgba(255, 96, 0, 0.1); }
+  &__title { margin: 12px 0; }
+  &__text { color: var(--text-secondary); }
+}
 
-  &--featured {
-    border: 2px solid var(--primary-theme);
-    background-color: var(--bg-main);
-    transform: scale(1.02);
-    box-shadow: var(--shadow);
+.planCard {
+  background: white;
+  padding: 40px;
+  border-radius: 20px;
+  border: 1px solid #eee;
+  flex: 1;
+  max-width: 350px;
+  text-align: center;
 
-    @media (max-width: 768px) {
-      transform: scale(1);
+  &Pro {
+    border-color: var(--primary-theme);
+    position: relative;
+    .planCard__badge {
+      position: absolute;
+      top: -12px; left: 50%; transform: translateX(-50%);
+      background: var(--primary-theme); color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem;
     }
   }
 
-  &__badge {
-    position: absolute;
-    top: -14px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: var(--secondary-theme); // Blue for variety
-    color: var(--text-on-brand);
-    padding: 6px 16px;
-    border-radius: 50px;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 800;
-  }
-
-  &__name {
-    font-size: 1.25rem;
-    color: var(--text-secondary);
-    text-transform: uppercase;
-    letter-spacing: 1px;
-  }
-
-  &__price {
-    font-size: 3.5rem;
-    font-weight: 800;
-    margin: 16px 0;
-    color: var(--text-primary);
-    
-    span { 
-      font-size: 1.2rem; 
-      color: var(--text-secondary); 
-      font-weight: 400;
-    }
-  }
-
-  &__list {
-    list-style: none;
-    margin: 24px 0 40px;
-    flex-grow: 1;
-  }
-
-  &__item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 16px;
-    color: var(--text-primary);
-
-    svg {
-      color: var(--success);
-      flex-shrink: 0;
-    }
-  }
-
+  &__price { font-size: 3rem; font-weight: 800; margin: 20px 0; }
+  &__list { list-style: none; padding: 0; margin-bottom: 30px; text-align: left; }
   &__btn {
-    width: 100%;
-    padding: 16px;
-    border-radius: var(--border-radius);
-    font-weight: 800;
-    cursor: pointer;
-    transition: var(--transition);
-    border: none;
-
-    &--solid {
-      background-color: var(--primary-theme);
-      color: var(--text-on-brand);
-      
-      &:hover {
-        filter: brightness(1.2);
-      }
-    }
-
-    &--outline {
-      background-color: transparent;
-      border: 2px solid var(--primary-theme);
-      color: var(--primary-theme);
-      
-      &:hover {
-        background-color: var(--primary-theme);
-        color: var(--text-on-brand);
-      }
-    }
+    width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; cursor: pointer;
+    &Highlight { background: var(--primary-theme); color: white; border: none; }
   }
 }
