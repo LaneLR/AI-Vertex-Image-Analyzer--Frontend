@@ -1,47 +1,59 @@
-const bcrypt = require('bcryptjs');
-const User = require('../lib/models/User'); 
-const { connectDB } = require('../lib/db');
+const User = require('../lib/models/User').default || require('../lib/models/User'); 
+const sequelize = require('../lib/db').default || require('../lib/db'); // Import the sequelize instance
 require('dotenv').config(); 
 
 async function createTestUser() {
   try {
-    // 1. Connect to the Database
-    const DATABASE_URL = process.env.DATABASE_URL;
-    
-    if (!DATABASE_URL) {
+    // 1. Check for Database URL
+    if (!process.env.DATABASE_URL) {
       throw new Error("DATABASE_URL is not defined in environment variables");
     }
 
-    connectDB();
-    console.log('✅ Connected to Database for seeding users...');
+    // 2. Ensure connection and Sync
+    // { alter: true } ensures the table matches your model exactly on Render
+    await sequelize.authenticate();
+    console.log('✅ Connection has been established successfully.');
+    await sequelize.sync({ alter: false }); 
 
-    const existingUser = await User.findOne({ email: 'test@flipfinder.com' });
+    const testEmail = 'test@flipfinder.com';
+
+    // 3. Find or Create User
+    // We use findOne with Sequelize syntax
+    const existingUser = await User.findOne({ where: { email: testEmail } });
+
     if (existingUser) {
-      console.log('⚠️ Test user already exists. Skipping creation.');
+      console.log('⚠️ Test user already exists. Updating to ensure Pro status.');
+      await existingUser.update({
+        subscriptionStatus: 'pro',
+        isVerified: true,
+        isActive: true
+      });
     } else {
-      const hashedPassword = await bcrypt.hash('password123', 10);
-      
+      // NOTE: Do NOT hash the password here. 
+      // Your Sequelize model has a 'beforeCreate' hook that will do it for you.
       await User.create({
-        email: 'test@flipfinder.com',
-        password: hashedPassword,
+        email: testEmail,
+        password: 'password123', // Will be hashed by model hooks
         subscriptionStatus: 'pro',
         dailyScansCount: 0,
-        lastScanDate: null,
+        lastScanDate: new Date().toISOString().split('T')[0], // YYYY-MM-DD
         darkMode: false,
         paymentProvider: 'none',
-        providerCustomerId: null,
-        providerSubscriptionId: null,
-        subscriptionEndDate: null,
+        providerCustomerId: 'seed_cust_123',
+        providerSubscriptionId: 'seed_sub_123',
+        subscriptionEndDate: new Date(new Date().setFullYear(new Date().getFullYear() + 1)), // 1 year from now
         cancelAtPeriodEnd: false,
         isVerified: true,
+        isActive: true,
         verificationCode: null,
       });
 
       console.log('🚀 Test user created successfully!');
     }
+
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error creating user:', error);
+    console.error('❌ Error seeding user:', error);
     process.exit(1);
   }
 }

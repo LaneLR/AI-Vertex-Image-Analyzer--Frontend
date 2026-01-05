@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await User.findOne({
-          where: { email: credentials.email },
+          where: { email: credentials.email.toLowerCase().trim() },
         });
 
         if (!user) throw new Error("No user found with this email");

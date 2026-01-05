@@ -10,11 +10,35 @@
   align-items: center;
 }
 
+.login-btn {
+  width: fit-content;
+  padding: 1rem;
+  background: var(--primary-theme);
+  color: var(--primary-text);
+  border-radius: var(--border-radius);
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.filler {
+  width: 76px;
+}
+
 .header-container {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 1.5rem;
+  padding: 0 0.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;

@@ -1,17 +1,24 @@
 export const getApiUrl = (path: string) => {
-  // Check if we are in a browser or a Capacitor app
-  const isLocalhost =
-    typeof window !== "undefined" &&
-    (window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1");
+  if (typeof window !== "undefined") {
+    // If it's an internal NextAuth call, use a relative path
+    // This fixes the "Failed to fetch" on /api/auth/session
+    if (path.includes("/api/auth") || path.includes("/api/verify")) {
+      return path.startsWith("/") ? path : `/${path}`;
+    }
 
-  // Replace with your actual deployed Production URL (Vercel, AWS, etc.)
-  const baseUrl = isLocalhost
-    ? "http://localhost:3000"
-    : "https://your-flip-finder-domain.com";
+    const isLocalhost =
+      window.location.hostname === "localhost" ||
+      window.location.hostname === "127.0.0.1";
 
-  // Ensure path starts with /
-  const sanitizedPath = path.startsWith("/") ? path : `/${path}`;
+    // For other API calls (like your scanner), use the logic below
+    const baseUrl = isLocalhost
+      ? "http://localhost:3000"
+      : "https://your-flip-finder-domain.com";
 
-  return `${baseUrl}${sanitizedPath}`;
+    const sanitizedPath = path.startsWith("/") ? path : `/${path}`;
+    return `${baseUrl}${sanitizedPath}`;
+  }
+
+  // Fallback for server-side calls
+  return path;
 };
