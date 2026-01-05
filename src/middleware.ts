@@ -3,29 +3,39 @@ import { NextResponse } from "next/server";
 
 export default withAuth(
   function middleware(req) {
-    // If it's the webhook, bypass everything and return NextResponse.next()
-    if (req.nextUrl.pathname.startsWith("/api/stripe/webhook")) {
-      return NextResponse.next();
+    const { pathname } = req.nextUrl;
+    const userAgent = req.headers.get("user-agent") || "";
+    const isMobileApp = userAgent.includes("FlipFinder-Mobile-App");
+    const token = req.nextauth.token;
+
+    // 1. Force Mobile users away from Root
+    if (isMobileApp && pathname === "/") {
+      return NextResponse.redirect(new URL(token ? "/dashboard" : "/login", req.url));
     }
+
+    return NextResponse.next();
   },
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // ALWAYS authorize the webhook route regardless of token
-        if (req.nextUrl.pathname.startsWith("/api/stripe/webhook")) {
-          return true;
-        }
-        // Otherwise, require a session token
-        return !!token;
+        const { pathname } = req.nextUrl;
+        // Define truly public paths here
+        const isPublic = 
+          pathname === "/" || 
+          pathname === "/login" || 
+          pathname.startsWith("/api/auth");
+        
+        if (isPublic) return true;
+        return !!token; // Protected paths (like /dashboard) need a token
       },
     },
     pages: {
       signIn: "/login",
-    },
+    }
   }
 );
 
 export const config = {
-  // Use a very broad matcher and handle logic inside the function above
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  // Catch everything except static assets
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|images).*)"],
 };

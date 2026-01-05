@@ -3,8 +3,8 @@
 
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { useSession } from "next-auth/react";
-import Loading from "./Loading"; // Using the component we created
+import Loading from "./Loading"; 
+import { getApiUrl } from "@/lib/api-config";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -24,7 +24,7 @@ export default function SubscribeButton({ priceId, isPro = false }: SubscribeBut
     setError(null);
 
     try {
-      const response = await fetch("/api/stripe/checkout", {
+      const response = await fetch(getApiUrl("/api/stripe/checkout"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ priceId }),
@@ -57,7 +57,7 @@ export default function SubscribeButton({ priceId, isPro = false }: SubscribeBut
       ) : (
         <>
           <button
-            className={`account__upgrade-btn`}
+            className={`generate-btn`}
             onClick={handleSubscribe}
             disabled={isPro || loading}
           >

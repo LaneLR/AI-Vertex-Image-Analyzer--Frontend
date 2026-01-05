@@ -5,23 +5,25 @@ import { connectDB } from "@/lib/db";
 export async function POST(req: Request) {
   try {
     await connectDB();
-    const { email, code } = await req.json();
+    const { email, otp, type } = await req.json();
 
-    // 1. Find the unverified user
-    const user = await User.findOne({ where: { email, verificationCode: code } });
-
+    const user = await User.findOne({ where: { email }});
     if (!user) {
-      return NextResponse.json({ error: "Invalid or expired code" }, { status: 400 });
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    }
+    if (user.verificationCode !== otp) {
+      return NextResponse.json({ error: "Invalid verification code" }, { status: 400 });
     }
 
-    // 2. Mark as verified and CLEAR the code
-    user.isVerified = true;
-    user.verificationCode = ''; 
-    await user.save();
+    if (type === "verify") {
+      user.isVerified = true;
+      user.verificationCode = '';
+      await user.save();
+      return NextResponse.json({ message: "Account verified successfully" });
+    }
 
     return NextResponse.json({ message: "Account verified successfully" });
   } catch (error) {
-    console.error("VERIFY_ERROR:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

@@ -2,18 +2,19 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { 
-  Menu, 
-  User, 
-  Settings, 
-  ShieldCheck, 
-  LogOut, 
+import {
+  Menu,
+  User,
+  Settings,
+  ShieldCheck,
+  LogOut,
   X,
-  LayoutDashboard
+  LayoutDashboard,
 } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 export default function Header() {
+  const { data: session, update } = useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -35,38 +36,69 @@ export default function Header() {
     <header className="main-header">
       <div className="header-container" ref={menuRef}>
         {/* LEFT: MENU TOGGLE */}
-        <button 
-          className={`menu-toggle ${isMenuOpen ? 'is-active' : ''}`} 
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-          aria-label="Toggle Menu"
-        >
-          {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        {!session ? (
+          <div className="filler" />
+        ) : (
+          <button
+            className={`menu-toggle ${isMenuOpen ? "is-active" : ""}`}
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle Menu"
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        )}
 
         {/* CENTER: BRAND */}
-        <Link href="/" className="brand-link" onClick={() => setIsMenuOpen(false)}>
-          {/* <span className="brand-logo-small">FF</span> */}
-          <h1 className="brand-text">
-            Flip<span>Finder</span>
-          </h1>
-        </Link>
 
+        {!session ? (
+          <Link
+            href="/"
+            className="brand-link"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {/* <span className="brand-logo-small">FF</span> */}
+            <h1 className="brand-text">
+              Flip<span>Finder</span>
+            </h1>
+          </Link>
+        ) : (
+          <Link
+            href="/dashboard"
+            className="brand-link"
+            onClick={() => setIsMenuOpen(false)}
+          >
+            {/* <span className="brand-logo-small">FF</span> */}
+            <h1 className="brand-text">
+              Flip<span>Finder</span>
+            </h1>
+          </Link>
+        )}
         {/* RIGHT: QUICK ACTION */}
-        <Link href="/account" className="account-quick-link">
-          <div className="avatar-placeholder">
-            <User size={20} />
-          </div>
-        </Link>
+        {!session ? (
+          <Link href={"/login"}>
+            <button className="login-btn">Sign in</button>
+          </Link>
+        ) : (
+          <Link href="/account" className="account-quick-link">
+            <div className="avatar-placeholder">
+              <User size={20} />
+            </div>
+          </Link>
+        )}
 
         {/* OVERLAY NAVIGATION */}
-        <div className={`nav-overlay ${isMenuOpen ? 'is-visible' : ''}`}>
+        <div className={`nav-overlay ${isMenuOpen ? "is-visible" : ""}`}>
           <nav className="dropdown-nav">
             <div className="nav-header">
               <span>Studio Navigation</span>
             </div>
             <ul className="nav-list">
               <li>
-                <Link href="/" className="nav-item" onClick={() => setIsMenuOpen(false)}>
+                <Link
+                  href="/dashboard"
+                  className="nav-item"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   <LayoutDashboard size={20} />
                   <div className="nav-item-content">
                     <span className="nav-label">Dashboard</span>
@@ -75,7 +107,11 @@ export default function Header() {
                 </Link>
               </li>
               <li>
-                <Link href="/account" className="nav-item" onClick={() => setIsMenuOpen(false)}>
+                <Link
+                  href="/account"
+                  className="nav-item"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   <User size={20} />
                   <div className="nav-item-content">
                     <span className="nav-label">Profile</span>
@@ -84,7 +120,11 @@ export default function Header() {
                 </Link>
               </li>
               <li>
-                <Link href="/settings" className="nav-item" onClick={() => setIsMenuOpen(false)}>
+                <Link
+                  href="/settings"
+                  className="nav-item"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   <Settings size={20} />
                   <div className="nav-item-content">
                     <span className="nav-label">Settings</span>
@@ -93,7 +133,11 @@ export default function Header() {
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="nav-item" onClick={() => setIsMenuOpen(false)}>
+                <Link
+                  href="/privacy"
+                  className="nav-item"
+                  onClick={() => setIsMenuOpen(false)}
+                >
                   <ShieldCheck size={20} />
                   <div className="nav-item-content">
                     <span className="nav-label">Privacy</span>

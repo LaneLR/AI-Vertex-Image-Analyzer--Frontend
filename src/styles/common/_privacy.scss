@@ -9,8 +9,12 @@
     padding: 1.5rem;
     background: var(--bg-nav);
     border-bottom: 1px solid var(--border-color);
-    color: white;
-    h1 { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
+    color: var(--text-primary);
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
   }
 
   &__content {
@@ -51,7 +55,7 @@
     text-transform: uppercase;
     color: var(--text-tertiary);
     background: var(--bg-card);
-    padding: 4px 12px;
+    padding: 6px 16px;
     border-radius: 100px;
     border: 1px solid var(--border-color);
   }
@@ -67,15 +71,22 @@
     margin-bottom: 1rem;
 
     .section-icon {
-      width: 32px; height: 32px;
+      width: 32px;
+      height: 32px;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
       border-radius: 8px;
-      display: flex; align-items: center; justify-content: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       color: var(--primary-theme);
     }
 
-    h3 { font-size: 1rem; font-weight: 800; color: var(--text-primary); }
+    h3 {
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--text-primary);
+    }
   }
 }
 
@@ -84,13 +95,15 @@
   padding: 1.5rem;
   border-radius: 20px;
   border: 1px solid var(--border-color);
-  
+
   p {
     font-size: 0.95rem;
     line-height: 1.7;
     color: var(--text-secondary);
     margin-bottom: 1rem;
-    &:last-child { margin-bottom: 0; }
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
 
   .data-pill {
@@ -110,8 +123,17 @@
   margin-top: 5rem;
   text-align: center;
 
-  &__title { font-size: 1.25rem; font-weight: 800; color: var(--text-primary); margin-bottom: 0.5rem; }
-  p { font-size: 0.9rem; color: var(--text-tertiary); margin-bottom: 2rem; }
+  &__title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+  }
+  p {
+    font-size: 0.9rem;
+    color: var(--text-tertiary);
+    margin-bottom: 2rem;
+  }
 
   &__links {
     display: flex;
@@ -136,11 +158,18 @@
     align-items: center;
     gap: 12px;
     color: var(--text-primary);
-    span { font-weight: 700; font-size: 0.95rem; }
-    svg { color: var(--text-tertiary); }
+    span {
+      font-weight: 700;
+      font-size: 0.95rem;
+    }
+    svg {
+      color: var(--text-tertiary);
+    }
   }
 
-  .chevron { color: var(--text-tertiary); }
+  .chevron {
+    color: var(--text-tertiary);
+  }
 
   &:hover {
     border-color: var(--primary-theme);

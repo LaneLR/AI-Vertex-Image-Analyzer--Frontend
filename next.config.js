@@ -9,6 +9,7 @@ const nextConfig = {
   },
   images: {
     remotePatterns: [],
+    unoptimized: true,
   },
   webpack: (config, { isServer }) => {
     if (isServer) {
@@ -17,6 +18,7 @@ const nextConfig = {
     }
     return config;
   },
+  // trailingSlash: true,
 };
 
 module.exports = nextConfig;

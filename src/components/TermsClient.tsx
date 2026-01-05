@@ -80,7 +80,6 @@ export default function TermsClient() {
               <p>Visit our <Link href="/help">Help Center</Link> or review our <Link href="/privacy">Privacy Policy</Link>.</p>
             </div>
           </div>
-          <p className="copyright">© 2025 Flip Finder Studio. All rights reserved.</p>
         </footer>
       </div>
     </main>

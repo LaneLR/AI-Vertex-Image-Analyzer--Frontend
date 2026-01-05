@@ -13,10 +13,14 @@ import {
   Trash2,
   Cpu,
   AlertTriangle,
+  History,
+  Wand2,
+  BookmarkX,
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import InfoModal from "./InfoModal";
+import { getApiUrl } from "@/lib/api-config";
 
 type User = {
   name?: string | null;
@@ -41,11 +45,14 @@ export default function SettingsClient({
   const [localDarkMode, setLocalDarkMode] = useState(user?.darkMode ?? false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [showSubWarning, setShowSubWarning] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
 
   const handleDeleteAll = async () => {
     setIsDeleting(true);
     try {
-      const res = await fetch("/api/user/clear-history", { method: "DELETE" });
+      const res = await fetch(getApiUrl("/api/user/clear-history"), { method: "DELETE" });
       if (res.ok) {
         setIsModalOpen(false);
       }
@@ -71,7 +78,7 @@ export default function SettingsClient({
     const newDarkModeStatus = !localDarkMode;
 
     setLocalDarkMode(newDarkModeStatus);
-    localStorage.setItem('darkMode', newDarkModeStatus ? 'true' : 'false'); 
+    localStorage.setItem("darkMode", newDarkModeStatus ? "true" : "false");
 
     if (newDarkModeStatus) {
       document.documentElement.classList.add("dark");
@@ -80,7 +87,7 @@ export default function SettingsClient({
     }
 
     try {
-      const res = await fetch("/api/user/update-settings", {
+      const res = await fetch(getApiUrl("/api/user/update-settings"), {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ darkMode: newDarkModeStatus }),
@@ -93,6 +100,27 @@ export default function SettingsClient({
       console.error("Failed to sync dark mode to DB", err);
     } finally {
       setIsUpdating(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch(getApiUrl("/api/user/delete-account"), { method: "POST" });
+      const data = await res.json();
+
+      if (!res.ok && data.error === "ACTIVE_SUBSCRIPTION") {
+        setShowConfirmDelete(false);
+        setShowSubWarning(true);
+      } else if (res.ok) {
+        window.location.href = "/api/auth/signout";
+      } else {
+        setShowErrorModal(true);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -134,7 +162,7 @@ export default function SettingsClient({
         </section>
 
         {/* AI ENGINE GROUP */}
-        <section className="settings-group">
+        {/* <section className="settings-group">
           <h2 className="settings-group__title">
             <Sparkles size={14} /> AI Engine Configuration
           </h2>
@@ -175,6 +203,38 @@ export default function SettingsClient({
               </button>
             </div>
           </div>
+        </section> */}
+
+        {/* TOOLS GROUP */}
+        <section className="settings-group">
+          <h2 className="settings-group__title">TOOLS</h2>
+          <div className="settings-list">
+            <Link
+              href="/listing"
+              className="settings-item settings-item--clickable"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <Wand2 size={18} />
+                </div>
+                <p className="item-label">Listing Studio</p>
+              </div>
+              <ChevronRight size={18} className="chevron" />
+            </Link>
+
+            <Link
+              href="/history"
+              className="settings-item settings-item--clickable"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <History size={18} />
+                </div>
+                <p className="item-label">Scan History</p>
+              </div>
+              <ChevronRight size={18} className="chevron" />
+            </Link>
+          </div>
         </section>
 
         {/* PREFERENCES GROUP */}
@@ -208,6 +268,9 @@ export default function SettingsClient({
 
         {/* DANGER ZONE SECTION */}
         <section className="settings-group">
+          <h2 className="settings-group__title settings-group__title--danger">
+            DANGER ZONE
+          </h2>
           <div className="settings-list settings-list--danger">
             <button
               className="settings-item settings-item--btn"
@@ -219,13 +282,24 @@ export default function SettingsClient({
               </div>
             </button>
           </div>
+          <div className="settings-list settings-list--danger">
+            <button
+              className="settings-item settings-item--btn"
+              onClick={() => setShowConfirmDelete(true)}
+            >
+              <div className="settings-item__info">
+                <BookmarkX size={18} color="#ef4444" />
+                <span className="text-danger">Deactivate Account</span>
+              </div>
+            </button>
+          </div>
         </section>
 
         {/* CONFIRMATION MODAL */}
         <InfoModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          title="Clear History"
+          title="Clear history"
         >
           <div className="delete-modal">
             <div className="delete-modal__warning">
@@ -254,6 +328,144 @@ export default function SettingsClient({
               >
                 {isDeleting ? "Clearing..." : "Delete Everything"}
               </button>
+            </div>
+          </div>
+        </InfoModal>
+
+        <InfoModal
+          isOpen={showConfirmDelete}
+          onClose={() => setShowConfirmDelete(false)}
+          title="Delete account?"
+        >
+          <div className="delete-modal">
+            <div className="delete-modal__warning">
+              <div className="warning-icon-bg">
+                <AlertTriangle size={32} />
+              </div>
+              <h3>Are you sure?</h3>
+              <p>
+                This will deactivate your account and you will lose access to
+                your scan history.
+                <strong> This cannot be undone.</strong>
+              </p>
+            </div>
+
+            <div className="delete-modal__actions">
+              <button
+                className="modal-btn modal-btn--secondary"
+                onClick={() => setShowConfirmDelete(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                className="modal-btn modal-btn--danger"
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Preparing to deactivate account..." : "Delete Account"}
+              </button>
+            </div>
+          </div>
+        </InfoModal>
+
+        {/* <InfoModal
+          isOpen={showConfirmDelete}
+          onClose={() => setShowConfirmDelete(false)}
+          title="Delete account?"
+        >
+          <div className="modal-content">
+            <p>
+              Are you sure? This will deactivate your account and you will lose
+              access to your scan history.
+            </p>
+            <div className="modal-actions">
+              <button onClick={() => setShowConfirmDelete(false)}>
+                Cancel
+              </button>
+              <button
+                className="btn-danger"
+                onClick={handleDeleteAccount}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Processing..." : "Confirm Deactivation"}
+              </button>
+            </div>
+          </div>
+        </InfoModal> */}
+
+        {/* <InfoModal
+          isOpen={showSubWarning}
+          onClose={() => setShowSubWarning(false)}
+          title="Action required"
+        >
+          <div className="modal-content">
+            <p>
+              You currently have an active Pro subscription. To prevent further
+              charges to your account, you must cancel your subscription in the
+              billing portal before deactivating your account.
+            </p>
+            <div className="modal-actions">
+              <Link href="/billing" className="btn-primary">
+                Go to Billing
+              </Link>
+              <button onClick={() => setShowSubWarning(false)}>Close</button>
+            </div>
+          </div>
+        </InfoModal> */}
+
+        {/* <InfoModal
+          isOpen={showSubWarning}
+          onClose={() => setShowErrorModal(false)}
+          title="An error occurred"
+        >
+          <div className="modal-content">
+            <p>
+              An error occurred when trying to deactivate your account. If you
+              are a Pro user, please make sure you have canceled any
+              subscriptions to Flip Finder before requesting to deactivate your
+              account.
+            </p>
+            <div className="modal-actions">
+              <Link href="/billing" className="btn-primary">
+                Go to Billing
+              </Link>
+              <button onClick={() => setShowSubWarning(false)}>Close</button>
+            </div>
+          </div>
+        </InfoModal> */}
+
+                <InfoModal
+          isOpen={showSubWarning}
+          onClose={() => setShowSubWarning(false)}
+          title="An error occurred"
+        >
+          <div className="delete-modal">
+            <div className="delete-modal__warning">
+              <div className="warning-icon-bg">
+                <AlertTriangle size={32} />
+              </div>
+              <h3>An error occurred</h3>
+              <p>
+              An error occurred while trying to deactivate your account. If you
+              are a Pro user, please make sure you have canceled any
+              subscriptions to Flip Finder before deactivating your account.
+              </p>
+            </div>
+
+            <div className="delete-modal__actions">
+              <button
+                className="modal-btn modal-btn--secondary"
+                onClick={() => setShowSubWarning(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <div className="modal-btn modal-btn--danger">
+              <Link href="/account" className="btn-primary">
+                Go to Account
+              </Link>
+            </div>
             </div>
           </div>
         </InfoModal>

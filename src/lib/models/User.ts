@@ -14,7 +14,7 @@ interface UserAttributes {
   lastScanDate: string;
 
   // Unified Billing Fields
-  paymentProvider: "stripe" | "apple" | "none"; // Track where they subscribed
+  paymentProvider: "stripe" | "apple" | "google" | "none"; // Track where they subscribed
   providerCustomerId?: string; // Stripe Customer ID or Apple App Account Token
   providerSubscriptionId?: string; // Stripe Sub ID or Apple Original Transaction ID
 
@@ -25,6 +25,7 @@ interface UserAttributes {
   // Auth & Security
   isVerified?: boolean;
   verificationCode?: string;
+  isActive?: boolean;
 }
 
 interface UserCreationAttributes
@@ -58,6 +59,7 @@ class User
 
   public isVerified!: boolean;
   public verificationCode!: string;
+  public isActive!: boolean;
 
   toJSON() {
     const values = { ...this.get() };
@@ -92,9 +94,8 @@ User.init(
     lastScanDate: { type: DataTypes.DATEONLY, defaultValue: DataTypes.NOW },
     darkMode: { type: DataTypes.BOOLEAN, defaultValue: false },
 
-    // New Billing Logic
     paymentProvider: {
-      type: DataTypes.ENUM("stripe", "apple", "none"),
+      type: DataTypes.ENUM("stripe", "apple", "google", "none"),
       defaultValue: "none",
     },
     providerCustomerId: { type: DataTypes.STRING, allowNull: true }, // Unified field for IDs
@@ -104,6 +105,7 @@ User.init(
 
     isVerified: { type: DataTypes.BOOLEAN, defaultValue: false },
     verificationCode: { type: DataTypes.STRING, allowNull: true },
+    isActive: { type: DataTypes.BOOLEAN, defaultValue: true },
   },
   {
     sequelize,

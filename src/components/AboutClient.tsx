@@ -2,7 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, Target, ScanEye, TrendingUp, Info } from "lucide-react";
+import { ArrowLeft, Target, ScanEye, TrendingUp, Info, DollarSign, DollarSignIcon, CircleDollarSign, BadgeDollarSignIcon } from "lucide-react";
 
 
 export default function AboutClient() {
@@ -13,7 +13,7 @@ export default function AboutClient() {
         <Link href="/" className="back-btn">
           <ArrowLeft size={20} />
         </Link>
-        <h1>About the Studio</h1>
+        <h1>About Us</h1>
         <div className="header-spacer" />
       </header>
 
@@ -61,7 +61,7 @@ export default function AboutClient() {
 
           <div className="feature-card">
             <div className="feature-card__icon icon-green">
-              <Target size={20} />
+              <BadgeDollarSignIcon size={20} />
             </div>
             <h3>Profit</h3>
             <p>Turn your hobby into a hustle with data-backed buying decisions.**</p>

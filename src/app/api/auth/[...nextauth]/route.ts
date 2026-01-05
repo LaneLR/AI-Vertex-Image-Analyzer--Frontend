@@ -11,6 +11,8 @@ declare module "next-auth" {
     id?: string;
     subscriptionStatus?: string;
     darkMode?: boolean;
+    paymentProvider?: string;
+    isActive?: boolean;
   }
   interface Session {
     user: {
@@ -20,6 +22,8 @@ declare module "next-auth" {
       image?: string | null;
       subscriptionStatus?: string;
       darkMode?: boolean;
+      paymentProvider?: string;
+      isActive?: boolean;
     };
   }
 }
@@ -41,10 +45,12 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) return null;
 
         const user = await User.findOne({
-          where: { email: credentials.email },
+          where: { email: credentials.email.toLowerCase().trim() },
         });
 
-        if (!user) throw new Error("No user found with that email");
+        if (!user) throw new Error("No user found with this email");
+        if (!user.isActive)
+          throw new Error("The account associated with this email has been deactivated. Please sign in with a different account.");
         if (!user.isVerified)
           throw new Error("Please verify your email before logging in");
         if (!user.password) throw new Error("Please sign in with Google");
@@ -96,6 +102,7 @@ export const authOptions: NextAuthOptions = {
         token.isVerified = dbUser?.isVerified;
         token.dailyScansCount = dbUser?.dailyScansCount;
         token.darkMode = dbUser?.darkMode;
+        token.isActive = dbUser?.isActive;
       }
       return token;
     },
@@ -106,6 +113,8 @@ export const authOptions: NextAuthOptions = {
         session.user.subscriptionStatus = dbUser?.subscriptionStatus || "basic";
         (session.user as any).dailyScansCount = dbUser?.dailyScansCount || 0;
         session.user.darkMode = dbUser?.darkMode ?? false;
+        session.user.paymentProvider = dbUser?.paymentProvider;
+        session.user.isActive = dbUser?.isActive;
       }
       return session;
     },

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useApp } from "@/context/AppContext"; 
+import { useApp } from "@/context/AppContext";
 import {
   User as UserIcon,
   History,
@@ -12,51 +12,55 @@ import {
   Wand2,
   LogOut,
   ShieldCheck,
-  HistoryIcon
+  HistoryIcon,
 } from "lucide-react";
 import Link from "next/link";
 import SubscribeButton from "@/components/SubscribeButton";
 import { Capacitor } from "@capacitor/core";
 import { useSession, signOut } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
+import InfoModal from "./InfoModal";
+import { getApiUrl } from "@/lib/api-config";
 
-export default function AccountClient({ user: initialUser, history }: { user: any, history: any[] }) {
-  const { maxFreeScans } = useApp(); 
-  const [isNative, setIsNative] = useState(false);
+export default function AccountClient({ user: initialUser }: { user: any }) {
+  const { maxFreeScans } = useApp();
   const [loadingPortal, setLoadingPortal] = useState(false);
   const { data: session, update } = useSession();
   const searchParams = useSearchParams();
+  const [errorModal, setErrorModal] = useState(false);
   const success = searchParams.get("success");
 
   const user = session?.user || initialUser;
   const dailyScansUsed = (user as any)?.dailyScansCount || 0;
+  const [platform, setPlatform] = useState<string>("web");
 
   useEffect(() => {
-    if (success === "true") update();
-  }, [success, update]);
-
-  useEffect(() => {
-    setIsNative(Capacitor.isNativePlatform());
+    // This returns 'ios', 'android', or 'web'
+    const currentPlatform = Capacitor.getPlatform();
+    setPlatform(currentPlatform);
   }, []);
+
+  const isIOS = platform === "ios";
+  const isAndroid = platform === "android";
+  const isNative = platform !== "web";
 
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const usagePercentage = Math.min((dailyScansUsed / maxFreeScans) * 100, 100);
-  const recentHistory = history.slice(0, 3);
 
   const handleManageSubscription = async () => {
-    if (isNative) {
+    if (user?.paymentProvider === 'stripe') {
+      try {
+        const res = await fetch(getApiUrl("/api/stripe/portal"), { method: "POST" });
+        const data = await res.json();
+        if (data.url) window.location.href = data.url;
+      } catch (err) {
+        console.error("Failed to open portal", err);
+      } finally {
+        setLoadingPortal(false);
+      }
+    } else if (user.paymentProvider === 'apple') {
       window.open("https://apps.apple.com/account/subscriptions", "_blank");
       return;
-    }
-    setLoadingPortal(true);
-    try {
-      const res = await fetch("/api/stripe/portal", { method: "POST" });
-      const data = await res.json();
-      if (data.url) window.location.href = data.url;
-    } catch (err) {
-      console.error("Failed to open portal", err);
-    } finally {
-      setLoadingPortal(false);
     }
   };
 
@@ -67,9 +71,10 @@ export default function AccountClient({ user: initialUser, history }: { user: an
           <ArrowLeft size={20} />
         </Link>
         <h1>Account Settings</h1>
-        <button className="logout-icon-btn" onClick={() => signOut({ callbackUrl: '/' })}>
+        {/* <button className="logout-icon-btn" onClick={() => signOut({ callbackUrl: '/' })}>
           <LogOut size={20} />
-        </button>
+        </button> */}
+        <div />
       </header>
 
       <div className="account-page__content">
@@ -77,13 +82,13 @@ export default function AccountClient({ user: initialUser, history }: { user: an
         <section className="profile-hero">
           <div className="profile-hero__avatar">
             <UserIcon size={32} />
-            {isPro && <div className="pro-badge-dot"><Zap size={10} fill="currentColor" /></div>}
+            {/* {isPro && <div className="pro-badge-dot"><Zap size={10} fill="currentColor" /></div>} */}
           </div>
           <div className="profile-hero__info">
             <h2>{user?.email}</h2>
-            <span className={`status-pill ${isPro ? 'status-pill--pro' : ''}`}>
+            <span className={`status-pill ${isPro ? "status-pill--pro" : ""}`}>
               {isPro ? <ShieldCheck size={12} /> : null}
-              {isPro ? "Pro Member" : "Basic Account"}
+              {isPro ? "Pro Member" : "Basic Member"}
             </span>
           </div>
         </section>
@@ -94,25 +99,43 @@ export default function AccountClient({ user: initialUser, history }: { user: an
             <h3>{isPro ? "Your Subscription" : "Upgrade to Pro"}</h3>
             <Zap size={18} className={isPro ? "icon-gold" : "icon-gray"} />
           </div>
-          
+
           {isPro ? (
             <div className="subscription-content">
-              <p>You have full access to Unlimited Appraisals and the Listing Studio.</p>
-              <button className="secondary-btn" onClick={handleManageSubscription} disabled={loadingPortal}>
-                <Settings size={14} /> {loadingPortal ? "Loading..." : "Billing Settings"}
+              <p>
+                You have full access to Unlimited Appraisals and the Listing
+                Studio.
+              </p>
+              <button
+                className="secondary-btn"
+                onClick={handleManageSubscription}
+                disabled={loadingPortal}
+              >
+                <Settings size={14} />{" "}
+                {loadingPortal ? "Loading..." : "Manage Billing Settings"}
               </button>
             </div>
           ) : (
             <div className="usage-content">
               <div className="usage-stats">
                 <span>Daily Scans Used</span>
-                <span className="usage-count">{dailyScansUsed} / {maxFreeScans}</span>
+                <span className="usage-count">
+                  {dailyScansUsed} / {maxFreeScans}
+                </span>
               </div>
               <div className="progress-bar">
-                <div className="progress-fill" style={{ width: `${usagePercentage}%` }} />
+                <div
+                  className="progress-fill"
+                  style={{ width: `${usagePercentage}%` }}
+                />
               </div>
-              <p className="usage-hint">Get unlimited scans and the listing generator with Pro.</p>
-              <SubscribeButton priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!} isPro={isPro} />
+              <p className="usage-hint">
+                Get unlimited scans and access to Listing Generator with FlipFinder Pro!
+              </p>
+              <SubscribeButton
+                priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
+                isPro={isPro}
+              />
             </div>
           )}
         </section>
@@ -143,32 +166,54 @@ export default function AccountClient({ user: initialUser, history }: { user: an
         </Link>
 
         {/* RECENT HISTORY */}
-        <section className="history-preview">
+        {/* <section className="history-preview">
           <div className="section-header">
-            <h3>Recent Activity</h3>
-            {/* <Link href="/history">View All</Link> */}
+            <h3>Recent Scans</h3>
+            <Link href="/history" className="view-all-link">
+              View All <ChevronRight size={14} />
+            </Link>
           </div>
-          <div className="history-list card">
-            {recentHistory.length > 0 ? recentHistory.map((item) => (
-              <Link href="/history" key={item.id} className="history-item">
-                <div className="history-item__main">
-                   <div className="item-icon"><History size={16} /></div>
-                   <div className="item-text">
-                     <p className="item-title">{item.itemTitle}</p>
-                     <p className="item-date">{new Date(item.createdAt).toLocaleDateString()}</p>
-                   </div>
-                </div>
-                <div className="item-meta">
-                  <span className="item-price">{item.priceRange}</span>
-                  <ChevronRight size={16} />
-                </div>
-              </Link>
-            )) : (
-              <div className="empty-history">Your recent appraisals will appear here.</div>
+
+          <div className="history-preview__list">
+            {recentHistory.length > 0 ? (
+              recentHistory.map((item) => (
+                <Link 
+                  href={`/history`} 
+                  key={item.id} 
+                  className="history-preview__item"
+                >
+                  <div className="item-details">
+                    <p className="item-name">{item.itemTitle || "Unnamed Appraisal"}</p>
+                    <span className="price-label">EST. VALUE</span>
+                    <span className="price-value">{item.priceRange || "N/A"}</span>
+                  </div>
+                </Link>
+              ))
+            ) : (
+              <div className="history-preview__empty">
+                <History size={24} />
+                <p>No recent appraisals found.</p>
+                <Link href="/">Start Scanning</Link>
+              </div>
             )}
           </div>
-        </section>
+        </section> */}
       </div>
+
+      <InfoModal
+        isOpen={!!errorModal}
+        onClose={() => setErrorModal(false)}
+        title={"Could not open billing settings"}
+      >
+        <div className="too-many-scans-cont">
+          <div className="errorModal-cont">
+            <div className="errorModal-text">
+              There was an error trying to open the billing settings. Please try
+              again later.
+            </div>
+          </div>
+        </div>
+      </InfoModal>
     </main>
   );
 }

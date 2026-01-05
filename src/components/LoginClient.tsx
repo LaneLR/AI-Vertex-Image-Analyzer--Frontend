@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { Mail, Lock, ArrowRight } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { getApiUrl } from "@/lib/api-config";
 
 export default function LoginClient() {
   const [isLogin, setIsLogin] = useState(true);
@@ -29,7 +30,7 @@ export default function LoginClient() {
     setError("");
     setLoading(true);
 
-    const endpoint = isLogin ? "/api/auth/login" : "/api/auth/register";
+    const endpoint = isLogin ? getApiUrl("/api/auth/login") : getApiUrl("/api/auth/register");
     
     try {
       const res = await fetch(endpoint, {
