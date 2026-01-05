@@ -279,12 +279,24 @@ export default function UnifiedAuthPage() {
             {loading
               ? "Processing..."
               : view === "forgot"
-              ? "Send Reset Link"
+              ? "Send reset code"
               : view === "verify"
-              ? "Verify Code"
-              : "Continue"}
+              ? "Verify code"
+              : view === "register"
+              ? "Create account"
+              : "Log in"}
             {!loading && <ArrowRight size={18} />}
           </button>
+
+           {(view === "login" || view === "register") && (
+            <>
+              <div className="auth-divider"><span>OR</span></div>
+              <button type="button" className="google-auth-btn" onClick={() => signIn("google", { callbackUrl: "/" })}>
+                <Chrome size={18} />
+                Continue with Google
+              </button>
+            </>
+          )}
         </form>
 
         <footer className="auth-footer">

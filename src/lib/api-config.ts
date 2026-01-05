@@ -13,7 +13,7 @@ export const getApiUrl = (path: string) => {
     // For other API calls (like your scanner), use the logic below
     const baseUrl = isLocalhost
       ? "http://localhost:3000"
-      : "https://your-flip-finder-domain.com";
+      : "https://flip-finder.onrender.com";
 
     const sanitizedPath = path.startsWith("/") ? path : `/${path}`;
     return `${baseUrl}${sanitizedPath}`;
