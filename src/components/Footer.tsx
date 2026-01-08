@@ -26,7 +26,7 @@ export default function Footer() {
             </div>
             <div className="footer__badges">
               <span className="badge-pill">
-                <Sparkles size={12} /> Powered by Gemini
+                <Sparkles size={12} />Powered by Gemini
               </span>
             </div>
           </div>
@@ -38,12 +38,12 @@ export default function Footer() {
             <ul className="footer__list">
               <li>
                 <Link href="/help" className="footer__link">
-                  <HelpCircle size={16} /> Help Center
+                  <HelpCircle size={16} />Help Center
                 </Link>
               </li>
               <li>
                 <Link href="/about" className="footer__link">
-                  <Info size={16} /> About Us
+                  <Info size={16} />About Us
                 </Link>
               </li>
             </ul>
@@ -54,12 +54,12 @@ export default function Footer() {
             <ul className="footer__list">
               <li>
                 <Link href="/terms" className="footer__link">
-                  <ShieldCheck size={16} /> Terms of Service
+                  <ShieldCheck size={16} />Terms of Service
                 </Link>
               </li>
               <li>
                 <Link href="/privacy" className="footer__link">
-                  <ShieldCheck size={16} /> Privacy
+                  <ShieldCheck size={16} />Privacy
                 </Link>
               </li>
             </ul>
