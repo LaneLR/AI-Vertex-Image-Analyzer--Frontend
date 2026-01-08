@@ -11,7 +11,7 @@
 
   &__grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: 3rem;
     margin-bottom: 4rem;
 
@@ -110,6 +110,8 @@
     align-items: center;
     padding-top: 2rem;
     border-top: 1px solid #333333;
+    justify-content: center;
+    width: 100%;
 
     @media (max-width: 768px) {
       flex-direction: column-reverse;
@@ -123,6 +125,7 @@
     color: var(--footer-text-light);
     text-transform: uppercase;
     letter-spacing: 0.02rem;
+    text-align: center;
   }
 
   &__social {
@@ -132,6 +135,24 @@
       &:hover {
         color: var(--footer-text-light);
       }
+    }
+  }
+
+  &__section {
+    width: 100%;
+  }
+
+  &__section-group{
+    display: flex;
+    // flex-direction: column;
+    justify-content: space-evenly;
+    width: 370px;
+
+    @media (max-width: 768px) {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-evenly;
     }
   }
 }

@@ -24,9 +24,6 @@ export default function Footer() {
                 </h1>
               </Link>
             </div>
-            <p className="footer__tagline">
-              Professional AI vision tools for the modern reseller.
-            </p>
             <div className="footer__badges">
               <span className="badge-pill">
                 <Sparkles size={12} /> Powered by Gemini
@@ -35,6 +32,7 @@ export default function Footer() {
           </div>
 
           {/* Navigation Links */}
+          <div className="footer__section-group">
           <div className="footer__section">
             <h4 className="footer__label">Resources</h4>
             <ul className="footer__list">
@@ -67,7 +65,7 @@ export default function Footer() {
             </ul>
           </div>
         </div>
-
+</div>
         <div className="footer__bottom">
           <div className="footer__copyright">
             © {currentYear} Flip Finder • v1.13.7

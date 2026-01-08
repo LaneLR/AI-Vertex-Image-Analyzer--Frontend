@@ -35,9 +35,9 @@ export default function WebHome() {
               Item Flipping AI Companion
             </span>
             <h1 className="web__title">
-              Turn :
+              <p>Turn</p>
               <p className="web__titleSecondary">"Wait, what's this?" </p>
-              <p>into :</p>
+              <p>into</p>
               <span className="web__titleHighlight"> Sold for $200.</span>
             </h1>
             <p className="web__subtitle">
