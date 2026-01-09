@@ -275,20 +275,22 @@ export default function SettingsClient({
               </div>
             </div>
             <br />
-            <div className="delete-modal__actions mt-6">
-              <Link
+            <div className="delete-modal__actions">
+              {/* <Link
                 href="/listing"
                 className="modal-btn modal-btn--primary text-center"
               >
                 <button className="modal-btn modal-btn--secondary">
                   Go to Studio
                 </button>
-              </Link>
+              </Link> */}
               <div
                 className="modal-btn modal-btn--primary text-center"
                 onClick={() => setIsListingStudioModalOpen(false)}
               >
-                Close
+                <div className="modal-btn modal-btn--secondary">
+                  Close
+                </div>
               </div>
             </div>
           </div>
