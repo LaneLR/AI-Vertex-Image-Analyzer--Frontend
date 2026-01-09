@@ -32,10 +32,22 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
   const user = session?.user || initialUser;
 
   useEffect(() => {
-    if (user?.dailyScansCount !== undefined) {
-      setScansCount(user.dailyScansCount);
+    if (user?.dailyScansCount !== undefined && user?.lastScanDate) {
+      const lastUpdate = new Date(user.lastScanDate);
+      const now = new Date();
+
+      const isNewDay =
+        lastUpdate.getUTCFullYear() !== now.getUTCFullYear() ||
+        lastUpdate.getUTCMonth() !== now.getUTCMonth() ||
+        lastUpdate.getUTCDate() !== now.getUTCDate();
+
+      if (isNewDay) {
+        setScansCount(0);
+      } else {
+        setScansCount(user.dailyScansCount);
+      }
     }
-  }, [user?.dailyScansCount]);
+  }, [user?.dailyScansCount, user?.updatedAt]);
 
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
