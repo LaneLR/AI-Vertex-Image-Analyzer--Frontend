@@ -48,11 +48,15 @@ export default function SettingsClient({
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showSubWarning, setShowSubWarning] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [isListingStudioModalOpen, setIsListingStudioModalOpen] =
+    useState(false);
 
   const handleDeleteAll = async () => {
     setIsDeleting(true);
     try {
-      const res = await fetch(getApiUrl("/api/user/clear-history"), { method: "DELETE" });
+      const res = await fetch(getApiUrl("/api/user/clear-history"), {
+        method: "DELETE",
+      });
       if (res.ok) {
         setIsModalOpen(false);
       }
@@ -106,7 +110,9 @@ export default function SettingsClient({
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
     try {
-      const res = await fetch(getApiUrl("/api/user/delete-account"), { method: "POST" });
+      const res = await fetch(getApiUrl("/api/user/delete-account"), {
+        method: "POST",
+      });
       const data = await res.json();
 
       if (!res.ok && data.error === "ACTIVE_SUBSCRIPTION") {
@@ -209,9 +215,9 @@ export default function SettingsClient({
         <section className="settings-group">
           <h2 className="settings-group__title">TOOLS</h2>
           <div className="settings-list">
-            <Link
-              href="/listing"
-              className="settings-item settings-item--clickable"
+            <div
+              onClick={() => setIsListingStudioModalOpen(true)}
+              className="settings-item settings-item--clickable cursor-pointer"
             >
               <div className="settings-item__info">
                 <div className="icon-box icon-box--shield">
@@ -220,7 +226,7 @@ export default function SettingsClient({
                 <p className="item-label">Listing Studio</p>
               </div>
               <ChevronRight size={18} className="chevron" />
-            </Link>
+            </div>
 
             <Link
               href="/history"
@@ -236,6 +242,57 @@ export default function SettingsClient({
             </Link>
           </div>
         </section>
+
+        <InfoModal
+          isOpen={isListingStudioModalOpen}
+          onClose={() => setIsListingStudioModalOpen(false)}
+          title="Listing Studio"
+        >
+          <div className="feature-info-modal">
+            <div className="feature-info-modal__icon">
+              {/* <div className="icon-box icon-box--large">
+                <Wand2 size={32} />
+              </div> */}
+            </div>
+            {/* <h3>Professional Listings in Seconds</h3> */}
+            <p>
+              Listing Studio uses advanced AI to generate SEO-optimized titles
+              and descriptions for your items.
+            </p>
+            <br />
+            <div className="feature-benefits">
+              <div>
+                <strong>Smart Descriptions:</strong> Automatically highlights
+                key features and flaws.
+              </div>
+              <div>
+                <strong>SEO Keywords:</strong> Higher visibility on eBay,
+                Poshmark, and Depop.
+              </div>
+              <div>
+                <strong>Multi-Photo Analysis:</strong> Analyzes up to 3 photos
+                for maximum accuracy.
+              </div>
+            </div>
+            <br />
+            <div className="delete-modal__actions mt-6">
+              <Link
+                href="/listing"
+                className="modal-btn modal-btn--primary text-center"
+              >
+                <button className="modal-btn modal-btn--secondary">
+                  Go to Studio
+                </button>
+              </Link>
+              <div
+                className="modal-btn modal-btn--primary text-center"
+                onClick={() => setIsListingStudioModalOpen(false)}
+              >
+                Close
+              </div>
+            </div>
+          </div>
+        </InfoModal>
 
         {/* PREFERENCES GROUP */}
         <section className="settings-group">
@@ -363,7 +420,9 @@ export default function SettingsClient({
                 onClick={handleDeleteAccount}
                 disabled={isDeleting}
               >
-                {isDeleting ? "Preparing to deactivate account..." : "Delete Account"}
+                {isDeleting
+                  ? "Preparing to deactivate account..."
+                  : "Delete Account"}
               </button>
             </div>
           </div>
@@ -435,7 +494,7 @@ export default function SettingsClient({
           </div>
         </InfoModal> */}
 
-                <InfoModal
+        <InfoModal
           isOpen={showSubWarning}
           onClose={() => setShowSubWarning(false)}
           title="An error occurred"
@@ -447,9 +506,9 @@ export default function SettingsClient({
               </div>
               <h3>An error occurred</h3>
               <p>
-              An error occurred while trying to deactivate your account. If you
-              are a Pro user, please make sure you have canceled any
-              subscriptions to Flip Finder before deactivating your account.
+                An error occurred while trying to deactivate your account. If
+                you are a Pro user, please make sure you have canceled any
+                subscriptions to Flip Finder before deactivating your account.
               </p>
             </div>
 
@@ -462,10 +521,10 @@ export default function SettingsClient({
                 Cancel
               </button>
               <div className="modal-btn modal-btn--danger">
-              <Link href="/account" className="btn-primary">
-                Go to Account
-              </Link>
-            </div>
+                <Link href="/account" className="btn-primary">
+                  Go to Account
+                </Link>
+              </div>
             </div>
           </div>
         </InfoModal>

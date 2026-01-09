@@ -18,10 +18,8 @@ import SubscribeButton from "./SubscribeButton";
 import { getApiUrl } from "@/lib/api-config";
 
 export default function HomeClient({ user: initialUser }: { user: any }) {
-  // --- State Updates for Multi-Image Support ---
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
-
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [scansCount, setScansCount] = useState<number>(0);
@@ -359,10 +357,12 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
             <History />
             <span>History</span>
           </Link>
-          <Link href="/listing" className="nav-card nav-card--pro">
-            <Zap />
-            <span>Listing Studio</span>
-          </Link>
+          {(isPro || isHobby) && (
+            <Link href="/listing" className="nav-card nav-card--pro">
+              <Zap />
+              <span>Listing Studio</span>
+            </Link>
+          )}
         </nav>
       </div>
 
