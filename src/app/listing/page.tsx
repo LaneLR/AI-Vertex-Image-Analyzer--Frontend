@@ -11,6 +11,10 @@ export default async function ListingPage() {
     redirect("/login");
   }
 
+  if (session?.user?.subscriptionStatus === "basic") {
+    redirect("/account");
+  }
+
   return <GenerateListingClient user={session.user} />;
 }
 
