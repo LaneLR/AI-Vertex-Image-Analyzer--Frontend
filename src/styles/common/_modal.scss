@@ -187,6 +187,7 @@
 
     &:hover:not(:disabled) {
       background: var(--bg-header);
+      color: #fff;
     }
 
     &:active:not(:disabled) {
