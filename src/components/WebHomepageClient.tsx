@@ -11,13 +11,19 @@ import Link from "next/link";
 
 export default function WebHome() {
   const features = {
-    basic: [
-      "5 Scans per day", 
+    basic: ["5 Scans per day", 
       "Basic price estimates", 
       "Manual profit entry"
     ],
+    hobby: [
+      "100 Scans per day",
+      "Access to Listing Generator",
+      "Profit calculator",
+      "Multi-platform comparison",
+    ],
     pro: [
-      "Unlimited AI Scans",
+      "250 Scans per day",
+      ,
       "Access to Listing Generator",
       "Profit calculator",
       "Multi-platform comparison",
@@ -143,15 +149,32 @@ export default function WebHome() {
                 ))}
               </ul>
               <Link href={"/login"}>
-                <button className="planCard__btn">Free</button>
+                <button className="planCard__btn">Create Account</button>
               </Link>
             </div>
 
             <div className="planCard planCardPro">
-              <div className="planCard__badge">Recommended</div>
+              <h3 className="planCard__name">Hobbyist</h3>
+              <div className="planCard__price">
+                9.99<span>/ mo</span>
+              </div>
+              <ul className="planCard__list">
+                {features.hobby.map((f, i) => (
+                  <li key={i}>
+                    <Check size={18} /> {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href={"/login"}>
+                <button className="planCard__btn planCard__btnHighlight">Upgrade to Hobby Plan</button>
+              </Link>
+            </div>
+
+            <div className="planCard planCardPro">
+              {/* <div className="planCard__badge">Recommended</div> */}
               <h3 className="planCard__name">Pro</h3>
               <div className="planCard__price">
-                5.99<span>/ mo</span>
+                19.99<span>/ mo</span>
               </div>
               <ul className="planCard__list">
                 {features.pro.map((f, i) => (
@@ -162,7 +185,7 @@ export default function WebHome() {
               </ul>
               <Link href={"/login"}>
                 <button className="planCard__btn planCard__btnHighlight">
-                  Go Pro Now
+                  Upgrade to Pro Plan
                 </button>
               </Link>
             </div>

@@ -32,7 +32,8 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
   }, [user?.dailyScansCount]);
 
   const isPro = user?.subscriptionStatus === "pro";
-  const maxPhotos = isPro ? 3 : 1;
+  const isHobby = user?.subscriptionStatus === "hobby";
+  const maxPhotos = isPro || isHobby ? 3 : 1;
 
   // --- 1. Robust Extraction Helper ---
   const extractFirstNumber = (val: any): number => {
@@ -137,12 +138,12 @@ const handleRemoveImage = (index: number) => {
       <section className="home-stats">
         <div className="home-stats__item">
           <Zap size={16} className="icon-gold" />
-          <span>{isPro ? "Pro Plan" : "Basic Plan"}</span>
+          <span>{isPro ? "Pro Plan" : isHobby ? "Hobbyist Plan" : "Basic Plan"}</span>
         </div>
         <div className="home-stats__item">
           <BarChart3 size={16} />
           <span className="home-stats__item">
-            {scansCount} / {isPro ? "∞" : "5"} daily scans
+            {scansCount} / {isPro ? "250" : isHobby ? "100" : "5"} daily scans
           </span>
         </div>
       </section>
@@ -171,7 +172,7 @@ const handleRemoveImage = (index: number) => {
         ))}
 
         {/* Show empty slots for Pro users to add more (up to 3) */}
-        {isPro && previews.length < 3 && (
+        {(isPro || isHobby) && previews.length < 3 && (
           <label className="add-more-slot">
             <input 
               type="file" 
@@ -203,14 +204,14 @@ const handleRemoveImage = (index: number) => {
         type="file" 
         onChange={handleFile} 
         accept="image/*" 
-        multiple={isPro} 
+        multiple={isPro || isHobby} 
         hidden 
       />
       <div className="dropzone-ui">
         <div className="camera-icon-wrapper">
           <Camera size={32} />
         </div>
-        <h3>{isPro ? "Upload up to 3 photos" : "Capture or Upload"}</h3>
+        <h3>{(isPro || isHobby) ? "Upload up to 3 photos" : "Capture or Upload"}</h3>
         <p>Show different angles for better accuracy</p>
       </div>
     </label>
@@ -320,7 +321,7 @@ const handleRemoveImage = (index: number) => {
 
       <InfoModal isOpen={!!showModal} onClose={() => setShowModal(false)} title={"Too many scans"}>
         <div className="too-many-scans-cont">
-          <div>You've reached your max scans for today. Upgrade to Pro for unlimited scans!</div>
+          <div>You've reached your max scans for today. Upgrade your account for more scans!</div>
           <div className="upgrade-btn-cont">
             <SubscribeButton priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!} />
           </div>
