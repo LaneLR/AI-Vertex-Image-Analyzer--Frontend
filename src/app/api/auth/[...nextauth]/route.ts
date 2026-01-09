@@ -13,6 +13,7 @@ declare module "next-auth" {
     darkMode?: boolean;
     paymentProvider?: string;
     isActive?: boolean;
+    lastScanDate?:  any | null;
   }
   interface Session {
     user: {
@@ -24,6 +25,7 @@ declare module "next-auth" {
       darkMode?: boolean;
       paymentProvider?: string;
       isActive?: boolean;
+      lastScanDate?: any | null;
     };
   }
 }
@@ -103,6 +105,7 @@ export const authOptions: NextAuthOptions = {
         token.dailyScansCount = dbUser?.dailyScansCount;
         token.darkMode = dbUser?.darkMode;
         token.isActive = dbUser?.isActive;
+        token.lastScanDate = dbUser?.lastScanDate;
       }
       return token;
     },
@@ -115,6 +118,7 @@ export const authOptions: NextAuthOptions = {
         session.user.darkMode = dbUser?.darkMode ?? false;
         session.user.paymentProvider = dbUser?.paymentProvider;
         session.user.isActive = dbUser?.isActive;
+        session.user.lastScanDate = dbUser?.lastScanDate;
       }
       return session;
     },

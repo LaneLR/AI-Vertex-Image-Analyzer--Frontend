@@ -88,99 +88,93 @@ import Stripe from "stripe";
 import User from "@/lib/models/User";
 import { connectDB } from "@/lib/db";
 
-// Use the latest stable API version or match your dashboard
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY! || "dummy_key", {
-  apiVersion: "2024-12-18.acacia" as any,
-});
-
 export async function POST(req: Request) {
+  // 1. Lazy Initialize Stripe to prevent build-time crashes
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_placeholder", {
+    apiVersion: "2024-12-18.acacia" as any,
+  });
 
-  
-  // 1. Get the RAW body as text - crucial for signature verification
   const body = await req.text();
   const signature = req.headers.get("stripe-signature");
-
-  // Ensure you have the LIVE webhook secret from Stripe Dashboard in your Render env
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
   if (!signature || !webhookSecret) {
-    console.error("❌ Missing stripe-signature or STRIPE_WEBHOOK_SECRET");
     return NextResponse.json({ error: "Unauthorized" }, { status: 400 });
   }
 
   let event: Stripe.Event;
-
   try {
-    // 2. Construct the event using the raw text body
     event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
   } catch (err: any) {
     console.error(`❌ Webhook Signature Error: ${err.message}`);
-    return NextResponse.json({ error: `Webhook Error: ${err.message}` }, { status: 400 });
+    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
   }
 
   await connectDB();
+
+  // 2. Map your Stripe Price IDs to your database tiers
+  const getTierFromPriceId = (priceId: string): "hobby" | "pro" | "basic" => {
+    if (priceId === process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID) return "pro";
+    if (priceId === process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID) return "hobby";
+    return "basic";
+  };
 
   try {
     switch (event.type) {
       case "checkout.session.completed": {
         const session = event.data.object as Stripe.Checkout.Session;
-        
-        // Ensure you passed this ID when creating the checkout session!
         const userId = session.client_reference_id;
 
-        if (!userId) {
-          console.error("❌ No client_reference_id found in session");
-          break;
-        }
+        if (!userId) break;
 
         const user = await User.findByPk(userId);
-        if (!user) {
-          console.error(`❌ User ${userId} not found in database`);
-          break;
-        }
+        if (!user) break;
 
-        // Retrieve subscription details to get the end date
+        // Retrieve the subscription and the specific price item
         const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
+        const priceId = subscription.items.data[0].price.id;
+        const tier = getTierFromPriceId(priceId);
 
         await user.update({
-          subscriptionStatus: "pro",
-          paymentProvider: "stripe",
+          subscriptionStatus: tier,
+          paymentProvider: 'stripe',
           providerCustomerId: session.customer as string,
           providerSubscriptionId: subscription.id,
           subscriptionEndDate: new Date((subscription as any)["current_period_end"] * 1000),
-          cancelAtPeriodEnd: false,
+          cancelAtPeriodEnd: false
         });
 
-        console.log(`✅ User ${user.email} upgraded to PRO`);
+        console.log(`✅ User ${user.email} upgraded to ${tier.toUpperCase()}`);
         break;
       }
 
       case "customer.subscription.updated":
       case "customer.subscription.deleted": {
-        const subscription = event.data.object as Stripe.Subscription;
+        const sub = event.data.object as Stripe.Subscription;
         
-        // Find user by subscription ID if metadata isn't available
-        const user = await User.findOne({ 
-          where: { providerSubscriptionId: subscription.id } 
-        });
+        const user = await User.findOne({ where: { providerSubscriptionId: sub.id } });
 
         if (user) {
           const isDeleted = event.type === "customer.subscription.deleted";
-          const isActive = subscription.status === "active";
+          const isActive = sub.status === "active";
+          
+          // Determine tier if still active
+          const priceId = sub.items.data[0].price.id;
+          const tier = isActive && !isDeleted ? getTierFromPriceId(priceId) : "basic";
 
           await user.update({
-            subscriptionStatus: (isActive && !isDeleted) ? "pro" : "basic",
-            subscriptionEndDate: new Date((subscription as any)["current_period_end"] * 1000),
-            cancelAtPeriodEnd: subscription.cancel_at_period_end,
+            subscriptionStatus: tier,
+            cancelAtPeriodEnd: sub.cancel_at_period_end,
+            subscriptionEndDate: new Date((sub as any)["current_period_end"] * 1000),
           });
-          console.log(`ℹ️ Subscription status for ${user.email}: ${subscription.status}`);
+          console.log(`ℹ️ Subscription synced: ${user.email} is now ${tier}`);
         }
         break;
       }
     }
   } catch (error: any) {
-    console.error("❌ Webhook processing failed:", error.message);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    console.error("❌ WEBHOOK ERROR:", error.message);
+    return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });

@@ -95,7 +95,19 @@ export async function POST(req: Request) {
 
     if (user.subscriptionStatus === 'basic' && user.dailyScansCount >= 5) {
       return NextResponse.json({ 
-        error: "Daily scan limit reached. Please upgrade to Pro for unlimited scans." 
+        error: "Daily scan limit reached. Please upgrade your account for more scans." 
+      }, { status: 429 });
+    }
+
+    if (user.subscriptionStatus === 'hobby' && user.dailyScansCount >= 100) {
+      return NextResponse.json({ 
+        error: "Daily scan limit reached. Please upgrade to Pro for more scans." 
+      }, { status: 429 });
+    }
+
+    if (user.subscriptionStatus === 'hobby' && user.dailyScansCount >= 250) {
+      return NextResponse.json({ 
+        error: "Daily scan limit reached. Please upgrade to Pro for more scans." 
       }, { status: 429 });
     }
 
@@ -111,7 +123,7 @@ export async function POST(req: Request) {
     let activePrompt = APPRAISAL_PROMPT; 
     if (mode === "listing") {
       if (user.subscriptionStatus !== 'pro') {
-        return NextResponse.json({ error: "Listing generation is a Pro feature." }, { status: 403 });
+        return NextResponse.json({ error: "Listing generation is a subscriber feature." }, { status: 403 });
       }
       activePrompt = LISTING_PROMPT;
     }
