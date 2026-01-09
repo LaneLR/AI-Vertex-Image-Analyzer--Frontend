@@ -6,7 +6,7 @@ interface UserAttributes {
   id: string;
   email: string;
   password?: string;
-  subscriptionStatus: "basic" | "pro";
+  subscriptionStatus: "basic" | "hobby" | "pro";
   darkMode?: boolean;
 
   // Usage tracking
@@ -46,7 +46,7 @@ class User
   public id!: string;
   public email!: string;
   public password!: string;
-  public subscriptionStatus!: "basic" | "pro";
+  public subscriptionStatus!: "basic" | "hobby" | "pro";
   public dailyScansCount!: number;
   public lastScanDate!: string;
   public darkMode!: boolean;
@@ -87,7 +87,7 @@ User.init(
     },
     password: { type: DataTypes.STRING, allowNull: true },
     subscriptionStatus: {
-      type: DataTypes.ENUM("basic", "pro"),
+      type: DataTypes.ENUM("basic", "hobby", "pro"),
       defaultValue: "basic",
     },
     dailyScansCount: { type: DataTypes.INTEGER, defaultValue: 0 },
