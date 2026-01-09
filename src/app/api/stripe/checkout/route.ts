@@ -49,14 +49,14 @@ export async function POST(req: Request) {
       success_url: `${process.env.NEXTAUTH_URL}/account?success=true`,
       cancel_url: `${process.env.NEXTAUTH_URL}/account?canceled=true`,
       customer_email: user.email,
-      client_reference_id: user.id,
+      client_reference_id: user.id.toString(),
       subscription_data: {
         metadata: {
-          userId: user.id, 
+          userId: user.id.toString(), 
         },
       },
       metadata: {
-        userId: user.id,
+        userId: user.id.toString(),
       },
       allow_promotion_codes: true,
     });

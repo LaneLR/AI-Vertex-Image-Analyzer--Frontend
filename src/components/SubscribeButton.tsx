@@ -11,9 +11,10 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
 interface SubscribeButtonProps {
   priceId: string;
   isPro?: boolean;
+  isHobby?: boolean;
 }
 
-export default function SubscribeButton({ priceId, isPro = false }: SubscribeButtonProps) {
+export default function SubscribeButton({ priceId, isPro = false, isHobby = false }: SubscribeButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -61,7 +62,7 @@ export default function SubscribeButton({ priceId, isPro = false }: SubscribeBut
             onClick={handleSubscribe}
             disabled={isPro || loading}
           >
-            {isPro ? "Current Plan: Pro" : "Upgrade to Pro"}
+            {isPro ? "Current Plan: Pro" : isHobby ? "Current Plan: Hobbyist" : "Upgrade to Pro"}
           </button>
           
           {error && (

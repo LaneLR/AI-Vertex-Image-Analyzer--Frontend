@@ -45,6 +45,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
   const isNative = platform !== "web";
 
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
+  const isHobby = user?.subscriptionStatus?.toLowerCase() === "hobby";
   const usagePercentage = Math.min((dailyScansUsed / maxFreeScans) * 100, 100);
 
   const handleManageSubscription = async () => {
@@ -135,6 +136,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
               <SubscribeButton
                 priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
                 isPro={isPro}
+                isHobby={isHobby}
               />
             </div>
           )}
