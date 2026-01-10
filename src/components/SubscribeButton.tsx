@@ -53,16 +53,18 @@ export default function SubscribeButton({ priceId, isPro = false, isHobby = fals
 
   // Determine button text based on props
   const getButtonText = () => {
-    if (isPro) return "Current Plan: Pro";
-    if (isHobby) return "Current Plan: Hobbyist";
-    if (isBusiness) return "Current Plan: Business";
+    if (isPro) return "Current Plan";
+    if (isHobby) return "Current Plan";
+    if (isBusiness) return "Current Plan";
     
     // Check which ID this button represents to show correct upgrade text
     return priceId === process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID 
-      ? "Upgrade to Pro" 
+      ? "Switch to Pro" 
       : priceId === process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID 
-      ? "Upgrade to Business"
-      : "Upgrade to Hobbyist";
+      ? "Switch to Business"
+      : priceId === process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID
+      ? "Switch to Hobbyist" 
+      : "";
   };
 
   return (
