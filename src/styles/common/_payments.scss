@@ -1,5 +1,3 @@
-// _pricing.scss
-
 .pricing-section {
   padding: 40px 20px;
   max-width: 1200px;
@@ -57,7 +55,6 @@
       left: 50%;
       transform: translateX(-50%);
       background: var(--primary-color);
-      color: white;
       padding: 4px 12px;
       border-radius: 20px;
       font-size: 0.8rem;
@@ -122,5 +119,113 @@
 
   &__button-container {
     margin-top: auto;
+  }
+}
+
+.paymentCard {
+  padding: 48px;
+  border-radius: 32px;
+  border: 1px solid #b6b6b6;
+  flex: 1 1 350px;
+  max-width: 400px;
+  transition: var(--transition);
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+  }
+
+  &Pro {
+    border: 2px solid var(--primary-theme);
+    scale: 1.05;
+    z-index: 2;
+    @media (max-width: 768px) {
+      scale: 1;
+    }
+  }
+
+  &__badge {
+    align-self: flex-start;
+    background: var(--primary-theme);
+    padding: 4px 12px;
+    border-radius: 100px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  &__name {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+  &__price {
+    font-size: 4rem;
+    font-weight: 850;
+    margin: 24px 0;
+    letter-spacing: -0.04em;
+    span {
+      font-size: 1rem;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    &::before {
+      content: "$";
+      font-size: 1.5rem;
+      vertical-align: super;
+      margin-right: 4px;
+    }
+  }
+
+  &__disclaimer {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+    padding: 10px 0 0 0;
+    color: var(--text-secondary);
+  }
+
+  // &__pricing {
+  //   padding: 30px 0 100px;
+  //   background-color: var(--bg-main);
+  // }
+
+  &__list {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 40px;
+    flex-grow: 1;
+    li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+      font-weight: 500;
+      svg {
+        color: #12b76a;
+      }
+    }
+  }
+
+  &__btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    border: 1px solid #d0d5dd;
+
+    &Highlight {
+      background: var(--primary-theme);
+      border: none;
+      &:hover {
+        background: #e55600;
+      }
+    }
   }
 }

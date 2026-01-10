@@ -81,12 +81,12 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
         <div className="pricing-section__grid">
           <div className="web__pricingWrapper">
             {/* PRO CARD */}
-            <div className="planCard planCardPro">
-              <h3 className="planCard__name">Business</h3>
-              <div className="planCard__price">
+            <div className="paymentCard planCardPro">
+              <h3 className="paymentCard__name">Business</h3>
+              <div className="paymentCard__price">
                 29.99<span>/ mo</span>
               </div>
-              <ul className="planCard__list">
+              <ul className="paymentCard__list">
                 {features.business.map((f, i) => (
                   <li key={i}>
                     <Check size={18} /> {f}
@@ -99,12 +99,12 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
               />
             </div>
 
-            <div className="planCard planCardPro">
-              <h3 className="planCard__name">Pro</h3>
-              <div className="planCard__price">
+            <div className="paymentCard planCardPro">
+              <h3 className="paymentCard__name">Pro</h3>
+              <div className="paymentCard__price">
                 19.99<span>/ mo</span>
               </div>
-              <ul className="planCard__list">
+              <ul className="paymentCard__list">
                 {features.pro.map((f, i) => (
                   <li key={i}>
                     <Check size={18} /> {f}
@@ -117,13 +117,12 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
               />
             </div>
 
-            {/* HOBBY CARD */}
-            <div className="planCard planCardPro">
-              <h3 className="planCard__name">Hobbyist</h3>
-              <div className="pricing-card__price">
+            <div className="paymentCard planCardPro">
+              <h3 className="paymentCard__name">Hobbyist</h3>
+              <div className="paymentCard__price">
                 9.99<span>/ mo</span>
               </div>
-              <ul className="planCard__list">
+              <ul className="paymentCard__list">
                 {features.hobby.map((f, i) => (
                   <li key={i}>
                     <Check size={18} /> {f}
@@ -137,12 +136,12 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
             </div>
 
             {/* BASIC CARD */}
-            <div className="planCard">
-              <h3 className="planCard__name">Basic</h3>
-              <div className="planCard__price">
+            <div className="paymentCard">
+              <h3 className="paymentCard__name">Basic</h3>
+              <div className="paymentCard__price">
                 0<span>/ mo</span>
               </div>
-              <ul className="planCard__list">
+              <ul className="paymentCard__list">
                 {features.basic.map((f, i) => (
                   <li key={i}>
                     <Check size={18} /> {f}
@@ -150,7 +149,7 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
                 ))}
               </ul>
               <button className="generate-btn" disabled={isBasic}>
-                {isBasic ? "Current Plan" : "Downgrade"}
+                {isBasic ? "Current Plan" : "Free"}
               </button>
             </div>
           </div>
