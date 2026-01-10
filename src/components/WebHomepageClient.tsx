@@ -16,13 +16,13 @@ export default function WebHome() {
       "Manual profit entry"
     ],
     hobby: [
-      "100 Scans per day",
+      "500 Scans per day",
       "Access to Listing Generator",
       "Profit calculator",
       "Multi-platform comparison",
     ],
     pro: [
-      "250 Scans per day",
+      "100 Scans per day",
       ,
       "Access to Listing Generator",
       "Profit calculator",

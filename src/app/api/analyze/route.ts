@@ -95,19 +95,25 @@ export async function POST(req: Request) {
 
     if (user.subscriptionStatus === 'basic' && user.dailyScansCount >= 5) {
       return NextResponse.json({ 
-        error: "Daily scan limit reached. Please upgrade your account for more scans." 
+        error: "Daily scan limit reached. For more scans, please upgrade your account." 
       }, { status: 429 });
     }
 
-    if (user.subscriptionStatus === 'hobby' && user.dailyScansCount >= 100) {
+    if (user.subscriptionStatus === 'hobby' && user.dailyScansCount >= 50) {
       return NextResponse.json({ 
-        error: "Daily scan limit reached. Please upgrade to Pro for more scans." 
+        error: "Daily scan limit reached. For more scans, please upgrade your account." 
       }, { status: 429 });
     }
 
-    if (user.subscriptionStatus === 'hobby' && user.dailyScansCount >= 250) {
+    if (user.subscriptionStatus === 'pro' && user.dailyScansCount >= 100) {
       return NextResponse.json({ 
-        error: "Daily scan limit reached. Please upgrade to Pro for more scans." 
+        error: "Daily scan limit reached. For more scans, please upgrade your account." 
+      }, { status: 429 });
+    }
+
+    if (user.subscriptionStatus === 'business' && user.dailyScansCount >= 250) {
+      return NextResponse.json({ 
+        error: "Daily scan limit reached." 
       }, { status: 429 });
     }
 

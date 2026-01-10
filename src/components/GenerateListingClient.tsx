@@ -31,7 +31,9 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const isPro = user?.subscriptionStatus === "pro";
-  const maxPhotos = isPro ? 3 : 1;
+  const isHobby = user?.subscriptionStatus === "hobby";
+  const isBusiness = user?.subscriptionStatus === "business";
+  const maxPhotos = (isPro || isHobby || isBusiness) ? 3 : 1;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -136,7 +138,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                       </div>
                     ))}
                     
-                    {isPro && previews.length < 3 && (
+                    {(isPro || isHobby || isBusiness) && previews.length < 3 && (
                       <label className="add-slot-btn">
                         <input type="file" onChange={handleAddMore} accept="image/*" hidden />
                         <Camera size={20} />
@@ -162,14 +164,14 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     type="file"
                     onChange={handleImageChange}
                     accept="image/*"
-                    multiple={isPro}
+                    multiple={isPro || isHobby || isBusiness}
                     hidden
                   />
                   <div className="dropzone-content">
                     <div className="icon-circle">
                       <Package />
                     </div>
-                    <span>{isPro ? "Tap to upload up to 3 photos" : "Tap to upload item photo"}</span>
+                    <span>{(isPro || isHobby || isBusiness) ? "Tap to upload up to 3 photos" : "Tap to upload item photo"}</span>
                   </div>
                 </label>
               )}
@@ -192,7 +194,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
               <Layout size={48} />
               <h3>Your listing will appear here</h3>
               <p>
-                Upload {isPro ? "different angles" : "a clear photo"} of your item to generate SEO-friendly
+                Upload {(isPro || isHobby || isBusiness) ? "different angles" : "a clear photo"} of your item to generate SEO-friendly
                 titles and descriptions.
               </p>
             </div>
