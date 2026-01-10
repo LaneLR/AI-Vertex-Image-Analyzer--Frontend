@@ -377,7 +377,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
         <nav className="home-nav-grid">
           <Link href="/history" className="nav-card">
             <History />
-            <span>History</span>
+            <span>Scan History</span>
           </Link>
           {(isPro || isHobby || isBusiness) && (
             <Link href="/listing" className="nav-card nav-card--pro">
