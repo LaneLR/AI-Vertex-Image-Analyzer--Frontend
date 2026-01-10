@@ -121,7 +121,10 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
                 <p className="usage-hint">
                   Get up to 250 scans and Listing Studio Pro with FlipFinder Pro!
                 </p>
-                <PaymentsClient user={user} />
+                {/* <PaymentsClient user={user} /> */}
+                <button className="generate-btn">
+                  Upgrade account
+                </button>
               </div>
             )}
           </div>
