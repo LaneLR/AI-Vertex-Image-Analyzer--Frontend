@@ -6,7 +6,7 @@ import { Check, ArrowLeft } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { Capacitor } from "@capacitor/core";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 export default function PaymentsClient({ user: initialUser }: { user: any }) {
   const { data: session } = useSession();
