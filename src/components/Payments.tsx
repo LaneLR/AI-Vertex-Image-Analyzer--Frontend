@@ -80,7 +80,7 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
 
         <div className="pricing-section__grid">
           <div className="web__pricingWrapper">
-            {/* PRO CARD */}
+            {/* BUSINESS CARD */}
             <div className="paymentCard planCardPro">
               <h3 className="paymentCard__name">Business</h3>
               <div className="paymentCard__price">
@@ -99,6 +99,7 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
               />
             </div>
 
+            {/* PRO CARD */}
             <div className="paymentCard planCardPro">
               <h3 className="paymentCard__name">Pro</h3>
               <div className="paymentCard__price">
@@ -117,6 +118,7 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
               />
             </div>
 
+            {/* HOBBYIST CARD */}
             <div className="paymentCard planCardPro">
               <h3 className="paymentCard__name">Hobbyist</h3>
               <div className="paymentCard__price">
