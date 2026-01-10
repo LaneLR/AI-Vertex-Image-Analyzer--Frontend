@@ -177,5 +177,5 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Internal Error" }, { status: 500 });
   }
 
-  return NextResponse.json({ received: true });
+  return NextResponse.json({ received: true }, { status: 200 });
 }
