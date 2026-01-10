@@ -21,18 +21,18 @@ import { getApiUrl } from "@/lib/api-config";
 import PaymentsClient from "./Payments";
 
 export default function AccountClient({ user: initialUser }: { user: any }) {
-  const { maxFreeScans, dailyScansUsed } = useApp(); 
+  const { maxFreeScans, dailyScansUsed } = useApp();
   const [loadingPortal, setLoadingPortal] = useState(false);
   const { data: session } = useSession();
   const searchParams = useSearchParams();
   const [errorModal, setErrorModal] = useState(false);
 
   const user = session?.user || initialUser;
-  
+
   // 1. Determine Dynamic Max Scans
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const isHobby = user?.subscriptionStatus?.toLowerCase() === "hobby";
-  
+
   const maxScans = isPro ? 250 : isHobby ? 100 : maxFreeScans;
   const usagePercentage = Math.min((dailyScansUsed / maxScans) * 100, 100);
 
@@ -40,7 +40,9 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
     setLoadingPortal(true);
     if (user?.paymentProvider === "stripe") {
       try {
-        const res = await fetch(getApiUrl("/api/stripe/portal"), { method: "POST" });
+        const res = await fetch(getApiUrl("/api/stripe/portal"), {
+          method: "POST",
+        });
         const data = await res.json();
         if (data.url) window.location.href = data.url;
       } catch (err) {
@@ -57,7 +59,9 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
   return (
     <main className="account-page">
       <header className="account-page__header">
-        <Link href="/" className="back-btn"><ArrowLeft size={20} /></Link>
+        <Link href="/" className="back-btn">
+          <ArrowLeft size={20} />
+        </Link>
         <h1>Account Settings</h1>
         <div />
       </header>
@@ -70,7 +74,11 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
           </div>
           <div className="profile-hero__info">
             <h2>{user?.email}</h2>
-            <span className={`status-pill ${isPro ? "status-pill--pro" : isHobby ? "status-pill--hobby" : ""}`}>
+            <span
+              className={`status-pill ${
+                isPro ? "status-pill--pro" : isHobby ? "status-pill--hobby" : ""
+              }`}
+            >
               {(isPro || isHobby) && <ShieldCheck size={16} />}
               {isPro ? "Pro" : isHobby ? "Hobbyist" : "Basic"}
             </span>
@@ -81,7 +89,10 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
         <section className="account-card subscription-card">
           <div className="account-card__header">
             <h3>Daily Usage</h3>
-            <Zap size={18} className={isPro || isHobby ? "icon-gold" : "icon-gray"} />
+            <Zap
+              size={18}
+              className={isPro || isHobby ? "icon-gold" : "icon-gray"}
+            />
           </div>
 
           <div className="usage-content">
@@ -91,20 +102,26 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
                 {dailyScansUsed} / {maxScans}
               </span>
             </div>
-            
+
             <div className="progress-bar">
               <div
                 className="progress-fill"
-                style={{ 
+                style={{
                   width: `${usagePercentage}%`,
-                  backgroundColor: usagePercentage > 90 ? "var(--error-color)" : "var(--primary-color)" 
+                  backgroundColor:
+                    usagePercentage > 90
+                      ? "var(--error-color)"
+                      : "var(--primary-color)",
                 }}
               />
             </div>
 
             {/* CONDITIONAL ACTIONS BASED ON PLAN */}
-            {(isPro || isHobby) ? (
-              <div className="subscription-manage-area" style={{ marginTop: '1.5rem' }}>
+            {isPro || isHobby ? (
+              <div
+                className="subscription-manage-area"
+                style={{ marginTop: "1.5rem" }}
+              >
                 {/* <p className="usage-hint">
                   Your daily scans resets every 24 hours.
                 </p> */}
@@ -113,18 +130,19 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
                   onClick={handleManageSubscription}
                   disabled={loadingPortal}
                 >
-                  <Settings size={14} /> {loadingPortal ? "Loading..." : "Manage Subscription"}
+                  <Settings size={14} />{" "}
+                  {loadingPortal ? "Loading..." : "Manage Subscription"}
                 </button>
               </div>
             ) : (
               <div className="upgrade-area">
                 <p className="usage-hint">
-                  Get up to 250 scans and Listing Studio Pro with FlipFinder Pro!
+                  Get over 100 scans and Listing Studio with our Hobbyist or Pro plans!
                 </p>
                 {/* <PaymentsClient user={user} /> */}
-                <button className="generate-btn">
-                  Upgrade account
-                </button>
+                <Link href={"/payments"}>
+                  <button className="generate-btn">Upgrade account</button>
+                </Link>
               </div>
             )}
           </div>
@@ -162,7 +180,8 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
         title={"Could not open billing settings"}
       >
         <div className="errorModal-text">
-          There was an error trying to open the billing settings. Please try again later.
+          There was an error trying to open the billing settings. Please try
+          again later.
         </div>
       </InfoModal>
     </main>
