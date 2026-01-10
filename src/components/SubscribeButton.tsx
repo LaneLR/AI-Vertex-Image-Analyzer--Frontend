@@ -1,10 +1,10 @@
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 "use client";
 
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import Loading from "./Loading"; 
+import Loading from "./Loading";
 import { getApiUrl } from "@/lib/api-config";
+import { useRouter } from "next/navigation";
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -17,10 +17,11 @@ interface SubscribeButtonProps {
 export default function SubscribeButton({ priceId, isPro = false, isHobby = false }: SubscribeButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleSubscribe = async () => {
-    if (isPro) return; 
-    
+    if (isPro || isHobby) return;
+
     setLoading(true);
     setError(null);
 
@@ -33,43 +34,47 @@ export default function SubscribeButton({ priceId, isPro = false, isHobby = fals
 
       const data = await response.json();
 
-      if (!response.ok) {
-        throw new Error(data.error || "Failed to start checkout.");
+      if (response.status === 401) {
+        router.push("/login");
+        return;
       }
+
+      if (!response.ok) throw new Error(data.error || "Failed to start checkout.");
 
       if (data.url) {
         window.location.href = data.url;
-      } else if (data.sessionId) {
-        const stripe = await stripePromise;
-        await stripe?.redirectToCheckout({ sessionId: data.sessionId });
       }
-      
     } catch (err: any) {
       setError(err.message);
-      console.error("Subscription error:", err);
       setLoading(false);
     }
+  };
+
+  // Determine button text based on props
+  const getButtonText = () => {
+    if (isPro) return "Current Plan: Pro";
+    if (isHobby) return "Current Plan: Hobby";
+    
+    // Check which ID this button represents to show correct upgrade text
+    return priceId === process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID 
+      ? "Upgrade to Pro" 
+      : "Upgrade to Hobbyist";
   };
 
   return (
     <div className="subscribe-container">
       {loading ? (
-        <Loading message="Connecting to Stripe..." />
+        <Loading message="Connecting..." />
       ) : (
         <>
           <button
-            className={`generate-btn`}
+            className="generate-btn"
             onClick={handleSubscribe}
-            disabled={isPro || loading}
+            disabled={isPro || isHobby || loading}
           >
-            {isPro ? "Current Plan: Pro" : isHobby ? "Current Plan: Hobbyist" : "Upgrade to Pro"}
+            {getButtonText()}
           </button>
-          
-          {error && (
-            <p className="error-text" style={{ color: "#ef4444", marginTop: "1rem", fontSize: "0.875rem" }}>
-              {error}
-            </p>
-          )}
+          {error && <p style={{ color: "#ef4444", fontSize: "0.8rem", marginTop: "5px" }}>{error}</p>}
         </>
       )}
     </div>

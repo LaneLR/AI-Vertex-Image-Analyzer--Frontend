@@ -24,9 +24,7 @@ export async function POST(req: Request) {
 
     // Fallback to Env variable if body is empty
     const finalPriceId =
-      priceId ||
-      "price_1Sj1ktFlSQA8kdoEZc07o9QV" ||
-      process.env.STRIPE_PRO_PRICE_ID;
+      priceId || process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID;
 
     if (!finalPriceId) {
       console.error(

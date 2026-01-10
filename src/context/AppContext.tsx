@@ -1,30 +1,30 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
 interface AppContextRef {
-  isSubscriber: boolean;
-  setIsSubscriber: (val: boolean) => void;
   dailyScansUsed: number;
+  setDailyScansUsed: (val: number) => void;
   incrementScans: () => void;
   maxFreeScans: number;
 }
 
 const AppContext = createContext<AppContextRef | undefined>(undefined);
 
-export function AppProvider({ children }: { children: ReactNode }) {
-  const [isSubscriber, setIsSubscriber] = useState(false);
-  const [dailyScansUsed, setDailyScansUsed] = useState(0);
+export function AppProvider({ children, initialScans = 0 }: { children: ReactNode, initialScans?: number }) {
+  const [dailyScansUsed, setDailyScansUsed] = useState(initialScans);
   const maxFreeScans = 5;
 
+  useEffect(() => {
+    setDailyScansUsed(initialScans);
+  }, [initialScans]);
+
   const incrementScans = () => {
-    if (!isSubscriber) {
-      setDailyScansUsed((prev) => Math.min(prev + 1, maxFreeScans));
-    }
+    setDailyScansUsed((prev) => prev + 1);
   };
 
   return (
-    <AppContext.Provider value={{ isSubscriber, setIsSubscriber, dailyScansUsed, incrementScans, maxFreeScans }}>
+    <AppContext.Provider value={{ dailyScansUsed, setDailyScansUsed, incrementScans, maxFreeScans }}>
       {children}
     </AppContext.Provider>
   );
