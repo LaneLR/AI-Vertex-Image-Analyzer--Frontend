@@ -23,11 +23,19 @@ import PaymentsClient from "./Payments";
 export default function AccountClient({ user: initialUser }: { user: any }) {
   const { maxFreeScans, dailyScansUsed } = useApp();
   const [loadingPortal, setLoadingPortal] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   const searchParams = useSearchParams();
   const [errorModal, setErrorModal] = useState(false);
 
   const user = session?.user || initialUser;
+
+  const success = searchParams.get("success")
+  
+  useEffect(() => {
+    if (success === "true") {
+      update();
+    }
+  }, [success])
 
   // 1. Determine Dynamic Max Scans
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
