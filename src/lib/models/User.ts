@@ -6,7 +6,7 @@ interface UserAttributes {
   id: string;
   email: string;
   password?: string;
-  subscriptionStatus: "basic" | "hobby" | "pro";
+  subscriptionStatus: "basic" | "hobby" | "pro" | "business";
   darkMode?: boolean;
 
   // Usage tracking
@@ -46,7 +46,7 @@ class User
   public id!: string;
   public email!: string;
   public password!: string;
-  public subscriptionStatus!: "basic" | "hobby" | "pro";
+  public subscriptionStatus!: "basic" | "hobby" | "pro" | "business";
   public dailyScansCount!: number;
   public lastScanDate!: string;
   public darkMode!: boolean;
@@ -87,7 +87,7 @@ User.init(
     },
     password: { type: DataTypes.STRING, allowNull: true },
     subscriptionStatus: {
-      type: DataTypes.ENUM("basic", "hobby", "pro"),
+      type: DataTypes.ENUM("basic", "hobby", "pro", "business"),
       defaultValue: "basic",
     },
     dailyScansCount: { type: DataTypes.INTEGER, defaultValue: 0 },
@@ -98,7 +98,7 @@ User.init(
       type: DataTypes.ENUM("stripe", "apple", "google", "none"),
       defaultValue: "none",
     },
-    providerCustomerId: { type: DataTypes.STRING, allowNull: true }, // Unified field for IDs
+    providerCustomerId: { type: DataTypes.STRING, allowNull: true }, 
     providerSubscriptionId: { type: DataTypes.STRING, allowNull: true },
     subscriptionEndDate: { type: DataTypes.DATE, allowNull: true },
     cancelAtPeriodEnd: { type: DataTypes.BOOLEAN, defaultValue: false },

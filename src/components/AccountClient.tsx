@@ -37,11 +37,11 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
     }
   }, [success])
 
-  // 1. Determine Dynamic Max Scans
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const isHobby = user?.subscriptionStatus?.toLowerCase() === "hobby";
+  const isBusiness = user?.subscriptionStatus?.toLowerCase() === "business";
 
-  const maxScans = isPro ? 250 : isHobby ? 100 : maxFreeScans;
+  const maxScans = isPro ? 100 : isHobby ? 50 : isBusiness ? 250 : maxFreeScans;
   const usagePercentage = Math.min((dailyScansUsed / maxScans) * 100, 100);
 
   const handleManageSubscription = async () => {
@@ -84,11 +84,11 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
             <h2>{user?.email}</h2>
             <span
               className={`status-pill ${
-                isPro ? "status-pill--pro" : isHobby ? "status-pill--hobby" : ""
+                isPro || isBusiness ? "status-pill--pro" : isHobby ? "status-pill--hobby" : ""
               }`}
             >
-              {(isPro || isHobby) && <ShieldCheck size={16} />}
-              {isPro ? "Pro" : isHobby ? "Hobbyist" : "Basic"}
+              {(isPro || isHobby || isBusiness) && <ShieldCheck size={16} />}
+              {isPro ? "Pro" : isHobby ? "Hobbyist" : isBusiness ? "Business" : "Basic"}
             </span>
           </div>
         </section>
@@ -99,7 +99,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
             <h3>Daily Usage</h3>
             <Zap
               size={18}
-              className={isPro || isHobby ? "icon-gold" : "icon-gray"}
+              className={isPro || isHobby || isBusiness ? "icon-gold" : "icon-gray"}
             />
           </div>
 
@@ -125,7 +125,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
             </div>
 
             {/* CONDITIONAL ACTIONS BASED ON PLAN */}
-            {isPro || isHobby ? (
+            {isPro || isHobby || isBusiness ? (
               <div
                 className="subscription-manage-area"
                 style={{ marginTop: "1.5rem" }}
@@ -157,7 +157,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
         </section>
 
         {/* TOOLS SHORTCUTS */}
-        {(isPro || isHobby) && (
+        {(isPro || isHobby || isBusiness) && (
           <Link href="/listing" className="account-card listing-shortcut">
             <div className="shortcut-info">
               <Wand2 size={20} />

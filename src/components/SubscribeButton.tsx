@@ -6,21 +6,22 @@ import Loading from "./Loading";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface SubscribeButtonProps {
   priceId: string;
   isPro?: boolean;
   isHobby?: boolean;
+  isBusiness?: boolean;
 }
 
-export default function SubscribeButton({ priceId, isPro = false, isHobby = false }: SubscribeButtonProps) {
+export default function SubscribeButton({ priceId, isPro = false, isHobby = false, isBusiness = false }: SubscribeButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubscribe = async () => {
-    if (isPro || isHobby) return;
+    if (isPro || isHobby || isBusiness) return;
 
     setLoading(true);
     setError(null);
@@ -53,11 +54,14 @@ export default function SubscribeButton({ priceId, isPro = false, isHobby = fals
   // Determine button text based on props
   const getButtonText = () => {
     if (isPro) return "Current Plan: Pro";
-    if (isHobby) return "Current Plan: Hobby";
+    if (isHobby) return "Current Plan: Hobbyist";
+    if (isBusiness) return "Current Plan: Business";
     
     // Check which ID this button represents to show correct upgrade text
     return priceId === process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID 
       ? "Upgrade to Pro" 
+      : priceId === process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID 
+      ? "Upgrade to Business"
       : "Upgrade to Hobbyist";
   };
 
@@ -70,7 +74,7 @@ export default function SubscribeButton({ priceId, isPro = false, isHobby = fals
           <button
             className="generate-btn"
             onClick={handleSubscribe}
-            disabled={isPro || isHobby || loading}
+            disabled={isPro || isHobby || isBusiness || loading}
           >
             {getButtonText()}
           </button>

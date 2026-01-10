@@ -62,7 +62,8 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
 
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
-  const maxPhotos = isPro || isHobby ? 3 : 1;
+  const isBusiness = user?.subscriptionStatus === "business";
+  const maxPhotos = isPro || isHobby || isBusiness ? 3 : 1;
 
   // --- 1. Robust Extraction Helper ---
   const extractFirstNumber = (val: any): number => {
@@ -176,7 +177,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
         <div className="home-stats__item">
           <BarChart3 size={16} />
           <span className="home-stats__item">
-            {dailyScansUsed} / {isPro ? "250" : isHobby ? "100" : "5"} daily scans
+            {dailyScansUsed} / {isPro ? "100" : isHobby ? "50" : isBusiness ? "250" : "5"} daily scans
           </span>
         </div>
       </section>
@@ -205,7 +206,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
                 ))}
 
                 {/* Show empty slots for Pro users to add more (up to 3) */}
-                {(isPro || isHobby) && previews.length < 3 && (
+                {(isPro || isHobby || isBusiness) && previews.length < 3 && (
                   <label className="add-more-slot">
                     <input
                       type="file"
@@ -237,7 +238,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
                 type="file"
                 onChange={handleFile}
                 accept="image/*"
-                multiple={isPro || isHobby}
+                multiple={isPro || isHobby || isBusiness}
                 hidden
               />
               <div className="dropzone-ui">
@@ -245,7 +246,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
                   <Camera size={32} />
                 </div>
                 <h3>
-                  {isPro || isHobby
+                  {isPro || isHobby || isBusiness
                     ? "Upload up to 3 photos"
                     : "Capture or Upload"}
                 </h3>
@@ -378,7 +379,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
             <History />
             <span>History</span>
           </Link>
-          {(isPro || isHobby) && (
+          {(isPro || isHobby || isBusiness) && (
             <Link href="/listing" className="nav-card nav-card--pro">
               <Zap />
               <span>Listing Studio</span>

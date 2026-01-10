@@ -20,7 +20,8 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
 
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
-  const isBasic = !isPro && !isHobby;
+  const isBusiness = user?.subscriptionStatus === "business";
+  const isBasic = !isPro && !isHobby && !isBusiness;
 
   useEffect(() => {
     // This returns 'ios', 'android', or 'web'
@@ -40,13 +41,19 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
   const features = {
     basic: ["5 Scans per day", "Basic price estimates", "Manual profit entry"],
     hobby: [
-      "100 Scans per day",
+      "50 scans per day",
       "Access to Listing Generator",
       "Profit calculator",
       "Multi-platform comparison",
     ],
     pro: [
-      "250 Scans per day",
+      "100 scans per day",
+      "Access to Listing Generator",
+      "Profit calculator",
+      "Multi-platform comparison",
+    ],
+    business: [
+      "250 scans per day",
       "Access to Listing Generator",
       "Profit calculator",
       "Multi-platform comparison",
@@ -74,6 +81,24 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
         <div className="pricing-section__grid">
           <div className="web__pricingWrapper">
             {/* PRO CARD */}
+            <div className="planCard planCardPro">
+              <h3 className="planCard__name">Business</h3>
+              <div className="planCard__price">
+                29.99<span>/ mo</span>
+              </div>
+              <ul className="planCard__list">
+                {features.business.map((f, i) => (
+                  <li key={i}>
+                    <Check size={18} /> {f}
+                  </li>
+                ))}
+              </ul>
+              <SubscribeButton
+                priceId={process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID!}
+                isBusiness={isBusiness}
+              />
+            </div>
+
             <div className="planCard planCardPro">
               <h3 className="planCard__name">Pro</h3>
               <div className="planCard__price">
