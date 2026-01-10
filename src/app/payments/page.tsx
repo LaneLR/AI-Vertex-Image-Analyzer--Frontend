@@ -10,9 +10,9 @@ export default async function PaymentsPage() {
     redirect("/login");
   }
 
-  if (session?.user?.subscriptionStatus === "basic" || session?.user?.paymentProvider !== "stripe") {
-    redirect("/account");
-  }
+  // if (session?.user?.subscriptionStatus === "basic" || session?.user?.paymentProvider !== "stripe") {
+  //   redirect("/account");
+  // }
 
   return <SubscribeButton user={session.user} />;
 }
