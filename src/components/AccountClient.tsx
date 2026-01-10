@@ -4,146 +4,131 @@ import React, { useEffect, useState } from "react";
 import { useApp } from "@/context/AppContext";
 import {
   User as UserIcon,
-  History,
   ChevronRight,
   Zap,
   ArrowLeft,
   Settings,
   Wand2,
-  LogOut,
   ShieldCheck,
   HistoryIcon,
 } from "lucide-react";
 import Link from "next/link";
-import SubscribeButton from "@/components/SubscribeButton";
 import { Capacitor } from "@capacitor/core";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import InfoModal from "./InfoModal";
 import { getApiUrl } from "@/lib/api-config";
+import PaymentsClient from "./Payments";
 
 export default function AccountClient({ user: initialUser }: { user: any }) {
-  const { maxFreeScans } = useApp();
+  const { maxFreeScans, dailyScansUsed } = useApp(); 
   const [loadingPortal, setLoadingPortal] = useState(false);
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   const searchParams = useSearchParams();
   const [errorModal, setErrorModal] = useState(false);
-  const success = searchParams.get("success");
 
   const user = session?.user || initialUser;
-  const dailyScansUsed = (user as any)?.dailyScansCount || 0;
-  const [platform, setPlatform] = useState<string>("web");
-
-  useEffect(() => {
-    // This returns 'ios', 'android', or 'web'
-    const currentPlatform = Capacitor.getPlatform();
-    setPlatform(currentPlatform);
-  }, []);
-
-  const isIOS = platform === "ios";
-  const isAndroid = platform === "android";
-  const isNative = platform !== "web";
-
+  
+  // 1. Determine Dynamic Max Scans
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const isHobby = user?.subscriptionStatus?.toLowerCase() === "hobby";
-  const usagePercentage = Math.min((dailyScansUsed / maxFreeScans) * 100, 100);
+  
+  const maxScans = isPro ? 250 : isHobby ? 100 : maxFreeScans;
+  const usagePercentage = Math.min((dailyScansUsed / maxScans) * 100, 100);
 
   const handleManageSubscription = async () => {
-    if (user?.paymentProvider === 'stripe') {
+    setLoadingPortal(true);
+    if (user?.paymentProvider === "stripe") {
       try {
         const res = await fetch(getApiUrl("/api/stripe/portal"), { method: "POST" });
         const data = await res.json();
         if (data.url) window.location.href = data.url;
       } catch (err) {
-        console.error("Failed to open portal", err);
+        setErrorModal(true);
       } finally {
         setLoadingPortal(false);
       }
-    } else if (user.paymentProvider === 'apple') {
+    } else if (user.paymentProvider === "apple") {
       window.open("https://apps.apple.com/account/subscriptions", "_blank");
-      return;
+      setLoadingPortal(false);
     }
   };
 
   return (
     <main className="account-page">
       <header className="account-page__header">
-        <Link href="/" className="back-btn">
-          <ArrowLeft size={20} />
-        </Link>
+        <Link href="/" className="back-btn"><ArrowLeft size={20} /></Link>
         <h1>Account Settings</h1>
-        {/* <button className="logout-icon-btn" onClick={() => signOut({ callbackUrl: '/' })}>
-          <LogOut size={20} />
-        </button> */}
         <div />
       </header>
 
       <div className="account-page__content">
-        {/* PROFILE IDENTIFIER */}
+        {/* PROFILE HERO */}
         <section className="profile-hero">
           <div className="profile-hero__avatar">
             <UserIcon size={32} />
-            {/* {isPro && <div className="pro-badge-dot"><Zap size={10} fill="currentColor" /></div>} */}
           </div>
           <div className="profile-hero__info">
             <h2>{user?.email}</h2>
-            <span className={`status-pill ${isPro ? "status-pill--pro" : ""}`}>
-              {isPro ? <ShieldCheck size={12} /> : null}
-              {isPro ? "Pro Member" : "Basic Member"}
+            <span className={`status-pill ${isPro ? "status-pill--pro" : isHobby ? "status-pill--hobby" : ""}`}>
+              {(isPro || isHobby) && <ShieldCheck size={16} />}
+              {isPro ? "Pro" : isHobby ? "Hobbyist" : "Basic"}
             </span>
           </div>
         </section>
 
-        {/* SUBSCRIPTION CARD */}
+        {/* USAGE & SUBSCRIPTION CARD */}
         <section className="account-card subscription-card">
           <div className="account-card__header">
-            <h3>{isPro ? "Your Subscription" : "Upgrade to Pro"}</h3>
-            <Zap size={18} className={isPro ? "icon-gold" : "icon-gray"} />
+            <h3>Daily Usage</h3>
+            <Zap size={18} className={isPro || isHobby ? "icon-gold" : "icon-gray"} />
           </div>
 
-          {isPro ? (
-            <div className="subscription-content">
-              <p>
-                You have full access to Unlimited Appraisals and the Listing
-                Studio.
-              </p>
-              <button
-                className="secondary-btn"
-                onClick={handleManageSubscription}
-                disabled={loadingPortal}
-              >
-                <Settings size={14} />{" "}
-                {loadingPortal ? "Loading..." : "Manage Billing Settings"}
-              </button>
+          <div className="usage-content">
+            <div className="usage-stats">
+              <span>Scans Used Today</span>
+              <span className="usage-count">
+                {dailyScansUsed} / {maxScans}
+              </span>
             </div>
-          ) : (
-            <div className="usage-content">
-              <div className="usage-stats">
-                <span>Daily Scans Used</span>
-                <span className="usage-count">
-                  {dailyScansUsed} / {maxFreeScans}
-                </span>
-              </div>
-              <div className="progress-bar">
-                <div
-                  className="progress-fill"
-                  style={{ width: `${usagePercentage}%` }}
-                />
-              </div>
-              <p className="usage-hint">
-                Get unlimited scans and access to Listing Generator with FlipFinder Pro!
-              </p>
-              <SubscribeButton
-                priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
-                isPro={isPro}
-                isHobby={isHobby}
+            
+            <div className="progress-bar">
+              <div
+                className="progress-fill"
+                style={{ 
+                  width: `${usagePercentage}%`,
+                  backgroundColor: usagePercentage > 90 ? "var(--error-color)" : "var(--primary-color)" 
+                }}
               />
             </div>
-          )}
+
+            {/* CONDITIONAL ACTIONS BASED ON PLAN */}
+            {(isPro || isHobby) ? (
+              <div className="subscription-manage-area" style={{ marginTop: '1.5rem' }}>
+                {/* <p className="usage-hint">
+                  Your daily scans resets every 24 hours.
+                </p> */}
+                <button
+                  className="secondary-btn"
+                  onClick={handleManageSubscription}
+                  disabled={loadingPortal}
+                >
+                  <Settings size={14} /> {loadingPortal ? "Loading..." : "Manage Subscription"}
+                </button>
+              </div>
+            ) : (
+              <div className="upgrade-area">
+                <p className="usage-hint">
+                  Get up to 250 scans and Listing Studio Pro with FlipFinder Pro!
+                </p>
+                <PaymentsClient user={user} />
+              </div>
+            )}
+          </div>
         </section>
 
-        {/* PRO TOOLS SHORTCUT */}
-        {isPro && (
+        {/* TOOLS SHORTCUTS */}
+        {(isPro || isHobby) && (
           <Link href="/listing" className="account-card listing-shortcut">
             <div className="shortcut-info">
               <Wand2 size={20} />
@@ -166,54 +151,15 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
           </div>
           <ChevronRight size={18} />
         </Link>
-
-        {/* RECENT HISTORY */}
-        {/* <section className="history-preview">
-          <div className="section-header">
-            <h3>Recent Scans</h3>
-            <Link href="/history" className="view-all-link">
-              View All <ChevronRight size={14} />
-            </Link>
-          </div>
-
-          <div className="history-preview__list">
-            {recentHistory.length > 0 ? (
-              recentHistory.map((item) => (
-                <Link 
-                  href={`/history`} 
-                  key={item.id} 
-                  className="history-preview__item"
-                >
-                  <div className="item-details">
-                    <p className="item-name">{item.itemTitle || "Unnamed Appraisal"}</p>
-                    <span className="price-label">EST. VALUE</span>
-                    <span className="price-value">{item.priceRange || "N/A"}</span>
-                  </div>
-                </Link>
-              ))
-            ) : (
-              <div className="history-preview__empty">
-                <History size={24} />
-                <p>No recent appraisals found.</p>
-                <Link href="/">Start Scanning</Link>
-              </div>
-            )}
-          </div>
-        </section> */}
       </div>
 
       <InfoModal
-        isOpen={!!errorModal}
+        isOpen={errorModal}
         onClose={() => setErrorModal(false)}
         title={"Could not open billing settings"}
       >
-        <div className="too-many-scans-cont">
-          <div className="errorModal-cont">
-            <div className="errorModal-text">
-              There was an error trying to open the billing settings. Please try
-              again later.
-            </div>
-          </div>
+        <div className="errorModal-text">
+          There was an error trying to open the billing settings. Please try again later.
         </div>
       </InfoModal>
     </main>

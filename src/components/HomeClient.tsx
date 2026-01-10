@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Camera,
   Zap,
@@ -14,15 +14,16 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import Loading from "./Loading";
 import InfoModal from "./InfoModal";
-import SubscribeButton from "./SubscribeButton";
+import SubscribeButton from "./Payments";
 import { getApiUrl } from "@/lib/api-config";
+import { useApp } from "@/context/AppContext";
 
 export default function HomeClient({ user: initialUser }: { user: any }) {
+  const { dailyScansUsed, setDailyScansUsed, incrementScans } = useApp();
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [scansCount, setScansCount] = useState<number>(0);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
   const [itemCost, setItemCost] = useState<string>("");
@@ -31,23 +32,33 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
   const { data: session, status } = useSession();
   const user = session?.user || initialUser;
 
+  // useEffect(() => {
+  //   if (user?.dailyScansCount !== undefined && user?.lastScanDate) {
+  //     const lastUpdate = new Date(user.lastScanDate);
+  //     const now = new Date();
+
+  //     const isNewDay =
+  //       lastUpdate.getUTCFullYear() !== now.getUTCFullYear() ||
+  //       lastUpdate.getUTCMonth() !== now.getUTCMonth() ||
+  //       lastUpdate.getUTCDate() !== now.getUTCDate();
+
+  //     if (isNewDay) {
+  //       setScansCount(0);
+  //     } else {
+  //       setScansCount(user.dailyScansCount);
+  //     }
+  //   }
+  // }, [user?.dailyScansCount, user?.updatedAt]);
+
   useEffect(() => {
-    if (user?.dailyScansCount !== undefined && user?.lastScanDate) {
-      const lastUpdate = new Date(user.lastScanDate);
+    if (user?.dailyScansCount !== undefined) {
+      const lastUpdate = new Date(user.lastScanDate || new Date());
       const now = new Date();
+      const isNewDay = lastUpdate.getUTCDate() !== now.getUTCDate();
 
-      const isNewDay =
-        lastUpdate.getUTCFullYear() !== now.getUTCFullYear() ||
-        lastUpdate.getUTCMonth() !== now.getUTCMonth() ||
-        lastUpdate.getUTCDate() !== now.getUTCDate();
-
-      if (isNewDay) {
-        setScansCount(0);
-      } else {
-        setScansCount(user.dailyScansCount);
-      }
+      setDailyScansUsed(isNewDay ? 0 : user.dailyScansCount);
     }
-  }, [user?.dailyScansCount, user?.updatedAt]);
+  }, [user?.dailyScansCount, user?.lastScanDate]);
 
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
@@ -105,7 +116,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
 
       if (res.ok) {
         setResult(data);
-        setScansCount((prev) => prev + 1);
+        incrementScans();
       } else if (res.status === 429) {
         setShowModal(true);
       } else {
@@ -165,16 +176,14 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
         <div className="home-stats__item">
           <BarChart3 size={16} />
           <span className="home-stats__item">
-            {scansCount} / {isPro ? "250" : isHobby ? "100" : "5"} daily scans
+            {dailyScansUsed} / {isPro ? "250" : isHobby ? "100" : "5"} daily scans
           </span>
         </div>
       </section>
 
       <div className="home-container">
         <section className="home-hero">
-          <h1>
-            Identify & Appraise <span className="text-gradient">Instantly</span>
-          </h1>
+          <h1>Identify & Appraise Instantly</h1>
           <p>Snapshot any item to get resale values and profit estimates.</p>
         </section>
 
@@ -389,9 +398,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
             more scans!
           </div>
           <div className="upgrade-btn-cont">
-            <SubscribeButton
-              priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
-            />
+            <SubscribeButton user={user} />
           </div>
         </div>
       </InfoModal>
