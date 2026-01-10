@@ -8,7 +8,6 @@ export default withAuth(
     const isMobileApp = userAgent.includes("FlipFinder-Mobile-App");
     const token = req.nextauth.token;
 
-    // 1. Force Mobile users away from Root
     if (isMobileApp && pathname === "/") {
       return NextResponse.redirect(new URL(token ? "/dashboard" : "/login", req.url));
     }
@@ -19,14 +18,20 @@ export default withAuth(
     callbacks: {
       authorized: ({ token, req }) => {
         const { pathname } = req.nextUrl;
-        // Define truly public paths here
+        if (pathname.startsWith("/api/stripe/webhook")) {
+          return true;
+        }
+
         const isPublic = 
           pathname === "/" || 
           pathname === "/login" || 
+          pathname === "/about" ||
+          pathname === "/terms" ||
+          pathname === "/privacy" ||
           pathname.startsWith("/api/auth");
         
         if (isPublic) return true;
-        return !!token; // Protected paths (like /dashboard) need a token
+        return !!token; 
       },
     },
     pages: {
@@ -36,6 +41,7 @@ export default withAuth(
 );
 
 export const config = {
-  // Catch everything except static assets
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|images).*)"],
+  // 3. UPDATED MATCHER
+  // Added api/stripe/webhook to the exclusion list to be safe
+  matcher: ["/((?!api/stripe/webhook|_next/static|_next/image|favicon.ico|images).*)"],
 };
