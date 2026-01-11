@@ -22,8 +22,8 @@
   --border-color: #dfdfdf;
   
   --error-text: #ff3333;
-  --error-bg: #ff4d4d;
-  --success: #22c55e;
+  --error-bg: #bb0000;
+  --success: #00a03b;
 
   --border-radius: 12px;
   --transition: all 0.2s ease-in-out;

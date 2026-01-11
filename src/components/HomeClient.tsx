@@ -169,9 +169,9 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
     <main className="home-screen">
       <section className="home-stats">
         <div className="home-stats__item">
-          <Zap size={16} className="icon-gold" />
+          <Zap size={16} />
           <span>
-            {isPro ? "Pro Plan" : isHobby ? "Hobbyist Plan" : "Basic Plan"}
+            {isPro ? "Pro Plan" : isHobby ? "Hobbyist Plan" : isBusiness ? "Business Plan" : "Basic Plan"}
           </span>
         </div>
         <div className="home-stats__item">
@@ -286,7 +286,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
                 <p>{result.description}</p>
               </div>
 
-              <div className="profit-calculator">
+              {/* <div className="profit-calculator">
                 <h3>Input the Item's Cost to Estimate Your Profit Margin</h3>
                 <div className="input-group">
                   <div>Item Cost</div>
@@ -358,7 +358,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
                     )}
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {result.sources && (
                 <div className="result-card__sources">
