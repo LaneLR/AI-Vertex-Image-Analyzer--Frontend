@@ -286,7 +286,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
                 <p>{result.description}</p>
               </div>
 
-              <div className="profit-calculator">
+              {/* <div className="profit-calculator">
                 <h3>Input the Item's Cost to Estimate Your Profit Margin</h3>
                 <div className="input-group">
                   <div>Item Cost</div>
@@ -358,7 +358,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
                     )}
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {result.sources && (
                 <div className="result-card__sources">
