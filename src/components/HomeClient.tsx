@@ -169,9 +169,9 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
     <main className="home-screen">
       <section className="home-stats">
         <div className="home-stats__item">
-          <Zap size={16} className="icon-gold" />
+          <Zap size={16} />
           <span>
-            {isPro ? "Pro Plan" : isHobby ? "Hobbyist Plan" : "Basic Plan"}
+            {isPro ? "Pro Plan" : isHobby ? "Hobbyist Plan" : isBusiness ? "Business Plan" : "Basic Plan"}
           </span>
         </div>
         <div className="home-stats__item">

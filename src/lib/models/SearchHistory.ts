@@ -55,9 +55,9 @@ SearchHistory.init(
   },
   {
     sequelize,
-
     tableName: "search_histories",
     underscored: true,
+    timestamps: true,
   }
 );
 

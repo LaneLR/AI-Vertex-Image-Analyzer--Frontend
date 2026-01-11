@@ -11,11 +11,11 @@ import {
   ArrowLeft,
   Moon,
   Trash2,
-  Cpu,
   AlertTriangle,
   History,
   Wand2,
   BookmarkX,
+  DollarSign,
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -237,6 +237,19 @@ export default function SettingsClient({
                   <History size={18} />
                 </div>
                 <p className="item-label">Scan History</p>
+              </div>
+              <ChevronRight size={18} className="chevron" />
+            </Link>
+
+            <Link
+              href="/calculator"
+              className="settings-item settings-item--clickable"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <DollarSign size={18} />
+                </div>
+                <p className="item-label">Profit Calculator</p>
               </div>
               <ChevronRight size={18} className="chevron" />
             </Link>
