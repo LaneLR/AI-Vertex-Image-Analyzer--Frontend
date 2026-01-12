@@ -11,6 +11,7 @@ import {
   Wand2,
   ShieldCheck,
   HistoryIcon,
+  CircleDollarSign,
 } from "lucide-react";
 import Link from "next/link";
 import { Capacitor } from "@capacitor/core";
@@ -29,13 +30,13 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
 
   const user = session?.user || initialUser;
 
-  const success = searchParams.get("success")
-  
+  const success = searchParams.get("success");
+
   useEffect(() => {
     if (success === "true") {
       update();
     }
-  }, [success])
+  }, [success]);
 
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const isHobby = user?.subscriptionStatus?.toLowerCase() === "hobby";
@@ -84,11 +85,21 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
             <h2>{user?.email}</h2>
             <span
               className={`status-pill ${
-                isPro || isBusiness ? "status-pill--pro" : isHobby ? "status-pill--hobby" : ""
+                isPro || isBusiness
+                  ? "status-pill--pro"
+                  : isHobby
+                  ? "status-pill--hobby"
+                  : ""
               }`}
             >
               {(isPro || isHobby || isBusiness) && <ShieldCheck size={16} />}
-              {isPro ? "Pro" : isHobby ? "Hobbyist" : isBusiness ? "Business" : "Basic"}
+              {isPro
+                ? "Pro"
+                : isHobby
+                ? "Hobbyist"
+                : isBusiness
+                ? "Business"
+                : "Basic"}
             </span>
           </div>
         </section>
@@ -99,7 +110,9 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
             <h3>Daily Usage</h3>
             <Zap
               size={18}
-              className={isPro || isHobby || isBusiness ? "icon-gold" : "icon-gray"}
+              className={
+                isPro || isHobby || isBusiness ? "icon-gold" : "icon-gray"
+              }
             />
           </div>
 
@@ -145,7 +158,8 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
             ) : (
               <div className="upgrade-area">
                 <p className="usage-hint">
-                  Get over 100 scans and Listing Studio with our Hobbyist or Pro plans!
+                  Get over 100 scans and Listing Studio with our Hobbyist or Pro
+                  plans!
                 </p>
                 {/* <PaymentsClient user={user} /> */}
                 <Link href={"/payments"}>
@@ -180,6 +194,19 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
           </div>
           <ChevronRight size={18} />
         </Link>
+
+        {(isPro || isHobby || isBusiness) && (
+          <Link href="/calculator" className="account-card listing-shortcut">
+            <div className="shortcut-info">
+              <CircleDollarSign size={20} />
+              <div>
+                <h4>Profit Calculator</h4>
+                <p>Calculate the profits for items you find</p>
+              </div>
+            </div>
+            <ChevronRight size={18} />
+          </Link>
+        )}
       </div>
 
       <InfoModal

@@ -27,6 +27,7 @@ type User = {
   email?: string | null;
   image?: string | null;
   darkMode?: boolean;
+  subscriptionStatus?: string | null;
 };
 
 interface SettingsClientProps {
@@ -215,6 +216,7 @@ export default function SettingsClient({
         <section className="settings-group">
           <h2 className="settings-group__title">TOOLS</h2>
           <div className="settings-list">
+            {user?.subscriptionStatus !== "basic" ? (
             <div
               onClick={() => setIsListingStudioModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
@@ -227,6 +229,9 @@ export default function SettingsClient({
               </div>
               <ChevronRight size={18} className="chevron" />
             </div>
+             ) : (
+              ""
+            )} 
 
             <Link
               href="/history"
@@ -241,18 +246,22 @@ export default function SettingsClient({
               <ChevronRight size={18} className="chevron" />
             </Link>
 
-            <Link
-              href="/calculator"
-              className="settings-item settings-item--clickable"
-            >
-              <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <DollarSign size={18} />
+            {user?.subscriptionStatus !== "basic" ? (
+              <Link
+                href="/calculator"
+                className="settings-item settings-item--clickable"
+              >
+                <div className="settings-item__info">
+                  <div className="icon-box icon-box--shield">
+                    <DollarSign size={18} />
+                  </div>
+                  <p className="item-label">Profit Calculator</p>
                 </div>
-                <p className="item-label">Profit Calculator</p>
-              </div>
-              <ChevronRight size={18} className="chevron" />
-            </Link>
+                <ChevronRight size={18} className="chevron" />
+              </Link>
+            ) : (
+              ""
+            )}
           </div>
         </section>
 
@@ -301,9 +310,7 @@ export default function SettingsClient({
                 className="modal-btn modal-btn--primary text-center"
                 onClick={() => setIsListingStudioModalOpen(false)}
               >
-                <div className="modal-btn modal-btn--secondary">
-                  Close
-                </div>
+                <div className="modal-btn modal-btn--secondary">Close</div>
               </div>
             </div>
           </div>
@@ -535,6 +542,19 @@ export default function SettingsClient({
               >
                 Cancel
               </button>
+              {user?.subscriptionStatus !== "basic" ? (
+                <Link href={"/listing"}>
+                  <button
+                    className="modal-btn modal-btn--secondary"
+                    // disabled={isDeleting}
+                  >
+                    To Listing Generator
+                  </button>
+                </Link>
+              ) : (
+                ""
+              )}
+
               <div className="modal-btn modal-btn--danger">
                 <Link href="/account" className="btn-primary">
                   Go to Account
