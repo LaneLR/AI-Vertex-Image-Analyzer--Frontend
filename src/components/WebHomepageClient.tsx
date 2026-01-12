@@ -16,7 +16,7 @@ export default function WebHome() {
       "Manual profit entry"
     ],
     hobby: [
-      "500 Scans per day",
+      " Scans per day",
       "Access to Listing Generator",
       "Profit calculator",
       "Multi-platform comparison",
@@ -24,6 +24,12 @@ export default function WebHome() {
     pro: [
       "100 Scans per day",
       ,
+      "Access to Listing Generator",
+      "Profit calculator",
+      "Multi-platform comparison",
+    ],
+    business: [
+      "250 scans per day",
       "Access to Listing Generator",
       "Profit calculator",
       "Multi-platform comparison",
@@ -186,6 +192,26 @@ export default function WebHome() {
               <Link href={"/login"}>
                 <button className="planCard__btn planCard__btnHighlight">
                   Upgrade to Pro Plan
+                </button>
+              </Link>
+            </div>
+
+                        <div className="planCard planCardPro">
+              {/* <div className="planCard__badge">Recommended</div> */}
+              <h3 className="planCard__name">Business</h3>
+              <div className="planCard__price">
+                29.99<span>/ mo</span>
+              </div>
+              <ul className="planCard__list">
+                {features.business.map((f, i) => (
+                  <li key={i}>
+                    <Check size={18} /> {f}
+                  </li>
+                ))}
+              </ul>
+              <Link href={"/login"}>
+                <button className="planCard__btn planCard__btnHighlight">
+                  Upgrade to Business Plan
                 </button>
               </Link>
             </div>
