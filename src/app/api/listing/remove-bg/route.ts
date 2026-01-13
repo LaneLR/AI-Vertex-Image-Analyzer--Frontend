@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route"; // Adjust path as needed
 
 // IMPORTANT: Replace this with the actual URL of your deployed Python service
-const REMBG_SERVICE_URL = process.env.REMBG_SERVICE_URL || 'https://lkaynlee123-background-remover.hf.space'; 
+const REMBG_SERVICE_URL = process.env.REMBG_SERVICE_URL || 'https://lkaynlee123-background-remover.hf.space/remove_background'; 
 
 export async function POST(req: NextRequest) {
   // Optional: Add authentication/authorization check here
