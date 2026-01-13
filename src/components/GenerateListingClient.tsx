@@ -305,7 +305,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                 <div className="empty-state">
                   <ImageIcon size={48} />
                   <h3>Your listing photo will appear here</h3>
-                  <p>Upload angles of your item to generate SEO metadata.</p>
+                  <p>The image will be have a plain white background.</p>
                 </div>
               ) : isProcessing ? (
                 <div className="loading-state">
