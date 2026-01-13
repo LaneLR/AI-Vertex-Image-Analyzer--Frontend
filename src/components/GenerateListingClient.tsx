@@ -122,6 +122,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       const res = await fetch("/api/listing/remove-bg", {
         method: "POST",
         body: formData,
+        // @ts-expect-error
+        duplex: 'half',
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to remove background");
