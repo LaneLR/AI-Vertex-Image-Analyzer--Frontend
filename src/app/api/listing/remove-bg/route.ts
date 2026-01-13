@@ -6,56 +6,42 @@ import { authOptions } from "../../auth/[...nextauth]/route"; // Adjust path as 
 const REMBG_SERVICE_URL = process.env.REMBG_SERVICE_URL || 'https://lkaynlee123-background-remover.hf.space/remove_background'; 
 
 export async function POST(req: NextRequest) {
-  // Optional: Add authentication/authorization check here
-  // For example, check if the user is subscribed to a tier that allows this feature.
-  const session = await getServerSession(authOptions);
-  if (!session || !session.user) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
-  // You might want to check the user's subscription status here
-  // const user = await db.getUser(session.user.id);
-  // if (user.subscriptionStatus === 'basic') {
-  //   return NextResponse.json({ error: "Subscription required for this feature" }, { status: 403 });
-  // }
-
-
-  if (!req.body) {
-    return NextResponse.json({ error: "No request body provided" }, { status: 400 });
-  }
-
   try {
-    // Forward the FormData directly to the Python microservice
-    const rembgResponse = await fetch(REMBG_SERVICE_URL, {
-      method: 'POST',
-      body: req.body, 
-      // @ts-expect-error 
+    // 1. Get the data from your frontend
+    const incomingData = await req.formData();
+    const image = incomingData.get('image');
+
+    if (!image) {
+      return NextResponse.json({ error: "No image found in request" }, { status: 400 });
+    }
+
+    // 2. Create a NEW FormData object for the outgoing request
+    const outgoingData = new FormData();
+    outgoingData.append('image', image);
+
+    // 3. Send to Hugging Face
+    const response = await fetch("https://lkaynlee123-background-remover.hf.space/remove_background", {
+      method: "POST",
+      body: outgoingData,
+      // DO NOT set the Content-Type header. Fetch will set it automatically 
+      // with the correct boundary string if you pass a FormData body.
+      // @ts-expect-error
       duplex: 'half',
     });
 
-    if (!rembgResponse.ok) {
-      const errorText = await rembgResponse.text();
-      console.error(`Rembg service error: ${rembgResponse.status} - ${errorText}`);
-      return NextResponse.json({ error: `Rembg service failed: ${errorText}` }, { status: rembgResponse.status });
+    if (!response.ok) {
+      const errorText = await response.text();
+      return NextResponse.json({ error: `Hugging Face error: ${errorText}` }, { status: response.status });
     }
 
-    // Get the image blob from the Python service response
-    const imageBlob = await rembgResponse.blob();
-
-    // Create a data URL for the image so it can be displayed/downloaded on the frontend
-    const reader = new FileReader();
-    const dataUrlPromise = new Promise<string>((resolve, reject) => {
-      reader.onloadend = () => resolve(reader.result as string);
-      reader.onerror = reject;
-      reader.readAsDataURL(imageBlob);
+    // 4. Send the image back to your frontend
+    const imageBlob = await response.blob();
+    return new NextResponse(imageBlob, {
+      headers: { 'Content-Type': 'image/png' },
     });
 
-    const dataUrl = await dataUrlPromise;
-
-    return NextResponse.json({ url: dataUrl });
-
   } catch (error: any) {
-    console.error("Error in Next.js background removal proxy:", error);
-    return NextResponse.json({ error: error.message || "Failed to process image" }, { status: 500 });
+    console.error("Proxy Error:", error);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
