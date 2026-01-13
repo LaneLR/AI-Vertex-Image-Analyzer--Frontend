@@ -122,6 +122,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       const res = await fetch("/api/listing/remove-bg", {
         method: "POST",
         body: formData,
+        // @ts-expect-error
+        duplex: 'half',
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to remove background");
@@ -303,7 +305,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                 <div className="empty-state">
                   <ImageIcon size={48} />
                   <h3>Your listing photo will appear here</h3>
-                  <p>Upload angles of your item to generate SEO metadata.</p>
+                  <p>The image will be have a plain white background.</p>
                 </div>
               ) : isProcessing ? (
                 <div className="loading-state">
