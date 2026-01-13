@@ -28,8 +28,9 @@ export async function POST(req: NextRequest) {
     // Forward the FormData directly to the Python microservice
     const rembgResponse = await fetch(REMBG_SERVICE_URL, {
       method: 'POST',
-      body: req.body, // Use the raw request body (FormData)
-      // Do NOT set Content-Type header manually for FormData, fetch handles it
+      body: req.body, 
+      // @ts-expect-error 
+      duplex: 'half',
     });
 
     if (!rembgResponse.ok) {
