@@ -27,21 +27,17 @@ interface GenerateListingProps {
 }
 
 export default function GenerateListingClient({ user }: GenerateListingProps) {
-  // Tabs & General State
   const [activeTab, setActiveTab] = useState<"seo" | "studio">("seo");
   const [copiedField, setCopiedField] = useState<string | null>(null);
-
-  // SEO Generator State
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-
-  // Background Removal (Studio) State
   const [studioImages, setStudioImages] = useState<File[]>([]);
   const [studioPreviews, setStudioPreviews] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
+  const [useWhiteBackground, setUseWhiteBackground] = useState(false);
 
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
@@ -110,6 +106,36 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
     setResultImage(null);
   };
 
+  const applyWhiteBackground = (transparentUrl: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext("2d");
+
+        if (ctx) {
+          // 1. Fill background with white
+          ctx.fillStyle = "#FFFFFF";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          // 2. Draw the transparent AI image on top
+          ctx.drawImage(img, 0, 0);
+
+          // 3. Convert back to a URL
+          canvas.toBlob(
+            (blob) => {
+              if (blob) resolve(URL.createObjectURL(blob));
+            },
+            "image/jpeg",
+            0.9
+          ); // JPEG is better for white backgrounds
+        }
+      };
+      img.src = transparentUrl;
+    });
+  };
+
   const processBackgroundRemoval = async () => {
     if (studioImages.length === 0) return;
 
@@ -127,22 +153,23 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       const res = await fetch("/api/listing/remove-bg", {
         method: "POST",
         body: formData,
-        // Note: Headers are NOT needed here; the browser sets them automatically for FormData
       });
 
       if (!res.ok) {
-        // Use .text() instead of .json() for the error check to avoid the token error
         const errorText = await res.text();
         console.error("Backend Error:", errorText);
         throw new Error("The server returned an error. Check logs.");
       }
 
       const imageBlob = await res.blob();
-      // 2. Create a local URL for that Blob
       const imageUrl = URL.createObjectURL(imageBlob);
-
-      // 3. Set the URL to state so the <img> tag can display it
-      setResultImage(imageUrl);
+      if (useWhiteBackground) {
+        const whiteBgUrl = await applyWhiteBackground(imageUrl);
+        setResultImage(whiteBgUrl);
+        URL.revokeObjectURL(imageUrl);
+      } else {
+        setResultImage(imageUrl);
+      }
     } catch (err: any) {
       console.error("Studio Error:", err);
       alert(err.message);
@@ -397,6 +424,29 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                       </div>
                     </label>
                   )}
+                </div>
+                <div
+                  className={`studio-option ${
+                    useWhiteBackground ? "active" : ""
+                  }`}
+                >
+                  <div className="studio-option__content">
+                    <label htmlFor="white-bg" className="studio-option__label">
+                      Apply solid white background
+                      {/* <span className="studio-option__hint">(eBay/Amazon style)</span> */}
+                    </label>
+                    <label className="toggle-switch">
+                      <input
+                        type="checkbox"
+                        id="white-bg"
+                        checked={useWhiteBackground}
+                        onChange={(e) =>
+                          setUseWhiteBackground(e.target.checked)
+                        }
+                      />
+                      <span className="toggle-slider"></span>
+                    </label>
+                  </div>
                 </div>
                 <button
                   disabled={studioImages.length === 0 || isProcessing}
