@@ -11,28 +11,34 @@ import Link from "next/link";
 
 export default function WebHome() {
   const features = {
-    basic: ["5 Scans per day", 
-      "Basic price estimates", 
-      "Manual profit entry"
-    ],
+    basic: ["5 Scans per day", "1 Image per scan", "Basic price estimates"],
     hobby: [
-      " Scans per day",
-      "Access to Listing Generator",
+      "50 scans per day",
       "Profit calculator",
-      "Multi-platform comparison",
+      "2 Images per scan",
+      "Improved accuracy price estimates",
+      "Access to SEO Generator to create SEO-optimized listing details",
     ],
     pro: [
-      "100 Scans per day",
-      ,
-      "Access to Listing Generator",
+      "100 scans per day",
       "Profit calculator",
-      "Multi-platform comparison",
+      "3 Images per scan",
+      "High accuracy price estimates",
+      "Access to SEO Generator to create SEO-optimized listing details",
+      "Access to Photo Studio to automatically remove backgrounds for listing photos",
+      "Multi-platform and marketplace price comparison",
+      "Item sell-through rates and demand indicators",
     ],
     business: [
       "250 scans per day",
-      "Access to Listing Generator",
       "Profit calculator",
-      "Multi-platform comparison",
+      "3 Images per scan",
+      "High accuracy price estimates",
+      "Access to SEO Generator to create SEO-optimized listing details",
+      "Access to Photo Studio to automatically remove backgrounds for listing photos",
+      "Multi-platform and marketplace price comparison",
+      "Item sell-through rates and demand indicators",
+      "CSV download of listings for bulk uploading",
     ],
   };
 
@@ -172,7 +178,9 @@ export default function WebHome() {
                 ))}
               </ul>
               <Link href={"/login"}>
-                <button className="planCard__btn planCard__btnHighlight">Upgrade to Hobby Plan</button>
+                <button className="planCard__btn planCard__btnHighlight">
+                  Upgrade to Hobby Plan
+                </button>
               </Link>
             </div>
 
@@ -196,11 +204,11 @@ export default function WebHome() {
               </Link>
             </div>
 
-                        <div className="planCard planCardPro">
+            <div className="planCard planCardPro">
               {/* <div className="planCard__badge">Recommended</div> */}
               <h3 className="planCard__name">Business</h3>
               <div className="planCard__price">
-                29.99<span>/ mo</span>
+                34.99<span>/ mo</span>
               </div>
               <ul className="planCard__list">
                 {features.business.map((f, i) => (

@@ -13,9 +13,10 @@
   background: var(--bg-main);
 
   &__container {
-    max-width: 1200px;
+    max-width: 1550px;
     margin: 0 auto;
     padding: 0 24px;
+    gap: 10px;
     @media (max-width: 992px) {
       flex-direction: column;
       text-align: center;
@@ -280,21 +281,27 @@
     background-color: var(--bg-main);
   }
 
-  &__pricingWrapper {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: stretch; // Ensures cards are the same height
-    gap: 32px;
-    margin-top: 60px;
-    width: 100%;
+&__pricingWrapper {
+  display: grid;
+  /* Use 4 columns on large screens, auto-sizing based on content */
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 20px; /* Reduced gap to help fit side-by-side */
+  margin-top: 60px;
+  width: 100%;
+  align-items: stretch;
 
-    @media (max-width: 992px) {
-      flex-direction: column; // Stack on mobile
-      align-items: center;
-    }
+  @media (min-width: 1201px) and (max-width: 1550px) {
+    grid-template-columns: repeat(3, 1fr); /* 2x2 on tablets */
   }
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr); /* 2x2 on tablets */
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr; /* 1 column on mobile */
+  }
+}
 }
 
 .stepItem {
@@ -336,90 +343,61 @@
 
 .planCard {
   background: white;
-  padding: 48px;
-  border-radius: 32px;
-  border: 1px solid #b6b6b6;
-  flex: 1 1 350px;
-  max-width: 400px;
+  padding: 32px 24px; /* Reduced padding to save horizontal space */
+  border-radius: 24px;
+  border: 1px solid #e2e2e2;
   transition: var(--transition);
   display: flex;
   flex-direction: column;
-  text-align: center;
+  position: relative;
+  width: 350px;
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
   }
 
   &Pro {
     border: 2px solid var(--primary-theme);
-    scale: 1.05;
+    /* Removed 'scale' as it causes overlapping on tight rows */
+    // background: linear-gradient(to bottom, #fff, #fff3eb); 
     z-index: 2;
-    @media (max-width: 768px) {
-      scale: 1;
-    }
-  }
-
-  &__badge {
-    align-self: flex-start;
-    background: var(--primary-theme);
-    color: white;
-    padding: 4px 12px;
-    border-radius: 100px;
-    font-size: 0.75rem;
-    font-weight: 700;
-    margin-bottom: 20px;
   }
 
   &__name {
-    font-size: 1.75rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    color: var(--text-primary);
   }
+
   &__price {
-    font-size: 4rem;
+    font-size: 3rem; /* Slightly smaller to prevent text overflow */
     font-weight: 850;
-    margin: 24px 0;
-    letter-spacing: -0.04em;
+    margin: 16px 0;
+    
     span {
-      font-size: 1rem;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-    &::before {
-      content: "$";
-      font-size: 1.5rem;
-      vertical-align: super;
-      margin-right: 4px;
+      font-size: 0.9rem;
     }
   }
-
-  &__disclaimer {
-    display: flex;
-    justify-content: left;
-    align-items: center;
-    padding: 10px 0 0 0;
-    color: var(--text-secondary);
-  }
-
-  // &__pricing {
-  //   padding: 30px 0 100px;
-  //   background-color: var(--bg-main);
-  // }
 
   &__list {
     list-style: none;
     padding: 0;
-    margin-bottom: 40px;
+    margin-bottom: 32px;
     flex-grow: 1;
+    text-align: left;
+
     li {
       display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      align-items: flex-start; /* Align icon to top of multi-line text */
+      gap: 10px;
+      margin-bottom: 12px;
+      font-size: 0.875rem; /* Slightly smaller text to fit content */
+      line-height: 1.4;
       color: var(--text-primary);
-      font-weight: 500;
+
       svg {
+        flex-shrink: 0; /* CRITICAL: Prevents icon from getting smaller */
+        margin-top: 2px; /* Centers icon with first line of text */
         color: #12b76a;
       }
     }
