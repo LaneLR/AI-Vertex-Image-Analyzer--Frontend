@@ -115,6 +115,12 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
     if (studioImages.length === 0) return;
 
     setIsProcessing(true);
+    // Cleanup old result if it exists to save memory
+    if (resultImage) {
+      URL.revokeObjectURL(resultImage);
+      setResultImage(null);
+    }
+
     const formData = new FormData();
     formData.append("image", studioImages[0]);
 
@@ -122,13 +128,24 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       const res = await fetch("/api/listing/remove-bg", {
         method: "POST",
         body: formData,
-        // @ts-expect-error
-        duplex: 'half',
+        // Note: Headers are NOT needed here; the browser sets them automatically for FormData
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to remove background");
-      if (data.url) setResultImage(data.url);
+
+      if (!res.ok) {
+        // Use .text() instead of .json() for the error check to avoid the token error
+        const errorText = await res.text();
+        console.error("Backend Error:", errorText);
+        throw new Error("The server returned an error. Check logs.");
+      }
+
+      const imageBlob = await res.blob();
+      // 2. Create a local URL for that Blob
+      const imageUrl = URL.createObjectURL(imageBlob);
+
+      // 3. Set the URL to state so the <img> tag can display it
+      setResultImage(imageUrl);
     } catch (err: any) {
+      console.error("Studio Error:", err);
       alert(err.message);
     } finally {
       setIsProcessing(false);
@@ -156,13 +173,17 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
 
             <div className="tab-switcher">
               <button
-                className={`listing-page__pointer ${activeTab === "seo" ? "active" : ""}`}
+                className={`listing-page__pointer ${
+                  activeTab === "seo" ? "active" : ""
+                }`}
                 onClick={() => setActiveTab("seo")}
               >
                 SEO Generator
               </button>
               <button
-                className={`listing-page__pointer ${activeTab === "studio" ? "active" : ""}`}
+                className={`listing-page__pointer ${
+                  activeTab === "studio" ? "active" : ""
+                }`}
                 onClick={() => setActiveTab("studio")}
               >
                 Photo Studio
@@ -179,37 +200,71 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
           <div className="listing-grid">
             <section className="listing-grid__input">
               <div className="card listing-card--sticky">
-                <h3 className="card-title"><Package size={18} /> Source Images</h3>
-                <div className={`upload-zone ${previews.length > 0 ? "has-image" : ""}`}>
+                <h3 className="card-title">
+                  <Package size={18} /> Source Images
+                </h3>
+                <div
+                  className={`upload-zone ${
+                    previews.length > 0 ? "has-image" : ""
+                  }`}
+                >
                   {previews.length > 0 ? (
                     <div className="multi-preview-wrapper">
                       <div className="preview-grid-system">
                         {previews.map((src, idx) => (
                           <div key={idx} className="preview-slot">
                             <img src={src} alt={`Preview ${idx + 1}`} />
-                            <button className="remove-btn" onClick={() => removeImage(idx)}>
+                            <button
+                              className="remove-btn"
+                              onClick={() => removeImage(idx)}
+                            >
                               <X size={14} />
                             </button>
                           </div>
                         ))}
-                        {(isPro || isHobby || isBusiness) && previews.length < 3 && (
-                          <label className="add-slot-btn">
-                            <input type="file" onChange={handleAddMore} accept="image/*" hidden />
-                            <Camera size={20} />
-                            <span>Add</span>
-                          </label>
-                        )}
+                        {(isPro || isHobby || isBusiness) &&
+                          previews.length < 3 && (
+                            <label className="add-slot-btn">
+                              <input
+                                type="file"
+                                onChange={handleAddMore}
+                                accept="image/*"
+                                hidden
+                              />
+                              <Camera size={20} />
+                              <span>Add</span>
+                            </label>
+                          )}
                       </div>
-                      <button className="change-img-btn" onClick={() => { setImages([]); setPreviews([]); setResult(null); }}>
+                      <button
+                        className="change-img-btn"
+                        onClick={() => {
+                          setImages([]);
+                          setPreviews([]);
+                          setResult(null);
+                        }}
+                      >
                         <RefreshCcw size={16} /> Clear All
                       </button>
                     </div>
                   ) : (
                     <label className="dropzone-label">
-                      <input type="file" onChange={handleImageChange} accept="image/*" multiple={isPro || isHobby || isBusiness} hidden />
+                      <input
+                        type="file"
+                        onChange={handleImageChange}
+                        accept="image/*"
+                        multiple={isPro || isHobby || isBusiness}
+                        hidden
+                      />
                       <div className="dropzone-content">
-                        <div className="icon-circle"><Upload /></div>
-                        <span>{isPro || isHobby || isBusiness ? "Tap to upload up to 3 photos" : "Tap to upload item photo"}</span>
+                        <div className="icon-circle">
+                          <Upload />
+                        </div>
+                        <span>
+                          {isPro || isHobby || isBusiness
+                            ? "Tap to upload up to 3 photos"
+                            : "Tap to upload item photo"}
+                        </span>
                       </div>
                     </label>
                   )}
@@ -219,7 +274,11 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   onClick={generateListing}
                   className={`generate-btn ${loading ? "loading" : ""}`}
                 >
-                  {loading ? "AI is writing..." : `Generate Details (${images.length} Photo${images.length !== 1 ? "s" : ""})`}
+                  {loading
+                    ? "AI is writing..."
+                    : `Generate Details (${images.length} Photo${
+                        images.length !== 1 ? "s" : ""
+                      })`}
                 </button>
               </div>
             </section>
@@ -239,21 +298,41 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                 <div className="results-wrapper">
                   <div className="result-group card">
                     <div className="result-group__header">
-                      <label><Tag size={14} /> Optimized Title</label>
-                      <button onClick={() => copyToClipboard(result.title, "title")}>
-                        {copiedField === "title" ? <Check size={16} color="#22c55e" /> : <Copy size={16} />}
+                      <label>
+                        <Tag size={14} /> Optimized Title
+                      </label>
+                      <button
+                        onClick={() => copyToClipboard(result.title, "title")}
+                      >
+                        {copiedField === "title" ? (
+                          <Check size={16} color="#22c55e" />
+                        ) : (
+                          <Copy size={16} />
+                        )}
                       </button>
                     </div>
                     <p className="result-value--title">{result.title}</p>
                   </div>
                   <div className="result-group card">
                     <div className="result-group__header">
-                      <label><Info size={14} /> Product Description</label>
-                      <button onClick={() => copyToClipboard(result.description, "desc")}>
-                        {copiedField === "desc" ? <Check size={16} color="#22c55e" /> : <Copy size={16} />}
+                      <label>
+                        <Info size={14} /> Product Description
+                      </label>
+                      <button
+                        onClick={() =>
+                          copyToClipboard(result.description, "desc")
+                        }
+                      >
+                        {copiedField === "desc" ? (
+                          <Check size={16} color="#22c55e" />
+                        ) : (
+                          <Copy size={16} />
+                        )}
                       </button>
                     </div>
-                    <div className="result-value--desc whitespace-pre-wrap">{result.description}</div>
+                    <div className="result-value--desc whitespace-pre-wrap">
+                      {result.description}
+                    </div>
                   </div>
                 </div>
               )}
@@ -264,27 +343,54 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
           <div className="listing-grid">
             <section className="listing-grid__input">
               <div className="card listing-card--sticky">
-                <h3 className="card-title"><ImageIcon size={18} /> Source Image</h3>
-                <div className={`upload-zone ${studioPreviews.length > 0 ? "has-image" : ""}`}>
+                <h3 className="card-title">
+                  <ImageIcon size={18} /> Source Image
+                </h3>
+                <div
+                  className={`upload-zone ${
+                    studioPreviews.length > 0 ? "has-image" : ""
+                  }`}
+                >
                   {studioPreviews.length > 0 ? (
                     <div className="multi-preview-wrapper">
                       <div className="preview-grid-system">
                         <div className="preview-slot">
                           <img src={studioPreviews[0]} alt="Studio Preview" />
-                          <button className="remove-btn" onClick={() => {setStudioImages([]); setStudioPreviews([]); setResultImage(null);}}>
+                          <button
+                            className="remove-btn"
+                            onClick={() => {
+                              setStudioImages([]);
+                              setStudioPreviews([]);
+                              setResultImage(null);
+                            }}
+                          >
                             <X size={14} />
                           </button>
                         </div>
                       </div>
-                      <button className="change-img-btn" onClick={() => {setStudioImages([]); setStudioPreviews([]); setResultImage(null);}}>
+                      <button
+                        className="change-img-btn"
+                        onClick={() => {
+                          setStudioImages([]);
+                          setStudioPreviews([]);
+                          setResultImage(null);
+                        }}
+                      >
                         <RefreshCcw size={16} /> Replace Photo
                       </button>
                     </div>
                   ) : (
                     <label className="dropzone-label">
-                      <input type="file" onChange={handleStudioImageChange} accept="image/*" hidden />
+                      <input
+                        type="file"
+                        onChange={handleStudioImageChange}
+                        accept="image/*"
+                        hidden
+                      />
                       <div className="dropzone-content">
-                        <div className="icon-circle"><Upload /></div>
+                        <div className="icon-circle">
+                          <Upload />
+                        </div>
                         <span>Tap to upload a photo</span>
                       </div>
                     </label>
@@ -295,7 +401,14 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   onClick={processBackgroundRemoval}
                   className={`generate-btn ${isProcessing ? "loading" : ""}`}
                 >
-                  {isProcessing ? <><Loader2 className="animate-spin" size={18} /> Processing...</> : `Remove Background`}
+                  {isProcessing ? (
+                    <>
+                      <Loader2 className="animate-spin" size={18} />{" "}
+                      Processing...
+                    </>
+                  ) : (
+                    `Remove Background`
+                  )}
                 </button>
               </div>
             </section>
@@ -310,23 +423,46 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
               ) : isProcessing ? (
                 <div className="loading-state">
                   <Loading />
-                  <p style={{textAlign: 'center', marginTop: '1rem', color: 'var(--text-secondary)'}}>AI is removing the background...</p>
+                  <p
+                    style={{
+                      textAlign: "center",
+                      marginTop: "1rem",
+                      color: "var(--text-secondary)",
+                    }}
+                  >
+                    AI is removing the background...
+                  </p>
                 </div>
               ) : (
                 <div className="results-wrapper">
                   <div className="result-group card">
                     <div className="result-group__header">
-                      <label><ImageIcon size={14} /> Processed Result</label>
-                      <a href={resultImage!} download="listing-photo.png" className="listing-page__pointer">
+                      <label>
+                        <ImageIcon size={14} /> Processed Result
+                      </label>
+                      <a
+                        href={resultImage!}
+                        download="listing-photo.png"
+                        className="listing-page__pointer"
+                      >
                         <Download size={18} />
                       </a>
                     </div>
                     {/* The .image-preview-box class in your scss handles the checkered background */}
                     <div className="image-preview-box">
-                       <img src={resultImage!} alt="Result" style={{ width: '100%', borderRadius: '8px' }} />
+                      <img
+                        src={resultImage!}
+                        alt="Result"
+                        style={{ width: "100%", borderRadius: "8px" }}
+                      />
                     </div>
-                    <a href={resultImage!} download="listing-photo.png" className="generate-btn" style={{marginTop: '1.5rem', textDecoration: 'none'}}>
-                       <Download size={18} /> Download High-Res PNG
+                    <a
+                      href={resultImage!}
+                      download="listing-photo.png"
+                      className="generate-btn"
+                      style={{ marginTop: "1.5rem", textDecoration: "none" }}
+                    >
+                      <Download size={18} /> Download High-Res PNG
                     </a>
                   </div>
                 </div>

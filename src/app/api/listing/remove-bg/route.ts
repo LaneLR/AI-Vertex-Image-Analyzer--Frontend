@@ -1,47 +1,33 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/[...nextauth]/route"; // Adjust path as needed
+// app/api/listing/remove-bg/route.ts
+import { NextResponse } from "next/server";
 
-// IMPORTANT: Replace this with the actual URL of your deployed Python service
-const REMBG_SERVICE_URL = process.env.REMBG_SERVICE_URL || 'https://lkaynlee123-background-remover.hf.space/remove_background'; 
-
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    // 1. Get the data from your frontend
-    const incomingData = await req.formData();
-    const image = incomingData.get('image');
-
-    if (!image) {
-      return NextResponse.json({ error: "No image found in request" }, { status: 400 });
-    }
-
-    // 2. Create a NEW FormData object for the outgoing request
-    const outgoingData = new FormData();
-    outgoingData.append('image', image);
-
-    // 3. Send to Hugging Face
+    const formData = await req.formData();
+    
+    // Call Hugging Face (update URL to your actual Space URL)
     const response = await fetch("https://lkaynlee123-background-remover.hf.space/remove_background", {
       method: "POST",
-      body: outgoingData,
-      // DO NOT set the Content-Type header. Fetch will set it automatically 
-      // with the correct boundary string if you pass a FormData body.
-      // @ts-expect-error
-      duplex: 'half',
+      body: formData,
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      return NextResponse.json({ error: `Hugging Face error: ${errorText}` }, { status: response.status });
+      return NextResponse.json({ error: errorText }, { status: response.status });
     }
 
-    // 4. Send the image back to your frontend
-    const imageBlob = await response.blob();
-    return new NextResponse(imageBlob, {
-      headers: { 'Content-Type': 'image/png' },
-    });
+    // 1. Get the image data as a buffer
+    const blob = await response.blob();
+    const buffer = await blob.arrayBuffer();
 
+    // 2. Return the binary data DIRECTLY with image headers
+    return new Response(buffer, {
+      headers: {
+        "Content-Type": "image/png",
+        "Cache-Control": "no-cache",
+      },
+    });
   } catch (error: any) {
-    console.error("Proxy Error:", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
