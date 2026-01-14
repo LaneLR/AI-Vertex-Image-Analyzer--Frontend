@@ -10,7 +10,6 @@ import {
   Check,
   RefreshCcw,
   Layout,
-  ListChecks,
   ArrowLeft,
   X,
   Camera,
@@ -201,7 +200,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
             <section className="listing-grid__input">
               <div className="card listing-card--sticky">
                 <h3 className="card-title">
-                  <Package size={18} /> Source Images
+                  <Package size={28} /> SEO Generator
                 </h3>
                 <div
                   className={`upload-zone ${
@@ -298,6 +297,9 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                 <div className="results-wrapper">
                   <div className="result-group card">
                     <div className="result-group__header">
+                      <h1>BETA</h1>
+                    </div>
+                    <div className="result-group__header">
                       <label>
                         <Tag size={14} /> Optimized Title
                       </label>
@@ -344,7 +346,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
             <section className="listing-grid__input">
               <div className="card listing-card--sticky">
                 <h3 className="card-title">
-                  <ImageIcon size={18} /> Source Image
+                  <ImageIcon size={28} /> Photo Studio (Beta)
                 </h3>
                 <div
                   className={`upload-zone ${
@@ -438,7 +440,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   <div className="result-group card">
                     <div className="result-group__header">
                       <label>
-                        <ImageIcon size={14} /> Processed Result
+                        <ImageIcon size={14} /> Generated Image
                       </label>
                       <a
                         href={resultImage!}
@@ -448,8 +450,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                         <Download size={18} />
                       </a>
                     </div>
-                    {/* The .image-preview-box class in your scss handles the checkered background */}
-                    <div className="image-preview-box">
+                    <div className="result-zone image-preview">
                       <img
                         src={resultImage!}
                         alt="Result"
@@ -462,7 +463,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                       className="generate-btn"
                       style={{ marginTop: "1.5rem", textDecoration: "none" }}
                     >
-                      <Download size={18} /> Download High-Res PNG
+                      <Download size={18} /> Download Image
                     </a>
                   </div>
                 </div>
