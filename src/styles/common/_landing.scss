@@ -124,6 +124,10 @@
   }
 }
 
+.image-subtext {
+  color: var(--text-secondary)
+}
+
 .preview-grid.multi img:first-child:nth-last-child(3) {
   grid-column: span 2;
   max-height: 200px;

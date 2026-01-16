@@ -252,7 +252,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
                     ? "Upload up to 3 photos"
                     : "Capture or Upload"}
                 </h3>
-                <p>Show different angles for better accuracy</p>
+                <p className="image-subtext">Show different angles for more accurate anaysis</p>
               </div>
             </label>
           )}
