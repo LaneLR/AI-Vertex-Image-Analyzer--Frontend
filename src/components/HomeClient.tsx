@@ -10,6 +10,9 @@ import {
   Sparkles,
   X,
   Wand2,
+  BriefcaseBusiness,
+  Flame,
+  ZapOff,
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -163,19 +166,27 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
     <main className="home-screen">
       <section className="home-stats">
         <div className="home-stats__item">
-          <Zap size={16} />
+          {isBusiness ? (
+            <BriefcaseBusiness size={18} className="orange-icon" />
+          ) : isPro ? (
+            <Flame size={18} className="orange-icon" />
+          ) : isHobby ? (
+              <Zap size={18} className="orange-icon" />
+          ) : (
+            <ZapOff size={18} />
+          )}
           <span>
             {isPro
               ? "Pro Plan"
               : isHobby
-              ? "Hobbyist Plan"
-              : isBusiness
-              ? "Business Plan"
-              : "Basic Plan"}
+                ? "Hobbyist Plan"
+                : isBusiness
+                  ? "Business Plan"
+                  : "Basic Plan"}
           </span>
         </div>
         <div className="home-stats__item">
-          <BarChart3 size={16} />
+          <BarChart3 size={16} className="orange-icon"/>
           <span className="home-stats__item">
             {dailyScansUsed} /{" "}
             {isPro ? "100" : isHobby ? "50" : isBusiness ? "250" : "5"} daily
@@ -252,7 +263,9 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
                     ? "Upload up to 3 photos"
                     : "Capture or Upload"}
                 </h3>
-                <p className="image-subtext">Show different angles for more accurate anaysis</p>
+                <p className="image-subtext">
+                  Show different angles for more accurate anaysis
+                </p>
               </div>
             </label>
           )}
@@ -319,7 +332,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
         )}
 
         <nav className="home-nav-grid">
-          <Link href="/history" className="nav-card">
+          <Link href="/history" className="nav-card nav-card--pro">
             <History />
             <span>Scan History</span>
           </Link>

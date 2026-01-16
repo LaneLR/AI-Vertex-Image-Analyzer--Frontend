@@ -170,6 +170,17 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
           </div>
         </section>
 
+        <Link href="/history" className="account-card listing-shortcut">
+          <div className="shortcut-info">
+            <HistoryIcon size={20} />
+            <div>
+              <h4>Scan History</h4>
+              <p>View your recent scans</p>
+            </div>
+          </div>
+          <ChevronRight size={18} />
+        </Link>
+
         {/* TOOLS SHORTCUTS */}
         {(isPro || isHobby || isBusiness) && (
           <Link href="/listing" className="account-card listing-shortcut">
@@ -183,17 +194,6 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
             <ChevronRight size={18} />
           </Link>
         )}
-
-        <Link href="/history" className="account-card listing-shortcut">
-          <div className="shortcut-info">
-            <HistoryIcon size={20} />
-            <div>
-              <h4>Scan History</h4>
-              <p>View your recent scans</p>
-            </div>
-          </div>
-          <ChevronRight size={18} />
-        </Link>
 
         {(isPro || isHobby || isBusiness) && (
           <Link href="/calculator" className="account-card listing-shortcut">
