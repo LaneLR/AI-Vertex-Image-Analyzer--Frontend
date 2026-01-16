@@ -9,6 +9,7 @@ import {
   Search,
   Sparkles,
   X,
+  Wand2,
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -324,7 +325,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
           </Link>
           {(isPro || isHobby || isBusiness) && (
             <Link href="/listing" className="nav-card nav-card--pro">
-              <Zap />
+              <Wand2 />
               <span>Listing Studio</span>
             </Link>
           )}
