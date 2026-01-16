@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Copy,
   Wand2,
@@ -17,10 +17,13 @@ import {
   Download,
   Upload,
   Loader2,
+  Tags,
+  BarChart3,
 } from "lucide-react";
 import Loading from "./Loading";
 import Link from "next/link";
 import { getApiUrl } from "@/lib/api-config";
+import { useApp } from "@/context/AppContext";
 
 interface GenerateListingProps {
   user: any;
@@ -38,12 +41,22 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [useWhiteBackground, setUseWhiteBackground] = useState(false);
+  const { dailyScansUsed, setDailyScansUsed, incrementScans } = useApp();
 
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
   const isBusiness = user?.subscriptionStatus === "business";
   const maxPhotos = isPro || isHobby || isBusiness ? 3 : 1;
 
+  useEffect(() => {
+    if (user?.dailyScansCount !== undefined) {
+      const lastUpdate = new Date(user.lastScanDate || new Date());
+      const now = new Date();
+      const isNewDay = lastUpdate.getUTCDate() !== now.getUTCDate();
+
+      setDailyScansUsed(isNewDay ? 0 : user.dailyScansCount);
+    }
+  }, [user?.dailyScansCount, user?.lastScanDate]);
   // --- SEO HANDLERS ---
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
@@ -87,8 +100,10 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
         body: formData,
       });
       const data = await res.json();
-      if (res.ok) setResult(data);
-      else alert(data.error || "Error generating listing");
+      if (res.ok) {
+        setResult(data);
+        incrementScans();
+      } else alert(data.error || "Error generating listing");
     } catch (err) {
       alert("Error generating listing");
     } finally {
@@ -217,7 +232,6 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
             </div>
           </div>
         </div>
-        <div />
       </header>
 
       <div className="listing-studio__container">
@@ -226,9 +240,27 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
           <div className="listing-grid">
             <section className="listing-grid__input">
               <div className="card listing-card--sticky">
-                <h3 className="card-title">
-                  <Package size={28} /> SEO Generator
-                </h3>
+                <div className="listing-card--title">
+                  <h3 className="card-title">
+                    <Package size={28} /> SEO Generator
+                  </h3>
+                  <div className="home-stats__item">
+                    <BarChart3 size={16} />
+                    <span className="home-stats__item">
+                      <b>
+                        {dailyScansUsed} /{" "}
+                        {isPro
+                          ? "100"
+                          : isHobby
+                          ? "50"
+                          : isBusiness
+                          ? "250"
+                          : "5"}{" "}
+                        daily scans
+                      </b>
+                    </span>
+                  </div>
+                </div>
                 <div
                   className={`upload-zone ${
                     previews.length > 0 ? "has-image" : ""
@@ -323,9 +355,9 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
               ) : (
                 <div className="results-wrapper">
                   <div className="result-group card">
-                    <div className="result-group__header">
+                    {/* <div className="result-group__header">
                       <h1>BETA</h1>
-                    </div>
+                    </div> */}
                     <div className="result-group__header">
                       <label>
                         <Tag size={14} /> Optimized Title
@@ -362,6 +394,37 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     <div className="result-value--desc whitespace-pre-wrap">
                       {result.description}
                     </div>
+                  </div>
+                </div>
+              )}
+              {result?.tags && result?.tags.length > 0 && (
+                <div className="result-group card">
+                  <div className="result-group__header">
+                    <label>
+                      <Tags size={14} /> Optimized Tags
+                    </label>
+                    <span className="hint-text">Click tag to copy</span>
+                  </div>
+                  <div className="tags-container--tags">
+                    {result?.tags.map((tag: string, index: number) => {
+                      const tagKey = `tag-${index}`;
+                      return (
+                        <button
+                          key={tagKey}
+                          className={`tag-pill ${
+                            copiedField === tagKey ? "copied" : ""
+                          }`}
+                          onClick={() => copyToClipboard(tag, tagKey)}
+                        >
+                          {tag}
+                          {copiedField === tagKey ? (
+                            <Check size={12} className="tag-icon" />
+                          ) : (
+                            <Copy size={12} className="tag-icon" />
+                          )}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}

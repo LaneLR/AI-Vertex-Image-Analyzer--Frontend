@@ -13,6 +13,12 @@ const LISTING_PROMPT = `
 You are a professional e-commerce copywriter for eBay, Poshmark, and Amazon, and an expert in writing details for item listings with optimized for SEO. 
 Analyze the image and create a high-converting product listing.
 If multiple images are uploaded and each or all of the photos are not related to the same item, for example three photos are uploaded and two are of a stuffed animal and third of a sofa, return a response like "Images are not for the same item. Please select photos of the same item."  
+Return an array of tags between 5 and 10 tags that are relevant to the item and commonly searched for on resale marketplaces. Use popular SEO-optimized hashtags for the item analyzed. For example, if a vintage shirt is analyzed, one of the tags should be something like "#VintageClothing", "#RetroFashion", "#90sStyle", etc. Be sure to use common and popular tags that are often used in online marketplaces. 
+
+If the image or images are a picture of food, a person or people, an animal or livestock, or non-tangible things like ghosts or fake AI generated images, return a response like "Image(s) does not meet criteria for analysis." 
+If the image or images are something personal that should not be shared or is not for resale, for example an insulin pump or personal medical equipment, return a response like "Image(s) does not meet criteria for analysis."
+If multiple images are uploaded and each or all of the photos are not related to the same item, for example three photos are uploaded and two are of a stuffed animal and third of a sofa, return a response like "Images are not for the same item. Please select photos of the same item."  
+These sorts of images should not be used to give a valuation in any case or instance. 
 
 OUTPUT FORMAT:
 Return a valid JSON object:
@@ -30,7 +36,7 @@ Return a valid JSON object:
 }
 `;
 
-    const APPRAISAL_PROMPT = `
+const APPRAISAL_PROMPT = `
 You are an expert in item identification and resale value. 
 When provided an image or images, you provide in this format the potential resale price range of the item, a title of the item, a short 3 to 5 sentence description of what the item is and what it last sold for (be as descriptive as possible), and an estimated shipping cost.
 
@@ -94,50 +100,69 @@ export async function POST(req: Request) {
     }
 
     const user = await User.findByPk(session.user.id);
-    if (!user) return NextResponse.json({ error: "User not found" }, { status: 404 });
+    if (!user)
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = new Date().toISOString().split("T")[0];
     if (user.lastScanDate !== today) {
       await user.update({ dailyScansCount: 0, lastScanDate: today });
     }
 
-    if (user.subscriptionStatus === 'basic' && user.dailyScansCount >= 5) {
-      return NextResponse.json({ 
-        error: "Daily scan limit reached. For more scans, please upgrade your account." 
-      }, { status: 429 });
+    if (user.subscriptionStatus === "basic" && user.dailyScansCount >= 5) {
+      return NextResponse.json(
+        {
+          error:
+            "Daily scan limit reached. For more scans, please upgrade your account.",
+        },
+        { status: 429 }
+      );
     }
 
-    if (user.subscriptionStatus === 'hobby' && user.dailyScansCount >= 50) {
-      return NextResponse.json({ 
-        error: "Daily scan limit reached. For more scans, please upgrade your account." 
-      }, { status: 429 });
+    if (user.subscriptionStatus === "hobby" && user.dailyScansCount >= 50) {
+      return NextResponse.json(
+        {
+          error:
+            "Daily scan limit reached. For more scans, please upgrade your account.",
+        },
+        { status: 429 }
+      );
     }
 
-    if (user.subscriptionStatus === 'pro' && user.dailyScansCount >= 100) {
-      return NextResponse.json({ 
-        error: "Daily scan limit reached. For more scans, please upgrade your account." 
-      }, { status: 429 });
+    if (user.subscriptionStatus === "pro" && user.dailyScansCount >= 100) {
+      return NextResponse.json(
+        {
+          error:
+            "Daily scan limit reached. For more scans, please upgrade your account.",
+        },
+        { status: 429 }
+      );
     }
 
-    if (user.subscriptionStatus === 'business' && user.dailyScansCount >= 250) {
-      return NextResponse.json({ 
-        error: "Daily scan limit reached." 
-      }, { status: 429 });
+    if (user.subscriptionStatus === "business" && user.dailyScansCount >= 250) {
+      return NextResponse.json(
+        {
+          error: "Daily scan limit reached.",
+        },
+        { status: 429 }
+      );
     }
 
     const data = await req.formData();
     const mode = data.get("mode") || "appraisal";
-    
+
     const files = data.getAll("image") as File[];
-    
+
     if (!files || files.length === 0) {
       return NextResponse.json({ error: "No image provided" }, { status: 400 });
     }
 
-    let activePrompt = APPRAISAL_PROMPT; 
+    let activePrompt = APPRAISAL_PROMPT;
     if (mode === "listing") {
-      if (user.subscriptionStatus !== 'pro') {
-        return NextResponse.json({ error: "Listing generation is a subscriber feature." }, { status: 403 });
+      if (user.subscriptionStatus !== "pro") {
+        return NextResponse.json(
+          { error: "Listing generation is a subscriber feature." },
+          { status: 403 }
+        );
       }
       activePrompt = LISTING_PROMPT;
     }
@@ -156,10 +181,10 @@ export async function POST(req: Request) {
     );
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash", 
+      model: "gemini-2.5-flash",
       generationConfig: { responseMimeType: "application/json" },
     });
-    
+
     const result = await model.generateContent([
       { text: activePrompt },
       ...imageParts,
@@ -183,11 +208,14 @@ export async function POST(req: Request) {
       });
     }
 
-    await user.increment('dailyScansCount');
+    await user.increment("dailyScansCount");
 
     return NextResponse.json(jsonResponse);
   } catch (error: any) {
     console.error("Gemini Route Error:", error);
-    return NextResponse.json({ error: "Service temporarily unavailable" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Service temporarily unavailable" },
+      { status: 500 }
+    );
   }
 }
