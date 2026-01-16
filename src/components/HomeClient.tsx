@@ -17,6 +17,7 @@ import InfoModal from "./InfoModal";
 import SubscribeButton from "./Payments";
 import { getApiUrl } from "@/lib/api-config";
 import { useApp } from "@/context/AppContext";
+import getGradeColor from "@/helpers/colorGrade";
 
 export default function HomeClient({ user: initialUser }: { user: any }) {
   const { dailyScansUsed, setDailyScansUsed, incrementScans } = useApp();
@@ -157,27 +158,27 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
     setPreviews(newPreviews);
   };
 
-  const rawValue = result?.priceRange || result?.estimatedValue || "0";
-  const cleanEstimatedValue = extractFirstNumber(rawValue);
-  const platformFees = cleanEstimatedValue * 0.13;
-  const dynamicShipping = extractFirstNumber(
-    result?.estimatedShippingCost || 0
-  );
-  const netProfit = calculateNet(rawValue, itemCost, dynamicShipping);
-
   return (
     <main className="home-screen">
       <section className="home-stats">
         <div className="home-stats__item">
           <Zap size={16} />
           <span>
-            {isPro ? "Pro Plan" : isHobby ? "Hobbyist Plan" : isBusiness ? "Business Plan" : "Basic Plan"}
+            {isPro
+              ? "Pro Plan"
+              : isHobby
+              ? "Hobbyist Plan"
+              : isBusiness
+              ? "Business Plan"
+              : "Basic Plan"}
           </span>
         </div>
         <div className="home-stats__item">
           <BarChart3 size={16} />
           <span className="home-stats__item">
-            {dailyScansUsed} / {isPro ? "100" : isHobby ? "50" : isBusiness ? "250" : "5"} daily scans
+            {dailyScansUsed} /{" "}
+            {isPro ? "100" : isHobby ? "50" : isBusiness ? "250" : "5"} daily
+            scans
           </span>
         </div>
       </section>
@@ -276,89 +277,31 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
         {result && (
           <section className="home-result animate-fade-in">
             <div className="card result-card">
-              <div className="result-card__price-tag">
-                <label>Estimated Value</label>
-                <h2>{result.priceRange}</h2>
+              <div className="result-card__header-flex">
+                <div className="result-card__price-tag">
+                  <label>Estimated Value</label>
+                  <h2>{result.priceRange}</h2>
+                </div>
+                {result.grade && (
+                  <div
+                    className="grade-badge"
+                    style={{ borderColor: getGradeColor(result.grade) }}
+                  >
+                    <span className="grade-badge__label">FLIP GRADE</span>
+                    <span
+                      className="grade-badge__value"
+                      style={{ color: getGradeColor(result.grade) }}
+                    >
+                      {result.grade}
+                    </span>
+                  </div>
+                )}
               </div>
 
               <div className="result-card__body">
                 <h3>{result.title}</h3>
                 <p>{result.description}</p>
               </div>
-
-              {/* <div className="profit-calculator">
-                <h3>Input the Item's Cost to Estimate Your Profit Margin</h3>
-                <div className="input-group">
-                  <div>Item Cost</div>
-                  <span
-                    style={{ color: "var(--text-tertiary)", fontWeight: "700" }}
-                  >
-                    $
-                  </span>
-                  <input
-                    type="number"
-                    placeholder="0.00"
-                    value={itemCost}
-                    onChange={(e) => setItemCost(e.target.value)}
-                  />
-                </div>
-
-                {itemCost && (
-                  <div
-                    className="profit-summary"
-                    onClick={() => setShowBreakdown(!showBreakdown)}
-                  >
-                    <div className="profit-main">
-                      <span>Estimated Net Profit:</span>
-                      <span
-                        className={`profit-amount ${
-                          netProfit > 0 ? "pos" : "neg"
-                        }`}
-                      >
-                        ${netProfit.toFixed(2)}
-                      </span>
-                    </div>
-                    <p className="tap-hint">
-                      {showBreakdown ? "Hide" : "View"} breakdown
-                    </p>
-
-                    {showBreakdown && (
-                      <div className="profit-accordion">
-                        <table className="fees-table">
-                          <tbody>
-                            <tr>
-                              <td>Est. Sale Price (Low End)</td>
-                              <td>+${cleanEstimatedValue.toFixed(2)}</td>
-                            </tr>
-                            <tr>
-                              <td>Est. Platform Fee (13%)</td>
-                              <td>-${platformFees.toFixed(2)}</td>
-                            </tr>
-                            <tr>
-                              <td>Est. Shipping/Materials</td>
-                              <td>-${dynamicShipping.toFixed(2)}</td>
-                            </tr>
-                            <tr>
-                              <td>Your Cost</td>
-                              <td>
-                                -${(parseFloat(itemCost) || 0).toFixed(2)}
-                              </td>
-                            </tr>
-                            <tr className="total-row">
-                              <td>
-                                <strong>Net Take-home</strong>
-                              </td>
-                              <td>
-                                <strong>${netProfit.toFixed(2)}</strong>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div> */}
 
               {result.sources && (
                 <div className="result-card__sources">

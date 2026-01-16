@@ -95,7 +95,6 @@
     }
   }
 
-
   /* --- New Multi-Preview Logic --- */
   &__preview-container {
     position: relative;
@@ -202,6 +201,34 @@
       margin-bottom: 4px;
       border: 1px solid var(--border-color);
     }
+  }
+
+  &__header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+  }
+}
+
+.grade-badge {
+  border: 2px solid;
+  border-radius: 12px;
+  padding: 4px 12px;
+  text-align: center;
+  background: var(--bg-card);
+  min-width: 70px;
+
+  &__label {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 800;
+    color: var(--text-tertiary);
+  }
+
+  &__value {
+    font-size: 1.5rem;
+    font-weight: 900;
   }
 }
 
@@ -319,7 +346,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  
+
   span:first-child {
     font-size: 0.9rem;
     color: var(--text-secondary);
@@ -329,9 +356,13 @@
 .profit-amount {
   font-size: 1.25rem;
   font-weight: 800;
-  
-  &.pos { color: var(--text-primary); } /* Emerald Green */
-  &.neg { color: var(--text-primary); } /* Red */
+
+  &.pos {
+    color: var(--text-primary);
+  } /* Emerald Green */
+  &.neg {
+    color: var(--text-primary);
+  } /* Red */
 }
 
 .tap-hint {
@@ -411,5 +442,5 @@
   justify-content: center;
   border: none;
   cursor: pointer;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }

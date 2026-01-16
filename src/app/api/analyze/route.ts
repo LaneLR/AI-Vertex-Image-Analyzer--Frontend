@@ -49,6 +49,12 @@ If multiple images are uploaded and each or all of the photos are not related to
 These sorts of images should not be used to give a valuation in any case or instance. 
 When returning the price range, do not use commas. For example, if the price range returned is "$500 - $1,200" return instead "$500 - $1200". Do not add commas. 
 
+Return a valuation grade (A, B, C, D, F) depending on the supply, demand, value and margin of the item based on its analyzed resale value.
+How it works: Combine the price estimate with a "Volatility Index."
+Grade A: High value, high demand, low price variance, high sell-through rate, consistent high pricing.
+Grade C: High value, but "Long Tail" (takes months to sell), slower at selling or high price volatility.
+Grade F: High saturation (too many people selling the same thing or low demand), item is likely counterfeit, restricted, or has no resale value.".
+
 CRITERIA:
 - If the image is food, people, animals, or non-tangible/AI-generated items, return ONLY: {"error": "Image does not meet criteria for analysis."}
 - If you cannot identify the item, return ONLY: {"error": "Could not determine value. Please provide another image of the item with more detail."}
@@ -66,7 +72,8 @@ You must return a valid JSON object. Do not include any markdown formatting.
     "Marketplace Name - listed for $Price (Condition)",
     "Marketplace Name - listed for $Price (Condition)"
   ],
-  "estimatedShippingCost": "$X"
+  "estimatedShippingCost": "$X",
+  "grade": "B"
 }
 
 DATA SOURCING:
