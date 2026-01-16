@@ -3,13 +3,14 @@ import sequelize from "../db";
 
 class SearchHistory extends Model {
   public id!: number;
-  public userId!: string; 
+  public userId!: string;
   public itemTitle!: string;
   public priceRange!: string;
   public description!: string;
   public imageUrl!: string;
   public platform!: string;
   public grade!: string;
+  public estimatedShippingCost!: string;
 }
 
 SearchHistory.init(
@@ -44,6 +45,10 @@ SearchHistory.init(
       allowNull: true,
     },
     grade: {
+      type: DataTypes.STRING,
+      allowNull: true,
+    },
+    estimatedShippingCost: {
       type: DataTypes.STRING,
       allowNull: true,
     },

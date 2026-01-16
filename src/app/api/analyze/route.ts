@@ -205,6 +205,8 @@ export async function POST(req: Request) {
         description: jsonResponse.description,
         platform: jsonResponse.platform || "Unidentified platform",
         sources: jsonResponse.sources || [],
+        grade: jsonResponse.grade || null,
+        estimatedShippingCost: jsonResponse.estimatedShippingCost || null,
       });
     }
 
