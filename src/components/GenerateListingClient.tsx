@@ -435,9 +435,14 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
           <div className="listing-grid">
             <section className="listing-grid__input">
               <div className="card listing-card--sticky">
+                <div className="listing-card--title-col">
+
+                
                 <h3 className="card-title">
                   <ImageIcon size={28} /> Photo Studio (Beta)
                 </h3>
+                <p className="hint-text-big">For best results, take photos in a well-lit environment with a solid background.</p>
+                </div>
                 <div
                   className={`upload-zone ${
                     studioPreviews.length > 0 ? "has-image" : ""
