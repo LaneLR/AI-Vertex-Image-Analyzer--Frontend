@@ -171,7 +171,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
           ) : isPro ? (
             <Flame size={18} className="orange-icon" />
           ) : isHobby ? (
-              <Zap size={18} className="orange-icon" />
+            <Zap size={18} className="orange-icon" />
           ) : (
             <ZapOff size={18} />
           )}

@@ -12,6 +12,9 @@ import {
   ShieldCheck,
   HistoryIcon,
   CircleDollarSign,
+  BriefcaseBusiness,
+  Flame,
+  ZapOff,
 } from "lucide-react";
 import Link from "next/link";
 import { Capacitor } from "@capacitor/core";
@@ -92,8 +95,15 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
                   : ""
               }`}
             >
-              {(isPro || isHobby || isBusiness) && <ShieldCheck size={16} />}
-              {isPro
+          {isBusiness ? (
+            <BriefcaseBusiness size={18} className="orange-icon" />
+          ) : isPro ? (
+            <Flame size={18} className="orange-icon" />
+          ) : isHobby ? (
+            <Zap size={18} className="orange-icon" />
+          ) : (
+            <ZapOff size={18} />
+          )}              {isPro
                 ? "Pro"
                 : isHobby
                 ? "Hobbyist"
