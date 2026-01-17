@@ -79,7 +79,13 @@ You must return a valid JSON object. Do not include any markdown formatting.
     "Marketplace Name - listed for $Price (Condition)"
   ],
   "estimatedShippingCost": "$X",
-  "grade": "B"
+  "grade": "B",
+  "specs": {
+    "Brand": "Name",
+    "Model": "Name/Number",
+    "Condition": "Visual assessment",
+    "Material/Type": "Details"
+  }
 }
 
 DATA SOURCING:
@@ -150,6 +156,9 @@ export async function POST(req: Request) {
     const data = await req.formData();
     const mode = data.get("mode") || "appraisal";
 
+    const addToInventory = data.get("addToInventory") === "true";
+
+    const finalInventoryFlag = user.subscriptionStatus === "business" ? addToInventory : false;
     const files = data.getAll("image") as File[];
 
     if (!files || files.length === 0) {
@@ -207,6 +216,9 @@ export async function POST(req: Request) {
         sources: jsonResponse.sources || [],
         grade: jsonResponse.grade || null,
         estimatedShippingCost: jsonResponse.estimatedShippingCost || null,
+        specs: jsonResponse.specs || {},
+        inInventory: addToInventory,
+        // inInventory: finalInventoryFlag,
       });
     }
 

@@ -6,7 +6,7 @@ import { connectDB } from "@/lib/db";
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   try {
     await connectDB();
@@ -28,7 +28,7 @@ export async function DELETE(
     if (deletedCount === 0) {
       return NextResponse.json(
         { error: "Scan not found or unauthorized" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -37,7 +37,47 @@ export async function DELETE(
     console.error("Delete History Error:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
-      { status: 500 }
+      { status: 500 },
+    );
+  }
+}
+
+export async function PATCH(
+  request: Request,
+  { params }: { params: { id: string } },
+) {
+  try {
+    await connectDB();
+    const session = await getServerSession(authOptions);
+
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { id } = await params;
+    const body = await request.json();
+
+    const item = await SearchHistory.findOne({
+      where: { id: id, userId: session.user.id },
+    });
+
+    if (!item) {
+      return NextResponse.json({ error: "Item not found" }, { status: 404 });
+    }
+
+    await item.update({ inInventory: body.inInventory });
+
+    return NextResponse.json({
+      message: body.inInventory
+        ? "Added to inventory"
+        : "Removed from inventory",
+      item,
+    });
+  } catch (error) {
+    console.error("Update Inventory Error:", error);
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
     );
   }
 }

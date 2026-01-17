@@ -1,0 +1,146 @@
+.inventory {
+  padding: 2rem 1.5rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--bg-main);
+
+  &__header {
+    margin-bottom: 2.5rem;
+  }
+
+  &__stats {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__stat-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    background: var(--bg-surface);
+    padding: 1.5rem 2.5rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+
+    @media (max-width: 440px) {
+      width: 100%;
+    }
+  }
+
+  &__stat-icon {
+    color: #10b981; // Success green
+    width: 32px;
+    height: 32px;
+  }
+
+  &__stat-label {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  &__stat-value {
+    font-size: 1.75rem;
+    font-weight: 800;
+    margin: 0;
+  }
+
+  &__download-btn {
+    width: fit-content;
+    padding: 1rem;
+    background: var(--primary-theme);
+    color: var(--primary-text);
+    border-radius: var(--border-radius);
+    font-weight: 700;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    @media (max-width: 440px) {
+      width: 100%;
+    }
+  }
+
+  &__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+}
+
+.inventory-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: box-shadow 0.2s;
+
+  &:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+  }
+
+  &__body {
+    padding: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  &__title {
+    font-size: 1.1rem;
+    margin: 0 0 0.25rem 0;
+  }
+
+  &__brand {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+
+  &__badges {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  &__badge {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    font-weight: 600;
+
+    &--price {
+      background: #ecfdf5;
+      color: #059669;
+    }
+  }
+
+  &__remove {
+    color: var(--text-muted);
+    padding: 8px;
+    border-radius: 8px;
+    transition: all 0.2s;
+
+    &:hover {
+      background: #fef2f2;
+      color: #ef4444;
+    }
+  }
+}

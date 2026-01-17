@@ -11,11 +11,14 @@ import {
   Tag,
   ExternalLink,
   Trash2,
+  Package,
+  Boxes,
 } from "lucide-react";
 import Link from "next/link";
 import { getApiUrl } from "@/lib/api-config";
 import getGradeColor from "@/helpers/colorGrade";
 import InfoModal from "./InfoModal";
+import { useSession } from "next-auth/react";
 
 interface HistoryItem {
   id: string;
@@ -28,7 +31,7 @@ interface HistoryItem {
   grade?: string;
 }
 
-export default function HistoryClient({ user }: { user: any }) {
+export default function HistoryClient({ user: initialUser }: { user: any }) {
   const [history, setHistory] = useState<HistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -38,6 +41,13 @@ export default function HistoryClient({ user }: { user: any }) {
     "Today",
     "Last 7 Days",
   ]);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const { data: session, update } = useSession();
+  const user = session?.user || initialUser;
+
+  const isHobby = user?.subscriptionStatus === "hobby";
+  const isPro = user?.subscriptionStatus === "pro";
+  const isBusiness = user?.subscriptionStatus === "business";
 
   useEffect(() => {
     async function fetchHistory() {
@@ -56,6 +66,30 @@ export default function HistoryClient({ user }: { user: any }) {
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
+  };
+
+  const handleAddToInventory = async (id: string) => {
+    try {
+      const res = await fetch(getApiUrl(`/api/user/history/${id}`), {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inInventory: true }),
+      });
+
+      if (res.ok) {
+        setSuccessMessage("Item added to your business inventory!");
+        // Optional: Remove from current history view if you want it to "move"
+        // setHistory(prev => prev.filter(item => item.id !== id));
+
+        setTimeout(() => setSuccessMessage(null), 3000);
+      } else {
+        const data = await res.json();
+        setErrorMessage(data.error || "Failed to add to inventory.");
+      }
+    } catch (err) {
+      console.error("Inventory Add Error:", err);
+      setErrorMessage("An error occurred.");
+    }
   };
 
   const handleDeleteClick = (e: React.MouseEvent, id: string) => {
@@ -122,7 +156,7 @@ export default function HistoryClient({ user }: { user: any }) {
     setOpenSections((prev) =>
       prev.includes(section)
         ? prev.filter((s) => s !== section)
-        : [...prev, section]
+        : [...prev, section],
     );
   };
 
@@ -215,14 +249,26 @@ export default function HistoryClient({ user }: { user: any }) {
                                       }
                                       className="history-card__delete-btn"
                                     >
-                                      <Trash2 size={16} />
+                                      <Trash2 size={18} />
                                     </button>
+                                    {isBusiness || isPro && (
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          handleAddToInventory(item.id);
+                                        }}
+                                        className="history-card__inventory-btn"
+                                        title="Add to Inventory"
+                                      >
+                                        <Boxes size={18} />
+                                      </button>
+                                    )}
                                   </div>
                                 </div>
                                 <div className="history-card__meta">
                                   <span>
                                     {new Date(
-                                      item.createdAt
+                                      item.createdAt,
                                     ).toLocaleDateString()}
                                   </span>
                                   {/* <span className="history-card__dot">•</span> */}
@@ -310,6 +356,13 @@ export default function HistoryClient({ user }: { user: any }) {
             </button>
           </div>
         </InfoModal>
+
+        {successMessage && (
+          <div className="history-page__toast success">
+            <Package size={18} />
+            {successMessage}
+          </div>
+        )}
       </div>
     </main>
   );

@@ -11,6 +11,8 @@ class SearchHistory extends Model {
   public platform!: string;
   public grade!: string;
   public estimatedShippingCost!: string;
+  public inInventory!: boolean;
+  public specs!: Record<string, any>
 }
 
 SearchHistory.init(
@@ -52,6 +54,20 @@ SearchHistory.init(
       type: DataTypes.STRING,
       allowNull: true,
     },
+    inInventory: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: false,
+    },
+    specs: {
+      type: DataTypes.TEXT,
+      get() {
+        const rawValue = this.getDataValue("specs");
+        return rawValue ? JSON.parse(rawValue) : {};
+      },
+      set(value) {
+        this.setDataValue("specs", JSON.stringify(value));
+      },
+    },
     sources: {
       type: DataTypes.TEXT,
       get() {
@@ -68,7 +84,7 @@ SearchHistory.init(
     tableName: "search_histories",
     underscored: true,
     timestamps: true,
-  }
+  },
 );
 
 export default SearchHistory;
