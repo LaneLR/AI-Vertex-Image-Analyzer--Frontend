@@ -31,8 +31,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
-  const [itemCost, setItemCost] = useState<string>("");
-  const [showBreakdown, setShowBreakdown] = useState(false);
+  const [addToInventory, setAddToInventory] = useState(false);
 
   const { data: session, status } = useSession();
   const user = session?.user || initialUser;
@@ -112,6 +111,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
       formData.append("image", img);
     });
     formData.append("mode", "appraisal");
+    formData.append("addToInventory", String(addToInventory));
 
     try {
       const res = await fetch(getApiUrl("/api/analyze"), {
@@ -186,7 +186,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
           </span>
         </div>
         <div className="home-stats__item">
-          <BarChart3 size={16} className="orange-icon"/>
+          <BarChart3 size={16} className="orange-icon" />
           <span className="home-stats__item">
             {dailyScansUsed} /{" "}
             {isPro ? "100" : isHobby ? "50" : isBusiness ? "250" : "5"} daily
@@ -269,7 +269,29 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
               </div>
             </label>
           )}
-
+          {(isBusiness || isPro) && (
+              <div
+                className={`studio-option ${addToInventory ? "active" : ""}`}
+              >
+                <div className="studio-option__content">
+                  <label
+                    htmlFor="inventory-toggle"
+                    className="studio-option__label"
+                  >
+                    Auto-add to Inventory
+                  </label>
+                  <label className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      id="inventory-toggle"
+                      checked={addToInventory}
+                      onChange={(e) => setAddToInventory(e.target.checked)}
+                    />
+                    <span className="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            )}
           <button
             className={`generate-btn ${loading ? "loading" : ""}`}
             disabled={images.length === 0 || loading}

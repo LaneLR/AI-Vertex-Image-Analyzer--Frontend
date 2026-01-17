@@ -106,9 +106,9 @@
 
   &__warning {
     margin-bottom: 2rem;
-      > p {
-    text-align: left;
-  }
+    > p {
+      text-align: left;
+    }
 
     .warning-icon-bg {
       width: 64px;
@@ -148,7 +148,7 @@
 }
 
 // Global Modal Button Styles
-.modal-btn {
+.modal-btn-container {
   width: 100%;
   padding: 1rem;
   border-radius: 14px;
@@ -160,10 +160,35 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 16px;
+
+  @media (max-width: 440px) {
+    flex-direction: column;
+    width: 100%;
+  }
+}
+
+.modal-btn {
+  width: fit-content;
+  padding: 1rem;
+  border-radius: 14px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+  }
+
+  &--close {
+    width: 100%;
   }
 
   &--danger {
@@ -180,10 +205,34 @@
     }
   }
 
+  &--primary {
+    background: var(--primary-theme);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    flex: 1;
+
+    &:hover:not(:disabled) {
+      background: var(--bg-header);
+      color: #fff;
+    }
+
+    &:active:not(:disabled) {
+      transform: scale(0.98);
+    }
+
+    @media (max-width: 440px) {
+      width: 100%;
+    }
+  }
+
   &--secondary {
     background: var(--bg-main);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
+
+    @media (max-width: 440px) {
+      width: 100%;
+    }
 
     &:hover:not(:disabled) {
       background: var(--bg-header);

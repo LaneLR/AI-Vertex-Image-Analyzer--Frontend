@@ -16,6 +16,10 @@ import {
   Wand2,
   BookmarkX,
   DollarSign,
+  Boxes,
+  ArrowUpNarrowWide,
+  AArrowUp,
+  ALargeSmall,
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -40,8 +44,6 @@ export default function SettingsClient({
   const { data: session, update } = useSession();
   const user = session?.user || initialUser;
 
-  const [highAccuracy, setHighAccuracy] = useState(true);
-  const [saveHistory, setSaveHistory] = useState(true);
   const [isUpdating, setIsUpdating] = useState(false);
   const [localDarkMode, setLocalDarkMode] = useState(user?.darkMode ?? false);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,6 +53,11 @@ export default function SettingsClient({
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [isListingStudioModalOpen, setIsListingStudioModalOpen] =
     useState(false);
+  const [isScanHistoryModalOpen, setIsScanHistoryModalOpen] = useState(false);
+  const [isProfitCalcModalOpen, setIsProfitCalcModalOpen] = useState(false);
+  const [isGradesModalOpen, setIsGradesModalOpen] = useState(false);
+  const [isPhotoStudioModalOpen, setIsPhotoStudioModalOpen] = useState(false);
+  const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
 
   const handleDeleteAll = async () => {
     setIsDeleting(true);
@@ -149,7 +156,7 @@ export default function SettingsClient({
             <div className="settings-item">
               <div className="settings-item__info">
                 <div className="icon-box icon-box--moon">
-                  <Moon size={18} />
+                  <Moon size={22} />
                 </div>
                 <div>
                   <p className="item-label">Dark Mode</p>
@@ -216,49 +223,104 @@ export default function SettingsClient({
         <section className="settings-group">
           <h2 className="settings-group__title">TOOLS</h2>
           <div className="settings-list">
-            {user?.subscriptionStatus !== "basic" ? (
-            <div
-              onClick={() => setIsListingStudioModalOpen(true)}
-              className="settings-item settings-item--clickable cursor-pointer"
-            >
-              <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <Wand2 size={18} />
-                </div>
-                <p className="item-label">Listing Studio</p>
-              </div>
-              <ChevronRight size={18} className="chevron" />
-            </div>
-             ) : (
-              ""
-            )} 
-
-            <Link
-              href="/history"
-              className="settings-item settings-item--clickable"
-            >
-              <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <History size={18} />
-                </div>
-                <p className="item-label">Scan History</p>
-              </div>
-              <ChevronRight size={18} className="chevron" />
-            </Link>
-
-            {user?.subscriptionStatus !== "basic" ? (
-              <Link
-                href="/calculator"
-                className="settings-item settings-item--clickable"
+            {user?.subscriptionStatus ? (
+              <div
+                onClick={() => setIsScanHistoryModalOpen(true)}
+                className="settings-item settings-item--clickable cursor-pointer"
               >
                 <div className="settings-item__info">
                   <div className="icon-box icon-box--shield">
-                    <DollarSign size={18} />
+                    <History size={22} />
+                  </div>
+                  <p className="item-label">Scan History</p>
+                </div>
+                <ChevronRight size={18} className="chevron" />
+              </div>
+            ) : (
+              ""
+            )}
+
+            {user?.subscriptionStatus ? (
+              <div
+                onClick={() => setIsGradesModalOpen(true)}
+                className="settings-item settings-item--clickable cursor-pointer"
+              >
+                <div className="settings-item__info">
+                  <div className="icon-box icon-box--shield">
+                    <ALargeSmall size={22} />
+                  </div>
+                  <p className="item-label">Grades</p>
+                </div>
+                <ChevronRight size={18} className="chevron" />
+              </div>
+            ) : (
+              ""
+            )}
+
+            {user?.subscriptionStatus !== "basic" ? (
+              <div
+                onClick={() => setIsProfitCalcModalOpen(true)}
+                className="settings-item settings-item--clickable cursor-pointer"
+              >
+                <div className="settings-item__info">
+                  <div className="icon-box icon-box--shield">
+                    <DollarSign size={22} />
                   </div>
                   <p className="item-label">Profit Calculator</p>
                 </div>
                 <ChevronRight size={18} className="chevron" />
-              </Link>
+              </div>
+            ) : (
+              ""
+            )}
+
+            {user?.subscriptionStatus !== "basic" ? (
+              <div
+                onClick={() => setIsListingStudioModalOpen(true)}
+                className="settings-item settings-item--clickable cursor-pointer"
+              >
+                <div className="settings-item__info">
+                  <div className="icon-box icon-box--shield">
+                    <Wand2 size={22} />
+                  </div>
+                  <p className="item-label">SEO Generator</p>
+                </div>
+                <ChevronRight size={18} className="chevron" />
+              </div>
+            ) : (
+              ""
+            )}
+
+            {user?.subscriptionStatus !== "basic" ? (
+              <div
+                onClick={() => setIsPhotoStudioModalOpen(true)}
+                className="settings-item settings-item--clickable cursor-pointer"
+              >
+                <div className="settings-item__info">
+                  <div className="icon-box icon-box--shield">
+                    <Wand2 size={22} />
+                  </div>
+                  <p className="item-label">Photo Generator</p>
+                </div>
+                <ChevronRight size={18} className="chevron" />
+              </div>
+            ) : (
+              ""
+            )}
+
+            {user?.subscriptionStatus !== "basic" ? (
+              <div
+                onClick={() => setIsInventoryModalOpen(true)}
+                className="settings-item settings-item--clickable cursor-pointer"
+              >
+                <div className="settings-item__info">
+                  <div className="icon-box icon-box--shield">
+                    <Boxes size={22} />
+                  </div>
+                  <p className="item-label">Inventory Manager</p>
+                </div>
+                <ChevronRight size={18} className="chevron" />
+              </div>
             ) : (
               ""
             )}
@@ -268,7 +330,7 @@ export default function SettingsClient({
         <InfoModal
           isOpen={isListingStudioModalOpen}
           onClose={() => setIsListingStudioModalOpen(false)}
-          title="Listing Studio"
+          title="SEO Generator"
         >
           <div className="feature-info-modal">
             <div className="feature-info-modal__icon">
@@ -300,17 +362,275 @@ export default function SettingsClient({
             <div className="delete-modal__actions">
               {/* <Link
                 href="/listing"
-                className="modal-btn modal-btn--primary text-center"
+                className="modal-btn modal-btn--primary"
               >
                 <button className="modal-btn modal-btn--secondary">
-                  Go to Studio
+                  Studio
                 </button>
               </Link> */}
               <div
-                className="modal-btn modal-btn--primary text-center"
+                className="modal-btn modal-btn--primary"
                 onClick={() => setIsListingStudioModalOpen(false)}
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
+              </div>
+            </div>
+          </div>
+        </InfoModal>
+
+        <InfoModal
+          isOpen={isListingStudioModalOpen}
+          onClose={() => setIsListingStudioModalOpen(false)}
+          title="SEO Generator"
+        >
+          <div className="feature-info-modal">
+            <p>
+              The SEO Generator uses advanced AI to craft professional,
+              high-converting titles and descriptions for your marketplace
+              listings.
+            </p>
+            <br />
+            <div className="feature-benefits">
+              <div>
+                <strong>Smart Copywriting:</strong> Generates compelling
+                descriptions that highlight key selling points automatically.
+              </div>
+              <div>
+                <strong>Algorithm Optimized:</strong> Uses high-ranking keywords
+                to boost visibility on eBay, Poshmark, and Mercari.
+              </div>
+              <div>
+                <strong>Brand Detection:</strong> Identifies specific models and
+                styles to ensure technical accuracy in every post.
+              </div>
+            </div>
+            <br />
+            <div className="delete-modal__actions">
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsListingStudioModalOpen(false)}
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+                <Link
+                  href="/listing"
+                  className="modal-btn modal-btn--primary"
+                >
+                  Listing Studio
+                </Link>
+              </div>
+            </div>
+          </div>
+        </InfoModal>
+
+        {/* --- Scan History --- */}
+        <InfoModal
+          isOpen={isScanHistoryModalOpen}
+          onClose={() => setIsScanHistoryModalOpen(false)}
+          title="Scan History"
+        >
+          <div className="feature-info-modal">
+            <p>
+              Your Scan History acts as a digital log of every item you've ever
+              analyzed, allowing you to revisit appraisals at any time.
+            </p>
+            <br />
+            <div className="feature-benefits">
+              <div>
+                <strong>Unlimited Recall:</strong> Access past price estimates
+                and item details without re-scanning the physical object.
+              </div>
+              <div>
+                <strong>One-Tap Inventory:</strong> Easily move successful scans
+                into your Business Inventory for long-term tracking.
+              </div>
+              <div>
+                <strong>Cloud Sync:</strong> Your history is saved to your
+                account and accessible across all your devices.
+              </div>
+            </div>
+            <br />
+            <div className="delete-modal__actions">
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsScanHistoryModalOpen(false)}
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+                <Link
+                  href="/history"
+                  className="modal-btn modal-btn--primary"
+                >
+                  Scan History
+                </Link>
+              </div>
+            </div>
+          </div>
+        </InfoModal>
+
+        {/* --- Item Grades --- */}
+        <InfoModal
+          isOpen={isGradesModalOpen}
+          onClose={() => setIsGradesModalOpen(false)}
+          title="Item Grades"
+        >
+          <div className="feature-info-modal">
+            <p>
+              Flip Grades provide an instant visual indicator of an item's
+              resale potential based on demand, margin, and sell-through rate.
+            </p>
+            <br />
+            <div className="feature-benefits">
+              <div>
+                <strong>Grade A+:</strong> High-demand items with excellent
+                profit margins and fast turnover.
+              </div>
+              <div>
+                <strong>Market Saturation:</strong> Grades factor in how many
+                similar items are currently listed online.
+              </div>
+              <div>
+                <strong>Risk Assessment:</strong> Identify "bad buys" early by
+                spotting low grades before you spend your capital.
+              </div>
+            </div>
+            <br />
+           <div className="delete-modal__actions">
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsGradesModalOpen(false)}
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+              </div>
+            </div>
+          </div>
+        </InfoModal>
+
+        {/* --- Profit Calculator --- */}
+        <InfoModal
+          isOpen={isProfitCalcModalOpen}
+          onClose={() => setIsProfitCalcModalOpen(false)}
+          title="Profit Calculator"
+        >
+          <div className="feature-info-modal">
+            <p>
+              Take the guesswork out of your margins by calculating exactly what
+              you'll take home after expenses.
+            </p>
+            <br />
+            <div className="feature-benefits">
+              <div>
+                <strong>Fee Estimates:</strong> Automatically accounts for
+                standard marketplace commission rates (approx. 13%).
+              </div>
+              <div>
+                <strong>Net Profit:</strong> Factors in your acquisition cost
+                and estimated shipping to show your true bottom line.
+              </div>
+              <div>
+                <strong>Real-Time Adjustments:</strong> Change your "Buy" price
+                on the fly to see how it impacts your ROI.
+              </div>
+            </div>
+            <br />
+            <div className="delete-modal__actions">
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsProfitCalcModalOpen(false)}
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+                <Link
+                  href="/calculator"
+                  className="modal-btn modal-btn--primary"
+                >
+                  Profit Calculator
+                </Link>
+              </div>
+            </div>
+          </div>
+        </InfoModal>
+
+        {/* --- Photo Generator (Photo Studio) --- */}
+        <InfoModal
+          isOpen={isPhotoStudioModalOpen}
+          onClose={() => setIsPhotoStudioModalOpen(false)}
+          title="Photo Generator"
+        >
+          <div className="feature-info-modal">
+            <p>
+              Transform amateur photos into professional studio-quality product
+              images that drive more sales.
+            </p>
+            <br />
+            <div className="feature-benefits">
+              <div>
+                <strong>Background Removal:</strong> Instantly strip away messy
+                room backgrounds for a clean, white "Amazon-style" look.
+              </div>
+              <div>
+                <strong>Lighting Enhancement:</strong> AI-driven brightness and
+                contrast correction to make colors pop.
+              </div>
+              <div>
+                <strong>Standardization:</strong> Create a consistent look
+                across your entire store to build brand trust.
+              </div>
+            </div>
+            <br />
+            <div className="delete-modal__actions">
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsPhotoStudioModalOpen(false)}
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+                <Link
+                  href="/listing"
+                  className="modal-btn modal-btn--primary"
+                >
+                  Listing Generator
+                </Link>
+              </div>
+            </div>
+          </div>
+        </InfoModal>
+
+        {/* --- Inventory Manager --- */}
+        <InfoModal
+          isOpen={isInventoryModalOpen}
+          onClose={() => setIsInventoryModalOpen(false)}
+          title="Inventory Manager"
+        >
+          <div className="feature-info-modal">
+            <p>
+              Designed for Business Tier users to manage their active stock and
+              track the total value of their business.
+            </p>
+            <br />
+            <div className="feature-benefits">
+              <div>
+                <strong>Active Tracking:</strong> Keep a dedicated list of items
+                you currently have in stock and ready to sell.
+              </div>
+              <div>
+                <strong>Potential Value:</strong> See the cumulative value of
+                your entire inventory at a single glance.
+              </div>
+              <div>
+                <strong>Business Workflow:</strong> Toggle "Auto-Add" on the
+                home screen to skip history and send scans straight to stock.
+              </div>
+            </div>
+            <br />
+            <div className="delete-modal__actions">
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsInventoryModalOpen(false)}
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+                <Link
+                  href="/inventory"
+                  className="modal-btn modal-btn--primary"
+                >
+                  Inventory Manager
+                </Link>
               </div>
             </div>
           </div>
@@ -326,7 +646,7 @@ export default function SettingsClient({
             >
               <div className="settings-item__info">
                 <div className="icon-box icon-box--shield">
-                  <Shield size={18} />
+                  <Shield size={22} />
                 </div>
                 <p className="item-label">Data & Privacy</p>
               </div>
@@ -336,11 +656,11 @@ export default function SettingsClient({
             <div className="settings-item">
               <div className="settings-item__info">
                 <div className="icon-box icon-box--phone">
-                  <Smartphone size={18} />
+                  <Smartphone size={22} />
                 </div>
                 <p className="item-label">App Version</p>
               </div>
-              <span className="version-tag">1.13.7</span>
+              <span className="version-tag">1.17.4</span>
             </div>
           </div>
         </section>
@@ -488,7 +808,7 @@ export default function SettingsClient({
             </p>
             <div className="modal-actions">
               <Link href="/billing" className="btn-primary">
-                Go to Billing
+                Billing
               </Link>
               <button onClick={() => setShowSubWarning(false)}>Close</button>
             </div>
@@ -509,7 +829,7 @@ export default function SettingsClient({
             </p>
             <div className="modal-actions">
               <Link href="/billing" className="btn-primary">
-                Go to Billing
+                Billing
               </Link>
               <button onClick={() => setShowSubWarning(false)}>Close</button>
             </div>
@@ -548,7 +868,7 @@ export default function SettingsClient({
                     className="modal-btn modal-btn--secondary"
                     // disabled={isDeleting}
                   >
-                    To Listing Generator
+                    To SEO Generator
                   </button>
                 </Link>
               ) : (
@@ -557,7 +877,7 @@ export default function SettingsClient({
 
               <div className="modal-btn modal-btn--danger">
                 <Link href="/account" className="btn-primary">
-                  Go to Account
+                  Account
                 </Link>
               </div>
             </div>

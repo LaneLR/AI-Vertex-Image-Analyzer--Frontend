@@ -286,10 +286,46 @@
     }
   }
 
+  &__inventory-btn {
+    background: none;
+    border: none;
+    color: var(--text-tertiary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: all 0.2s;
+
+    &:hover {
+      color: var(--primary-theme);
+      background: rgba(239, 151, 68, 0.1);
+    }
+  }
+
   &__grade-icon {
     font-size: 1.25rem;
     font-weight: 900;
     font-family: sans-serif;
+  }
+}
+
+.history-page__toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #0f172a;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  z-index: 1000;
+  animation: slideUp 0.3s ease-out;
+
+  &.success {
+    border-left: 4px solid #10b981;
   }
 }
 

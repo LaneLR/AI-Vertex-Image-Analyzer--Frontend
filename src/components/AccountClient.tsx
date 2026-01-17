@@ -15,6 +15,8 @@ import {
   BriefcaseBusiness,
   Flame,
   ZapOff,
+  Package,
+  Boxes,
 } from "lucide-react";
 import Link from "next/link";
 import { Capacitor } from "@capacitor/core";
@@ -91,25 +93,26 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
                 isPro || isBusiness
                   ? "status-pill--pro"
                   : isHobby
-                  ? "status-pill--hobby"
-                  : ""
+                    ? "status-pill--hobby"
+                    : ""
               }`}
             >
-          {isBusiness ? (
-            <BriefcaseBusiness size={18} className="orange-icon" />
-          ) : isPro ? (
-            <Flame size={18} className="orange-icon" />
-          ) : isHobby ? (
-            <Zap size={18} className="orange-icon" />
-          ) : (
-            <ZapOff size={18} />
-          )}              {isPro
+              {isBusiness ? (
+                <BriefcaseBusiness size={18} className="orange-icon" />
+              ) : isPro ? (
+                <Flame size={18} className="orange-icon" />
+              ) : isHobby ? (
+                <Zap size={18} className="orange-icon" />
+              ) : (
+                <ZapOff size={18} />
+              )}{" "}
+              {isPro
                 ? "Pro"
                 : isHobby
-                ? "Hobbyist"
-                : isBusiness
-                ? "Business"
-                : "Basic"}
+                  ? "Hobbyist"
+                  : isBusiness
+                    ? "Business"
+                    : "Basic"}
             </span>
           </div>
         </section>
@@ -212,6 +215,20 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
               <div>
                 <h4>Profit Calculator</h4>
                 <p>Calculate the profits for items you find</p>
+              </div>
+            </div>
+            <ChevronRight size={18} />
+          </Link>
+        )}
+
+
+        {(isBusiness || isPro) && (
+          <Link href="/inventory" className="account-card listing-shortcut">
+            <div className="shortcut-info">
+              <Boxes size={20} />
+              <div>
+                <h4>Inventory Manager</h4>
+                <p>Manage your inventory items</p>
               </div>
             </div>
             <ChevronRight size={18} />
