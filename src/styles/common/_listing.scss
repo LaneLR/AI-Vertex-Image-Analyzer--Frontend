@@ -7,9 +7,16 @@
     user-select: none;
   }
 
+  &__header-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
   &__header {
     background: var(--bg-nav);
-    padding: 2rem 1.5rem;
+    padding: 1rem;
     color: var(--primary-text);
     border-bottom: 1px solid var(--border-color);
     display: flex;
@@ -30,7 +37,6 @@
       p {
         font-size: 0.85rem;
         color: var(--text-secondary);
-        // opacity: 0.7;
       }
     }
 
@@ -260,35 +266,6 @@
     line-height: 1.6;
     color: var(--text-secondary);
     white-space: pre-wrap; /* Preserve line breaks from AI */
-  }
-}
-
-/* --- Shared Tab Switcher --- */
-.tab-switcher {
-  display: inline-flex;
-  background: var(--bg-main);
-  padding: 0.25rem;
-  border-radius: 12px;
-  gap: 0.25rem;
-  border: 1px solid var(--border-color);
-  margin-top: 0.5rem;
-
-  button {
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
-    border: none;
-    background: transparent;
-    color: var(--text-tertiary);
-    font-size: 0.8rem;
-    font-weight: 700;
-    transition: var(--transition);
-    cursor: pointer;
-
-    &.active {
-      background: var(--primary-theme);
-      color: var(--primary-text);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
   }
 }
 
@@ -561,13 +538,14 @@
 }
 
 .tab-switcher {
-  display: inline-flex; // Changed from flex to center it nicely in the header
+  display: inline-flex; 
   background: var(--bg-main);
   padding: 0.25rem;
   border-radius: 12px;
   gap: 0.25rem;
   border: 1px solid var(--border-color);
   margin-top: 0.5rem;
+  width: fit-content;
 
   button {
     padding: 0.5rem 1rem;
@@ -579,6 +557,8 @@
     font-weight: 700;
     transition: var(--transition);
     cursor: pointer;
+    width: 100%;
+    min-width: 130px;
 
     &.active {
       background: var(--primary-theme);
