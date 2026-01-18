@@ -1,7 +1,7 @@
 {
-  "name": "flipfinder",
+  "name": "flipsavvy",
   "version": "1.0.8",
-  "description": "Find items to flip with Flip Finder",
+  "description": "Find items to flip with Flip Savvy",
   "main": "next.config.js",
   "scripts": {
     "dev": "next dev",

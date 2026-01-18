@@ -24,7 +24,7 @@ export default function PrivacyClient() {
           </div>
           <h2 className="privacy-hero__title">Your Data, Protected</h2>
           <p className="privacy-hero__subtitle">
-            We believe in transparency. Here is how Flip Finder handles your information.
+            We believe in transparency. Here is how FlipSavvy handles your information.
           </p>
           <span className="last-updated-tag">Last updated December 2025</span>
         </section>
@@ -38,7 +38,7 @@ export default function PrivacyClient() {
             </div>
             <div className="privacy-card">
               <p>
-                When you use Flip Finder, we collect images you upload for AI appraisal, 
+                When you use FlipSavvy, we collect images you upload for AI appraisal, 
                 as well as basic account information to provide you with market insights.
               </p>
               {/* <div className="data-pill">

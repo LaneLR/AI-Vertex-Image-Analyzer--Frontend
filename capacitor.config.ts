@@ -1,8 +1,8 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.flipfinder.app',
-  appName: 'Flip Finder',
+  appId: 'com.flipsavvy.app',
+  appName: 'Flip Savvy',
   webDir: 'out',
   server: {
     // Correct property name for most Capacitor versions to add custom strings
@@ -12,10 +12,10 @@ const config: CapacitorConfig = {
   // If your version supports global override, it goes here, 
   // but appending is more standard:
   ios: {
-    appendUserAgent: 'FlipFinder-Mobile-App'
+    appendUserAgent: 'FlipSavvy-Mobile-App'
   },
   android: {
-    appendUserAgent: 'FlipFinder-Mobile-App'
+    appendUserAgent: 'FlipSavvy-Mobile-App'
   }
 };
 

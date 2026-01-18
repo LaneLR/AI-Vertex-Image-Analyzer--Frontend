@@ -42,6 +42,7 @@ export async function DELETE(
   }
 }
 
+// Inside PATCH in api/history/[id]/route.ts
 export async function PATCH(
   request: Request,
   { params }: { params: { id: string } },
@@ -49,10 +50,7 @@ export async function PATCH(
   try {
     await connectDB();
     const session = await getServerSession(authOptions);
-
-    if (!session?.user?.id) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    if (!session?.user?.id) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const { id } = await params;
     const body = await request.json();
@@ -61,23 +59,17 @@ export async function PATCH(
       where: { id: id, userId: session.user.id },
     });
 
-    if (!item) {
-      return NextResponse.json({ error: "Item not found" }, { status: 404 });
-    }
+    if (!item) return NextResponse.json({ error: "Item not found" }, { status: 404 });
 
-    await item.update({ inInventory: body.inInventory });
-
-    return NextResponse.json({
-      message: body.inInventory
-        ? "Added to inventory"
-        : "Removed from inventory",
-      item,
+    // Update with potential new fields
+    await item.update({ 
+      inInventory: body.inInventory ?? item.inInventory,
+      quantity: body.quantity ?? item.quantity,
+      purchasePrice: body.purchasePrice ?? item.purchasePrice
     });
+
+    return NextResponse.json({ message: "Updated successfully", item });
   } catch (error) {
-    console.error("Update Inventory Error:", error);
-    return NextResponse.json(
-      { error: "Internal Server Error" },
-      { status: 500 },
-    );
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

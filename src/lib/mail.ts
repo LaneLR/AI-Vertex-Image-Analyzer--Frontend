@@ -14,15 +14,15 @@ interface EmailOptions {
   html: string;
 }
 
-const APP_NAME = "Flip Finder";
+const APP_NAME = "FlipSavvy";
 const APP_FIRST_WORD = "FLIP";
-const APP_SECOND_WORD = "FINDER";
+const APP_SECOND_WORD = "SAVVY";
 const BRAND_COLOR1 = "#ff6000";
 const BRAND_COLOR2 = "#3b82f6";
 
 export async function sendEmail({ to, subject, html }: EmailOptions) {
   const mailOptions = {
-    from: '"Flip Finder" <testemail@gmail.com>',
+    from: `"${APP_NAME}" <testemail@gmail.com>`,
     to,
     subject,
     html: `

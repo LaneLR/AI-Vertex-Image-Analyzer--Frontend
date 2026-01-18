@@ -5,7 +5,7 @@ export default withAuth(
   function middleware(req) {
     const { pathname } = req.nextUrl;
     const userAgent = req.headers.get("user-agent") || "";
-    const isMobileApp = userAgent.includes("FlipFinder-Mobile-App");
+    const isMobileApp = userAgent.includes("FlipSavvy-Mobile-App");
     const token = req.nextauth.token;
 
     if (isMobileApp && pathname === "/") {

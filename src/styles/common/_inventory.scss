@@ -143,4 +143,67 @@
       color: #ef4444;
     }
   }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  &__quantity {
+    display: flex;
+    align-items: center;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 4px;
+  }
+
+  &__qty-btn {
+    padding: 6px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+
+    &:hover {
+      color: var(--primary-theme);
+    }
+  }
+
+  &__qty-value {
+    font-weight: 700;
+    min-width: 24px;
+    text-align: center;
+    font-size: 0.9rem;
+  }
+
+  &__cost {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--bg-secondary);
+    padding: 4px 8px;
+    border-radius: 8px;
+    color: var(--text-muted);
+
+    &-input {
+      background: transparent;
+      border: none;
+      width: 60px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      outline: none;
+
+      &::placeholder {
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+    }
+  }
 }
