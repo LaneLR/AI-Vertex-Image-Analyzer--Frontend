@@ -304,9 +304,9 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
             )}
             {loading
               ? "Analyzing..."
-              : `Appraise ${images.length} Photo${
-                  images.length > 1 ? "s" : ""
-                }`}
+              : `Appraise Item (${images.length} Photo${
+                  images.length !== 1 ? "s" : ""
+                })`}
           </button>
         </div>
 

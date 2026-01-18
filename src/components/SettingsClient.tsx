@@ -20,6 +20,7 @@ import {
   ArrowUpNarrowWide,
   AArrowUp,
   ALargeSmall,
+  Camera,
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -223,107 +224,83 @@ export default function SettingsClient({
         <section className="settings-group">
           <h2 className="settings-group__title">TOOLS</h2>
           <div className="settings-list">
-            {user?.subscriptionStatus ? (
-              <div
-                onClick={() => setIsScanHistoryModalOpen(true)}
-                className="settings-item settings-item--clickable cursor-pointer"
-              >
-                <div className="settings-item__info">
-                  <div className="icon-box icon-box--shield">
-                    <History size={22} />
-                  </div>
-                  <p className="item-label">Scan History</p>
+            <div
+              onClick={() => setIsScanHistoryModalOpen(true)}
+              className="settings-item settings-item--clickable cursor-pointer"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <History size={22} />
                 </div>
-                <ChevronRight size={18} className="chevron" />
+                <p className="item-label">Scan History</p>
               </div>
-            ) : (
-              ""
-            )}
+              <ChevronRight size={18} className="chevron" />
+            </div>
 
-            {user?.subscriptionStatus ? (
-              <div
-                onClick={() => setIsGradesModalOpen(true)}
-                className="settings-item settings-item--clickable cursor-pointer"
-              >
-                <div className="settings-item__info">
-                  <div className="icon-box icon-box--shield">
-                    <ALargeSmall size={22} />
-                  </div>
-                  <p className="item-label">Grades</p>
+            <div
+              onClick={() => setIsGradesModalOpen(true)}
+              className="settings-item settings-item--clickable cursor-pointer"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <ALargeSmall size={22} />
                 </div>
-                <ChevronRight size={18} className="chevron" />
+                <p className="item-label">Grades</p>
               </div>
-            ) : (
-              ""
-            )}
+              <ChevronRight size={18} className="chevron" />
+            </div>
 
-            {user?.subscriptionStatus !== "basic" ? (
-              <div
-                onClick={() => setIsProfitCalcModalOpen(true)}
-                className="settings-item settings-item--clickable cursor-pointer"
-              >
-                <div className="settings-item__info">
-                  <div className="icon-box icon-box--shield">
-                    <DollarSign size={22} />
-                  </div>
-                  <p className="item-label">Profit Calculator</p>
+            <div
+              onClick={() => setIsProfitCalcModalOpen(true)}
+              className="settings-item settings-item--clickable cursor-pointer"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <DollarSign size={22} />
                 </div>
-                <ChevronRight size={18} className="chevron" />
+                <p className="item-label">Profit Calculator</p>
               </div>
-            ) : (
-              ""
-            )}
+              <ChevronRight size={18} className="chevron" />
+            </div>
 
-            {user?.subscriptionStatus !== "basic" ? (
-              <div
-                onClick={() => setIsListingStudioModalOpen(true)}
-                className="settings-item settings-item--clickable cursor-pointer"
-              >
-                <div className="settings-item__info">
-                  <div className="icon-box icon-box--shield">
-                    <Wand2 size={22} />
-                  </div>
-                  <p className="item-label">SEO Generator</p>
+            <div
+              onClick={() => setIsListingStudioModalOpen(true)}
+              className="settings-item settings-item--clickable cursor-pointer"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <Wand2 size={22} />
                 </div>
-                <ChevronRight size={18} className="chevron" />
+                <p className="item-label">SEO Generator</p>
               </div>
-            ) : (
-              ""
-            )}
+              <ChevronRight size={18} className="chevron" />
+            </div>
 
-            {user?.subscriptionStatus !== "basic" ? (
-              <div
-                onClick={() => setIsPhotoStudioModalOpen(true)}
-                className="settings-item settings-item--clickable cursor-pointer"
-              >
-                <div className="settings-item__info">
-                  <div className="icon-box icon-box--shield">
-                    <Wand2 size={22} />
-                  </div>
-                  <p className="item-label">Photo Generator</p>
+            <div
+              onClick={() => setIsPhotoStudioModalOpen(true)}
+              className="settings-item settings-item--clickable cursor-pointer"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <Camera size={22} />
                 </div>
-                <ChevronRight size={18} className="chevron" />
+                <p className="item-label">Photo Generator</p>
               </div>
-            ) : (
-              ""
-            )}
+              <ChevronRight size={18} className="chevron" />
+            </div>
 
-            {user?.subscriptionStatus !== "basic" ? (
-              <div
-                onClick={() => setIsInventoryModalOpen(true)}
-                className="settings-item settings-item--clickable cursor-pointer"
-              >
-                <div className="settings-item__info">
-                  <div className="icon-box icon-box--shield">
-                    <Boxes size={22} />
-                  </div>
-                  <p className="item-label">Inventory Manager</p>
+            <div
+              onClick={() => setIsInventoryModalOpen(true)}
+              className="settings-item settings-item--clickable cursor-pointer"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <Boxes size={22} />
                 </div>
-                <ChevronRight size={18} className="chevron" />
+                <p className="item-label">Inventory Manager</p>
               </div>
-            ) : (
-              ""
-            )}
+              <ChevronRight size={18} className="chevron" />
+            </div>
           </div>
         </section>
 
@@ -360,12 +337,15 @@ export default function SettingsClient({
                 onClick={() => setIsListingStudioModalOpen(false)}
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
-                <Link
-                  href="/listing"
-                  className="modal-btn modal-btn--primary"
-                >
-                  Listing Studio
-                </Link>
+                {(user?.subscriptionStatus === "business" ||
+                  user?.subscriptionStatus === "pro") && (
+                  <Link
+                    href="/listing"
+                    className="modal-btn modal-btn--primary"
+                  >
+                    Listing Studio
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -404,10 +384,7 @@ export default function SettingsClient({
                 onClick={() => setIsScanHistoryModalOpen(false)}
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
-                <Link
-                  href="/history"
-                  className="modal-btn modal-btn--primary"
-                >
+                <Link href="/history" className="modal-btn modal-btn--primary">
                   Scan History
                 </Link>
               </div>
@@ -424,7 +401,8 @@ export default function SettingsClient({
           <div className="feature-info-modal">
             <p>
               Flip Grades provide an instant visual indicator of an item's
-              resale potential based on demand, margin, and sell-through rate. The higher the grade, the better the flip.
+              resale potential based on demand, margin, and sell-through rate.
+              The higher the grade, the better the flip.
             </p>
             <br />
             <div className="feature-benefits">
@@ -442,7 +420,7 @@ export default function SettingsClient({
               </div>
             </div>
             <br />
-           <div className="delete-modal__actions">
+            <div className="delete-modal__actions">
               <div
                 className="modal-btn-container"
                 onClick={() => setIsGradesModalOpen(false)}
@@ -486,12 +464,14 @@ export default function SettingsClient({
                 onClick={() => setIsProfitCalcModalOpen(false)}
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
-                <Link
-                  href="/calculator"
-                  className="modal-btn modal-btn--primary"
-                >
-                  Profit Calculator
-                </Link>
+                {user?.subscriptionStatus !== "basic" && (
+                  <Link
+                    href="/calculator"
+                    className="modal-btn modal-btn--primary"
+                  >
+                    Profit Calculator
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -530,12 +510,15 @@ export default function SettingsClient({
                 onClick={() => setIsPhotoStudioModalOpen(false)}
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
-                <Link
-                  href="/listing"
-                  className="modal-btn modal-btn--primary"
-                >
-                  Listing Generator
-                </Link>
+                {(user?.subscriptionStatus === "business" ||
+                  user?.subscriptionStatus === "pro") && (
+                  <Link
+                    href="/listing"
+                    className="modal-btn modal-btn--primary"
+                  >
+                    Listing Generator
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -574,12 +557,14 @@ export default function SettingsClient({
                 onClick={() => setIsInventoryModalOpen(false)}
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
-                <Link
-                  href="/inventory"
-                  className="modal-btn modal-btn--primary"
-                >
-                  Inventory Manager
-                </Link>
+                {user?.subscriptionStatus === "business" && (
+                  <Link
+                    href="/inventory"
+                    className="modal-btn modal-btn--primary"
+                  >
+                    Inventory Manager
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -647,7 +632,7 @@ export default function SettingsClient({
         <InfoModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          title="Clear history"
+          title="Clear History"
         >
           <div className="delete-modal">
             <div className="delete-modal__warning">
@@ -683,7 +668,7 @@ export default function SettingsClient({
         <InfoModal
           isOpen={showConfirmDelete}
           onClose={() => setShowConfirmDelete(false)}
-          title="Delete account?"
+          title="Delete Account"
         >
           <div className="delete-modal">
             <div className="delete-modal__warning">
@@ -713,7 +698,7 @@ export default function SettingsClient({
               >
                 {isDeleting
                   ? "Preparing to deactivate account..."
-                  : "Delete Account"}
+                  : "Deactivate Account"}
               </button>
             </div>
           </div>

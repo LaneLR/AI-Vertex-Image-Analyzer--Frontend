@@ -228,10 +228,10 @@
     border: 1px solid var(--border-color);
     flex: 1;
 
-    &:hover:not(:disabled) {
-      background: var(--bg-header);
-      color: var(--text-primary);
-    }
+    // &:hover:not(:disabled) {
+    //   background: var(--bg-header);
+    //   color: var(--text-primary);
+    // }
 
     &:active:not(:disabled) {
       transform: scale(0.98);

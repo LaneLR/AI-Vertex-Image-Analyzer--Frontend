@@ -143,7 +143,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
               if (blob) resolve(URL.createObjectURL(blob));
             },
             "image/jpeg",
-            0.9
+            0.9,
           ); // JPEG is better for white backgrounds
         }
       };
@@ -206,7 +206,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
           <ArrowLeft size={20} />
         </Link>
         <div className="listing-page__header-content">
-          <div>
+          <div className="listing-page__header-container">
             <div className="listing-page__header-title">
               <Wand2 className="icon-primary" />
               <h1>Listing Studio</h1>
@@ -221,14 +221,16 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
               >
                 SEO Generator
               </button>
-              <button
-                className={`listing-page__pointer ${
-                  activeTab === "studio" ? "active" : ""
-                }`}
-                onClick={() => setActiveTab("studio")}
-              >
-                Photo Studio
-              </button>
+              {isPro && (
+                <button
+                  className={`listing-page__pointer ${
+                    activeTab === "studio" ? "active" : ""
+                  }`}
+                  onClick={() => setActiveTab("studio")}
+                >
+                  Photo Studio
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -245,17 +247,17 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     <Package size={28} /> SEO Generator
                   </h3>
                   <div className="home-stats__item">
-                    <BarChart3 size={16} className="orange-icon"/>
+                    <BarChart3 size={16} className="orange-icon" />
                     <span className="home-stats__item">
                       <b>
                         {dailyScansUsed} /{" "}
                         {isPro
                           ? "100"
                           : isHobby
-                          ? "50"
-                          : isBusiness
-                          ? "250"
-                          : "5"}{" "}
+                            ? "50"
+                            : isBusiness
+                              ? "250"
+                              : "5"}{" "}
                         daily scans
                       </b>
                     </span>
@@ -436,12 +438,13 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
             <section className="listing-grid__input">
               <div className="card listing-card--sticky">
                 <div className="listing-card--title-col">
-
-                
-                <h3 className="card-title">
-                  <ImageIcon size={28} /> Photo Studio (Beta)
-                </h3>
-                <p className="hint-text-big">For best results, take photos in a well-lit environment with a solid background.</p>
+                  <h3 className="card-title">
+                    <ImageIcon size={28} /> Photo Studio (Beta)
+                  </h3>
+                  <p className="hint-text-big">
+                    For best results, take photos in a well-lit environment with
+                    a solid background.
+                  </p>
                 </div>
                 <div
                   className={`upload-zone ${
@@ -538,7 +541,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                 <div className="empty-state">
                   <ImageIcon size={48} />
                   <h3>Your listing photo will appear here</h3>
-                  <p>The image will be have a plain white background.</p>
+                  {useWhiteBackground ? <p>The image will be have a white background.</p> : <p>The image will be have a transparent background.</p>}
                 </div>
               ) : isProcessing ? (
                 <div className="loading-state">
