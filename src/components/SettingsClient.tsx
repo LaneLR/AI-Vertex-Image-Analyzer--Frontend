@@ -333,57 +333,6 @@ export default function SettingsClient({
           title="SEO Generator"
         >
           <div className="feature-info-modal">
-            <div className="feature-info-modal__icon">
-              {/* <div className="icon-box icon-box--large">
-                <Wand2 size={32} />
-              </div> */}
-            </div>
-            {/* <h3>Professional Listings in Seconds</h3> */}
-            <p>
-              Listing Studio uses advanced AI to generate SEO-optimized titles
-              and descriptions for your items.
-            </p>
-            <br />
-            <div className="feature-benefits">
-              <div>
-                <strong>Smart Descriptions:</strong> Automatically highlights
-                key features and flaws.
-              </div>
-              <div>
-                <strong>SEO Keywords:</strong> Higher visibility on eBay,
-                Poshmark, and Depop.
-              </div>
-              <div>
-                <strong>Multi-Photo Analysis:</strong> Analyzes up to 3 photos
-                for maximum accuracy.
-              </div>
-            </div>
-            <br />
-            <div className="delete-modal__actions">
-              {/* <Link
-                href="/listing"
-                className="modal-btn modal-btn--primary"
-              >
-                <button className="modal-btn modal-btn--secondary">
-                  Studio
-                </button>
-              </Link> */}
-              <div
-                className="modal-btn modal-btn--primary"
-                onClick={() => setIsListingStudioModalOpen(false)}
-              >
-                <div className="modal-btn modal-btn--secondary">Close</div>
-              </div>
-            </div>
-          </div>
-        </InfoModal>
-
-        <InfoModal
-          isOpen={isListingStudioModalOpen}
-          onClose={() => setIsListingStudioModalOpen(false)}
-          title="SEO Generator"
-        >
-          <div className="feature-info-modal">
             <p>
               The SEO Generator uses advanced AI to craft professional,
               high-converting titles and descriptions for your marketplace
@@ -475,12 +424,12 @@ export default function SettingsClient({
           <div className="feature-info-modal">
             <p>
               Flip Grades provide an instant visual indicator of an item's
-              resale potential based on demand, margin, and sell-through rate.
+              resale potential based on demand, margin, and sell-through rate. The higher the grade, the better the flip.
             </p>
             <br />
             <div className="feature-benefits">
               <div>
-                <strong>Grade A+:</strong> High-demand items with excellent
+                <strong>Grade A:</strong> High-demand items with excellent
                 profit margins and fast turnover.
               </div>
               <div>
@@ -489,7 +438,7 @@ export default function SettingsClient({
               </div>
               <div>
                 <strong>Risk Assessment:</strong> Identify "bad buys" early by
-                spotting low grades before you spend your capital.
+                spotting low grades before you purchase.
               </div>
             </div>
             <br />
