@@ -6,7 +6,7 @@ import ClientWrapper from "../components/ClientWrapper";
 import Providers from "@/components/SessionProvider";
 
 export const metadata: Metadata = {
-  title: "Flip Finder | AI Thrift Appraisal",
+  title: "FlipSavvy | AI Thrift Appraisal",
   description: "Identify and value thrift finds instantly with AI",
 };
 

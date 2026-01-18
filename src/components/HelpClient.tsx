@@ -49,7 +49,7 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
         {
           title: "Understanding AI appraisals",
           content:
-            "Flip Finder uses deep learning models trained on millions of marketplace data points. We cross-reference your item against live and sold listings on platforms like eBay, Poshmark, and Mercari. The price shown is an 'Estimated Market Value,' a range representing what you should realistically expect to resell the item for. Note that highly unique, vintage, or counterfeit-heavy items may require manual verification.",
+            "FlipSavvy uses deep learning models trained on millions of marketplace data points. We cross-reference your item against live and sold listings on platforms like eBay, Poshmark, and Mercari. The price shown is an 'Estimated Market Value,' a range representing what you should realistically expect to resell the item for. Note that highly unique, vintage, or counterfeit-heavy items may require manual verification.",
         },
       ],
     },
@@ -84,7 +84,7 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
         {
           title: "App performance",
           content:
-            "If the app feels sluggish, go to your phone's Settings and cler your cache. This removes temporary image data without deleting your scan history. Ensure you are using the latest version of the app from the App Store or Google Play. If you are using Flip Finder on the web, ensure your browser (Chrome, Safari, or Firefox) is up to date and that you aren't using 'Incognito Mode,' which can sometimes block the local storage needed for your preferences.",
+            "If the app feels sluggish, go to your phone's Settings and cler your cache. This removes temporary image data without deleting your scan history. Ensure you are using the latest version of the app from the App Store or Google Play. If you are using FlipSavvy on the web, ensure your browser (Chrome, Safari, or Firefox) is up to date and that you aren't using 'Incognito Mode,' which can sometimes block the local storage needed for your preferences.",
         },
         {
           title: "Scan history missing",
@@ -96,7 +96,7 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
   ];
 
   // const handleSupportClick = () => {
-  //   window.location.href = "mailto:support@flipfinder.com";
+  //   window.location.href = "mailto:support@fliSavvy.com";
   // };
 
   return (

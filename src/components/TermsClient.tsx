@@ -24,7 +24,7 @@ export default function TermsClient() {
           </div>
           <h2 className="terms-hero__title">Terms of Service</h2>
           <p className="terms-hero__subtitle">
-            Please read these terms carefully before using the Flip Finder studio and AI tools.
+            Please read these terms carefully before using the FlipSavvy studio and AI tools.
           </p>
           <div className="version-pill">Last Updated: Dec 30, 2025</div>
         </section>
@@ -37,7 +37,7 @@ export default function TermsClient() {
               <h3>1. Acceptance of Terms</h3>
             </div>
             <p>
-              By accessing or using Flip Finder, you agree to be bound by these Terms 
+              By accessing or using FlipSavvy, you agree to be bound by these Terms 
               of Service. If you do not agree, you may not use our AI appraisal 
               tools or platform.
             </p>
@@ -63,7 +63,7 @@ export default function TermsClient() {
               <h3>3. AI Accuracy Disclaimer</h3>
             </div>
             <p>
-              Flip Finder provides AI-generated estimates based on market data. These 
+              FlipSavvy provides AI-generated estimates based on market data. These 
               are <strong>suggestions</strong>, not professional appraisals. We are 
               not liable for financial losses resulting from buying or selling 
               decisions made using our data.

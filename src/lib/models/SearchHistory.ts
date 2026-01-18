@@ -13,6 +13,8 @@ class SearchHistory extends Model {
   public estimatedShippingCost!: string;
   public inInventory!: boolean;
   public specs!: Record<string, any>
+  public purchasePrice!: number;
+  public quantity!: number
 }
 
 SearchHistory.init(
@@ -57,6 +59,16 @@ SearchHistory.init(
     inInventory: {
       type: DataTypes.BOOLEAN,
       defaultValue: false,
+    },
+    quantity: {
+      type: DataTypes.NUMBER,
+      defaultValue: 1,
+      allowNull: true,
+    },
+    purchasePrice: {
+      type: DataTypes.NUMBER,
+      defaultValue: 0,
+      allowNull: true,
     },
     specs: {
       type: DataTypes.TEXT,

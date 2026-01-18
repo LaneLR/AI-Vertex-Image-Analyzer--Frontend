@@ -758,7 +758,7 @@ export default function SettingsClient({
             <p>
               An error occurred when trying to deactivate your account. If you
               are a Pro user, please make sure you have canceled any
-              subscriptions to Flip Finder before requesting to deactivate your
+              subscriptions to FlipSavvy before requesting to deactivate your
               account.
             </p>
             <div className="modal-actions">
@@ -784,7 +784,7 @@ export default function SettingsClient({
               <p>
                 An error occurred while trying to deactivate your account. If
                 you are a Pro user, please make sure you have canceled any
-                subscriptions to Flip Finder before deactivating your account.
+                subscriptions to FlipSavvy before deactivating your account.
               </p>
             </div>
 

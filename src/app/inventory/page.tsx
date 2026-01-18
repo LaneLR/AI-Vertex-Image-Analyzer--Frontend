@@ -6,7 +6,7 @@ import SearchHistory from "@/lib/models/SearchHistory";
 import { connectDB } from "@/lib/db";
 
 export const metadata = {
-  title: "Inventory | Flip Finder",
+  title: "Inventory | Flip Savvy",
   description: "Manage your business inventory and track potential profits.",
 };
 

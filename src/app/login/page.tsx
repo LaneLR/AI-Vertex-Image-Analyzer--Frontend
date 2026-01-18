@@ -8,7 +8,7 @@ export default async function LoginPage() {
   const session = await getServerSession(authOptions);
   const hdrs = await headers();
   const userAgent = hdrs.get("user-agent") || "";
-  const isMobileApp = userAgent.includes("FlipFinder-Mobile-App");
+  const isMobileApp = userAgent.includes("FlipSavvy-Mobile-App");
 
   // Mobile logic handled by middleware, but double-check here for SSR edge cases
   if (isMobileApp) {

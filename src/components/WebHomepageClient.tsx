@@ -82,7 +82,7 @@ export default function WebHome() {
                 <div className="web__placeholderImg">
                   <img
                     src="/images/AppDisplay.png"
-                    alt="FlipFinder App Interface"
+                    alt="FlipSavvy App Interface"
                   />
                 </div>
                 <div className="web__phoneButton volume"></div>

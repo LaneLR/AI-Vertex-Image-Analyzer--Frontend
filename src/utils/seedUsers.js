@@ -15,7 +15,7 @@ async function createTestUser() {
     console.log('✅ Connection has been established successfully.');
     await sequelize.sync({ alter: false }); 
 
-    const testEmail = 'test@flipfinder.com';
+    const testEmail = 'test@flipsavvy.com';
 
     // 3. Find or Create User
     // We use findOne with Sequelize syntax

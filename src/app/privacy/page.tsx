@@ -1,8 +1,8 @@
 import PrivacyClient from "../../components/PrivacyClient";
 
 export const metadata = {
-  title: "Privacy Policy | Flip Finder",
-  description: "Learn how Flip Finder protects your data and manages your uploaded images.",
+  title: "Privacy Policy | Flip Savvy",
+  description: "Learn how Flip Savvy protects your data and manages your uploaded images.",
 };
 
 export default function PrivacyPage() {

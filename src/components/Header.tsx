@@ -58,7 +58,7 @@ export default function Header() {
           >
             {/* <span className="brand-logo-small">FF</span> */}
             <h1 className="brand-text">
-              Flip<span>Finder</span>
+              Flip<span>Savvy</span>
             </h1>
           </Link>
         ) : (
@@ -69,7 +69,7 @@ export default function Header() {
           >
             {/* <span className="brand-logo-small">FF</span> */}
             <h1 className="brand-text">
-              Flip<span>Finder</span>
+              Flip<span>Savvy</span>
             </h1>
           </Link>
         )}

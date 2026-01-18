@@ -20,7 +20,7 @@ export default function Footer() {
               >
                 {/* <span className="brand-logo-small">FF</span> */}
                 <h1 className="brand-text">
-                  Flip<span>Finder</span>
+                  Flip<span>Savvy</span>
                 </h1>
               </Link>
             </div>
@@ -68,7 +68,8 @@ export default function Footer() {
 </div>
         <div className="footer__bottom">
           <div className="footer__copyright">
-            © {currentYear} Flip Finder • v1.13.7
+            {/* ©  */}
+            {currentYear} FlipSavvy • v1.13.7
           </div>
         </div>
       </div>
