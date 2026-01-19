@@ -34,7 +34,9 @@ export default function CalculatorClient({
   const [buyCost, setBuyCost] = useState<number | "">("");
   const [sellPrice, setSellPrice] = useState<number | "">("");
   const [shippingCost, setShippingCost] = useState<number | "">("");
-  const [platformFeePercent, setPlatformFeePercent] = useState<number>(13.25);
+  const [platformFeePercent, setPlatformFeePercent] = useState<string | number>(
+    13.25,
+  );
   const [otherCosts, setOtherCosts] = useState<number | "">("");
 
   const router = useRouter();
@@ -64,8 +66,8 @@ export default function CalculatorClient({
   const numericBuy = Number(buyCost) || 0;
   const numericShipping = Number(shippingCost) || 0;
   const numericOther = Number(otherCosts) || 0;
-
-  const totalFees = (numericSell * platformFeePercent) / 100;
+  const numericFee = parseFloat(platformFeePercent.toString()) || 0;
+  const totalFees = (numericSell * numericFee) / 100;
   const netProfit =
     numericSell - numericBuy - numericShipping - totalFees - numericOther;
   const margin = numericSell > 0 ? (netProfit / numericSell) * 100 : 0;
@@ -171,9 +173,10 @@ export default function CalculatorClient({
                 <label>Platform</label>
                 <select
                   className="calc-input"
-                  onChange={(e) =>
-                    setPlatformFeePercent(parseFloat(e.target.value))
-                  }
+                  onChange={(e) => {
+                    const val = parseFloat(e.target.value);
+                    setPlatformFeePercent(val === 0 ? "" : val);
+                  }}
                 >
                   {PLATFORMS.map((p) => (
                     <option key={p.name} value={p.fee}>
@@ -187,11 +190,26 @@ export default function CalculatorClient({
                 <label>Fee Percentage (%)</label>
                 <input
                   type="number"
+                  inputMode="decimal"
+                  pattern="[0-9]*"
                   placeholder="0"
                   value={platformFeePercent}
-                  onChange={(e) =>
-                    setPlatformFeePercent(e.target.valueAsNumber || 0)
-                  }
+                  onChange={(e) => {
+                    let val = e.target.value;
+
+                    if (
+                      val.length > 1 &&
+                      val.startsWith("0") &&
+                      val[1] !== "."
+                    ) {
+                      val = val.substring(1);
+                    }
+
+                    setPlatformFeePercent(val);
+                  }}
+                  onBlur={() => {
+                    if (platformFeePercent === "") setPlatformFeePercent(0);
+                  }}
                   className="calc-input"
                 />
               </div>
