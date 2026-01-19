@@ -14,9 +14,12 @@ import {
   DollarSign,
   Plus,
   Minus,
+  Eraser,
+  AlertTriangle,
 } from "lucide-react";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
+import InfoModal from "./InfoModal";
 
 interface InventoryItem {
   id: string;
@@ -48,6 +51,9 @@ export default function InventoryClient({
     })),
   );
 
+  const [isClearModalOpen, setIsClearModalOpen] = useState(false);
+  const [isClearing, setIsClearing] = useState(false);
+
   const router = useRouter();
 
   const handleBack = () => {
@@ -58,12 +64,47 @@ export default function InventoryClient({
     }
   };
 
-  const totalValue = useMemo(() => {
-    return items.reduce((sum, item) => {
-      const match = item.priceRange.match(/\$(\d+(?:\.\d+)?)/);
-      const val = match ? parseFloat(match[1]) : 0;
-      return sum + val * (item.quantity || 1);
-    }, 0);
+  const handleClearAll = async () => {
+    setIsClearing(true);
+    try {
+      // Map all current items to a removal promise
+      const deletePromises = items.map((item) =>
+        fetch(getApiUrl(`/api/user/history/${item.id}`), {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ inInventory: false }),
+        }),
+      );
+
+      await Promise.all(deletePromises);
+      setItems([]); // Clear local state
+      setIsClearModalOpen(false);
+    } catch (err) {
+      console.error("Failed to clear inventory:", err);
+    } finally {
+      setIsClearing(false);
+    }
+  };
+
+  const stats = useMemo(() => {
+    const totals = items.reduce(
+      (acc, item) => {
+        const match = item.priceRange.match(/\$(\d+(?:\.\d+)?)/);
+        const unitValue = match ? parseFloat(match[1]) : 0;
+        const qty = item.quantity || 1;
+
+        acc.revenue += unitValue * qty;
+        acc.cost += (item.purchasePrice || 0) * qty;
+        return acc;
+      },
+      { revenue: 0, cost: 0 },
+    );
+
+    return {
+      revenue: totals.revenue,
+      cost: totals.cost,
+      profit: totals.revenue - totals.cost,
+    };
   }, [items]);
 
   const updateItemMetadata = async (
@@ -104,25 +145,52 @@ export default function InventoryClient({
 
   const downloadCSV = () => {
     const headers = [
+      "Inventory ID",
       "Name",
       "Brand",
       "Model",
+      "Grade", // Now separate
+      "Condition", // Now separate
+      "Category",
+      "Platform",
       "Qty",
-      "Cost Basis",
-      "Est Value",
-      "Total Est Value",
+      "Unit Cost",
+      "Est Sale Price",
+      "Total Cost Basis",
+      "Total Est Revenue",
+      "Total Est Profit",
+      "ROI %",
     ];
+
     const rows = items.map((item) => {
+      // Extract numerical value from priceRange (e.g., "$120.00" -> 120)
       const match = item.priceRange.match(/\$(\d+(?:\.\d+)?)/);
       const unitValue = match ? parseFloat(match[1]) : 0;
+      const qty = item.quantity || 1;
+      const unitCost = item.purchasePrice || 0;
+
+      // Financial Calculations
+      const totalCost = unitCost * qty;
+      const totalRevenue = unitValue * qty;
+      const totalProfit = totalRevenue - totalCost;
+      const roi = unitCost > 0 ? ((unitValue - unitCost) / unitCost) * 100 : 0;
+
       return [
-        `"${item.itemTitle}"`,
-        item.specs.Brand || "N/A",
-        item.specs.Model || "N/A",
-        item.quantity,
-        item.purchasePrice,
-        unitValue,
-        (unitValue * (item.quantity || 1)).toFixed(2),
+        `"${item.id}"`,
+        `"${item.itemTitle.replace(/"/g, '""')}"`,
+        `"${item.specs.Brand || "N/A"}"`,
+        `"${item.specs.Model || "N/A"}"`,
+        `"${item.grade || "N/A"}"`,
+        `"${item.specs.Condition || "N/A"}"`,
+        `"${item.specs["Material/Type"] || "N/A"}"`,
+        `"${item.platform || "N/A"}"`,
+        qty,
+        unitCost.toFixed(2),
+        unitValue.toFixed(2),
+        totalCost.toFixed(2),
+        totalRevenue.toFixed(2),
+        totalProfit.toFixed(2),
+        `${roi.toFixed(1)}%`,
       ];
     });
 
@@ -133,6 +201,9 @@ export default function InventoryClient({
     link.href = url;
     link.download = `inventory_report_${new Date().toISOString().split("T")[0]}.csv`;
     link.click();
+
+    // Cleanup
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -147,19 +218,54 @@ export default function InventoryClient({
 
       <main className="inventory">
         <div className="inventory__header">
-          <div className="inventory__stats">
+          <div className="inventory__stats-grid">
             <div className="inventory__stat-card">
-              <TrendingUp size={40} className="inventory__stat-icon" />
-              <div className="inventory__stat-info">
-                <span className="inventory__stat-label">Stock Potential</span>
-                <h2 className="inventory__stat-value">
-                  ${totalValue.toFixed(2)}
-                </h2>
-              </div>
+              <span className="inventory__stat-label">
+                Total Potential Profit
+              </span>
+              <h2
+                className={`inventory__stat-value ${stats.profit > 0 ? "profit-text-pos" : stats.profit < 0 ? "profit-text-neg" : "profit-text-neutral"}`}
+              >
+                ${stats.profit.toFixed(2)}
+              </h2>
+              <TrendingUp size={20} className="profit-icon" />
             </div>
-            <button onClick={downloadCSV} className="inventory__download-btn">
-              <Download size={18} /> Export CSV
-            </button>
+
+            <div className="inventory__stat-card secondary">
+              <span className="inventory__stat-label">Inventory Value</span>
+              <h2 className="inventory__stat-value small">
+                ${stats.revenue.toFixed(2)}
+              </h2>
+            </div>
+
+            <div className="inventory__stat-card secondary">
+              <span className="inventory__stat-label">Total Cost Basis</span>
+              <h2 className="inventory__stat-value small">
+                ${stats.cost.toFixed(2)}
+              </h2>
+            </div>
+          </div>
+
+          <div className="inventory__actions-bar">
+            <div>
+              <p className="inventory__count-hint">Inventory count</p>
+              <p>
+                <b>{items.length} item{items.length !== 1 ? "s" : ""}</b>
+              </p>
+            </div>
+
+            <div className="inventory__actions-group">
+              <button
+                onClick={() => setIsClearModalOpen(true)}
+                className="inventory__clear-btn"
+                disabled={items.length === 0}
+              >
+                <Eraser size={16} /> Clear All
+              </button>
+              <button onClick={downloadCSV} className="inventory__download-btn">
+                <Download size={16} /> Export CSV
+              </button>
+            </div>
           </div>
         </div>
 
@@ -176,63 +282,109 @@ export default function InventoryClient({
                   </div>
 
                   <div className="inventory-card__controls">
-                    {/* Quantity Toggler */}
-                    <div className="inventory-card__quantity">
-                      <button
-                        className="inventory-card__qty-btn"
-                        onClick={() =>
-                          updateItemMetadata(item.id, {
-                            quantity: Math.max(1, (item.quantity || 1) - 1),
-                          })
-                        }
-                      >
-                        <Minus size={14} />
-                      </button>
-                      <span className="inventory-card__qty-value">
-                        {item.quantity}
-                      </span>
-                      <button
-                        className="inventory-card__qty-btn"
-                        onClick={() =>
-                          updateItemMetadata(item.id, {
-                            quantity: (item.quantity || 1) + 1,
-                          })
-                        }
-                      >
-                        <Plus size={14} />
-                      </button>
+                    <div className="control-group">
+                      <label>Quantity</label>
+                      <div className="inventory-card__quantity">
+                        <button
+                          className="inventory-card__qty-btn"
+                          onClick={() =>
+                            updateItemMetadata(item.id, {
+                              quantity: Math.max(1, (item.quantity || 1) - 1),
+                            })
+                          }
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <span className="inventory-card__qty-value">
+                          {item.quantity}
+                        </span>
+                        <button
+                          className="inventory-card__qty-btn"
+                          onClick={() =>
+                            updateItemMetadata(item.id, {
+                              quantity: (item.quantity || 1) + 1,
+                            })
+                          }
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
                     </div>
 
-                    {/* Cost Input */}
-                    <div className="inventory-card__cost">
-                      <DollarSign size={14} />
-                      <input
-                        type="number"
-                        placeholder="Cost"
-                        className="inventory-card__cost-input"
-                        value={item.purchasePrice || ""}
-                        onChange={(e) =>
-                          updateItemMetadata(item.id, {
-                            purchasePrice: parseFloat(e.target.value) || 0,
-                          })
-                        }
-                      />
+                    <div className="control-group">
+                      <label>Unit Cost</label>
+                      <div className="inventory-card__cost">
+                        <DollarSign size={14} />
+                        <input
+                          type="number"
+                          className="inventory-card__cost-input"
+                          value={item.purchasePrice || ""}
+                          onChange={(e) =>
+                            updateItemMetadata(item.id, {
+                              purchasePrice: parseFloat(e.target.value) || 0,
+                            })
+                          }
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
                 <button
-                  onClick={() => {
-                    /* Existing Remove Logic */
-                  }}
-                  className="history-card__delete-btn"
+                  onClick={() => removeItem(item.id)}
+                  className="inventory-card__remove"
                 >
-                  <Trash2 size={18} />
+                  <Trash2 size={20} />
                 </button>
               </div>
             </div>
           ))}
         </div>
       </main>
+
+      <InfoModal
+        isOpen={isClearModalOpen}
+        onClose={() => setIsClearModalOpen(false)}
+        title="Clear Inventory"
+      >
+        <div className="modal-content">
+          <div className="delete-modal__warning">
+            <p>
+              Are you sure you want to remove <b>all items</b> from your
+              inventory? This action cannot be undone.
+            </p>
+          </div>
+
+          {/* <div
+            className="modal-actions"
+            style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}
+          >
+            <button
+              className="secondary-btn"
+              onClick={() => setIsClearModalOpen(false)}
+              style={{ flex: 1 }}
+            >
+              Cancel
+            </button> */}
+
+          <div className="delete-modal__actions">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setIsClearModalOpen(false)}
+              disabled={isClearing}
+            >
+              Cancel
+            </button>
+            <button
+              className="modal-btn modal-btn--primary"
+              onClick={handleClearAll}
+              disabled={isClearing}
+            >
+              {isClearing ? "Clearing..." : "Yes, Clear All"}
+            </button>
+          </div>
+          {/* </div> */}
+        </div>
+      </InfoModal>
     </>
   );
 }

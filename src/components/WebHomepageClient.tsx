@@ -11,34 +11,37 @@ import Link from "next/link";
 
 export default function WebHome() {
   const features = {
-    basic: ["5 Scans per day", "1 Image per scan", "Basic price estimates"],
+    basic: ["5 Scans per day.", "1 Image per scan.", "Basic price estimates.", "Access to your scan history."],
     hobby: [
-      "50 scans per day",
-      "Profit calculator",
-      "2 Images per scan",
-      "Improved accuracy price estimates",
-      "Access to SEO Generator to create SEO-optimized listing details",
+      "50 scans per day.",
+      "2 Images per scan.",
+      "Improved accuracy and price estimates.",
+      "Access to your scan history.",
+      "Access to Profit Calculator.",
+      "Profitability grading on appraised items"
     ],
     pro: [
-      "100 scans per day",
-      "Profit calculator",
-      "3 Images per scan",
-      "High accuracy price estimates",
-      "Access to SEO Generator to create SEO-optimized listing details",
-      "Access to Photo Studio to automatically remove backgrounds for listing photos",
-      "Multi-platform and marketplace price comparison",
-      "Item sell-through rates and demand indicators",
+      "100 scans per day.",
+      "3 Images per scan.",
+      "High accuracy price estimates.",
+      "Access to your scan history.",
+      "Access to Profit Calculator.",
+      "Profitability grading on appraised items.",
+      "Access to SEO Generator to create SEO-optimized listing details.",
+      "Unlimited access to Photo Studio to automatically create listing photos.",
     ],
     business: [
-      "250 scans per day",
-      "Profit calculator",
-      "3 Images per scan",
-      "High accuracy price estimates",
-      "Access to SEO Generator to create SEO-optimized listing details",
-      "Access to Photo Studio to automatically remove backgrounds for listing photos",
-      "Multi-platform and marketplace price comparison",
-      "Item sell-through rates and demand indicators",
-      "CSV download of listings for bulk uploading",
+      "250 scans per day.",
+      "3 Images per scan.",
+      "High accuracy price estimates.",
+      "Access to your scan history.",
+      "Access to Profit Calculator.",
+      "Profitability grading on appraised items.",
+      "Access to SEO Generator to create SEO-optimized listing details.",
+      "Unlimited access to Photo Studio to automatically create listing photos.",
+      "Multi-platform and marketplace price comparison.",
+      "Access to Inventory Manager for tracking and managing items.",
+      "CSV download of inventory and listings for bulk uploading.",
     ],
   };
 
@@ -188,7 +191,7 @@ export default function WebHome() {
               {/* <div className="planCard__badge">Recommended</div> */}
               <h3 className="planCard__name">Pro</h3>
               <div className="planCard__price">
-                19.99<span>/ mo</span>
+                24.99<span>/ mo</span>
               </div>
               <ul className="planCard__list">
                 {features.pro.map((f, i) => (
@@ -208,7 +211,7 @@ export default function WebHome() {
               {/* <div className="planCard__badge">Recommended</div> */}
               <h3 className="planCard__name">Business</h3>
               <div className="planCard__price">
-                34.99<span>/ mo</span>
+                39.99<span>/ mo</span>
               </div>
               <ul className="planCard__list">
                 {features.business.map((f, i) => (

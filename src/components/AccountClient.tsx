@@ -203,6 +203,19 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
           <ChevronRight size={18} />
         </Link>
 
+        {(isPro || isHobby || isBusiness) && (
+          <Link href="/calculator" className="account-card listing-shortcut">
+            <div className="shortcut-info">
+              <CircleDollarSign size={20} />
+              <div>
+                <h4>Profit Calculator</h4>
+                <p>Calculate the profits for items you find</p>
+              </div>
+            </div>
+            <ChevronRight size={18} />
+          </Link>
+        )}
+
         {/* TOOLS SHORTCUTS */}
         {(isPro || isHobby || isBusiness) && (
           <Link href="/listing" className="account-card listing-shortcut">
@@ -211,19 +224,6 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
               <div>
                 <h4>Listing Studio</h4>
                 <p>Generate SEO marketplace details</p>
-              </div>
-            </div>
-            <ChevronRight size={18} />
-          </Link>
-        )}
-
-        {(isPro || isHobby || isBusiness) && (
-          <Link href="/calculator" className="account-card listing-shortcut">
-            <div className="shortcut-info">
-              <CircleDollarSign size={20} />
-              <div>
-                <h4>Profit Calculator</h4>
-                <p>Calculate the profits for items you find</p>
               </div>
             </div>
             <ChevronRight size={18} />

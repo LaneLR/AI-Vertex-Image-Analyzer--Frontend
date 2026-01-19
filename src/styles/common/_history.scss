@@ -264,41 +264,37 @@
     }
   }
 
-  
   &__actions {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 20px;
+    width: 100%;
+    justify-content: flex-start;
   }
 
   &__delete-btn {
-    background: none;
     border: none;
-    color: var(--text-tertiary);
+    color: var(--error-text);
+    background: transparent;
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
     transition: all 0.2s;
 
-    &:hover {
-      color: #ef4444;
-      background: rgba(239, 68, 68, 0.1);
-    }
+    // &:hover {
+    //   color: #ef4444;
+    //   background: rgba(239, 68, 68, 0.1);
+    // }
   }
 
   &__inventory-btn {
-    background: none;
+    background: transparent;
     border: none;
-    color: var(--text-tertiary);
+    color: var(--primary-theme);
     cursor: pointer;
     padding: 4px;
     border-radius: 4px;
     transition: all 0.2s;
-
-    &:hover {
-      color: var(--primary-theme);
-      background: rgba(239, 151, 68, 0.1);
-    }
   }
 
   &__grade-icon {
@@ -320,7 +316,7 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   z-index: 1000;
   animation: slideUp 0.3s ease-out;
 
@@ -388,7 +384,9 @@
     justify-content: space-between;
     align-items: center;
     text-decoration: none;
-    transition: transform 0.2s ease, border-color 0.2s ease;
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease;
 
     &:hover {
       transform: translateY(-2px);
@@ -499,7 +497,6 @@
 }
 
 .history-section {
-
   &__label {
     font-size: 0.9rem;
     font-weight: 600;
@@ -511,7 +508,9 @@
     border-bottom: 1px solid var(--border-color);
     position: sticky;
     top: 0;
-    background: var(--bg-primary); // Ensures label stays readable while scrolling
+    background: var(
+      --bg-primary
+    ); // Ensures label stays readable while scrolling
     z-index: 10;
     display: flex;
     align-items: center;
@@ -533,7 +532,7 @@
 
 .header-placeholder {
   width: 24px;
-} 
+}
 
 .orange-icon {
   color: var(--primary-theme);

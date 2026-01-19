@@ -19,6 +19,10 @@ import {
   Loader2,
   Tags,
   BarChart3,
+  DownloadIcon,
+  DollarSignIcon,
+  BadgeDollarSign,
+  DollarSign,
 } from "lucide-react";
 import Loading from "./Loading";
 import Link from "next/link";
@@ -38,6 +42,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
   const [previews, setPreviews] = useState<string[]>([]);
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [listingHistory, setListingHistory] = useState<any[]>([]);
   const [studioImages, setStudioImages] = useState<File[]>([]);
   const [studioPreviews, setStudioPreviews] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -71,6 +76,94 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       router.back();
     } else {
       router.push("/");
+    }
+  };
+
+  const downloadCSV = () => {
+    if (listingHistory.length === 0) return;
+
+    const headers = [
+      "Title",
+      "Description",
+      "Category",
+      "Tags",
+      "Brand",
+      "Model",
+      "Condition",
+      "Material",
+    ];
+
+    const rows = listingHistory.map((item) => [
+      `"${item.title.replace(/"/g, '""')}"`,
+      `"${item.description.replace(/"/g, '""')}"`,
+      `"${item.category}"`,
+      `"${item.tags.join(", ")}"`,
+      `"${item.specs?.Brand || ""}"`,
+      `"${item.specs?.Model || ""}"`,
+      `"${item.specs?.Condition || ""}"`,
+      `"${item.specs?.["Material/Type"] || ""}"`,
+    ]);
+
+    const csvContent = [headers, ...rows].map((e) => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `listings_export_${new Date().toISOString().split("T")[0]}.csv`,
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handleShareCSV = async () => {
+    if (listingHistory.length === 0) return;
+
+    // 1. Create the CSV Content
+    const headers = [
+      "Title",
+      "Description",
+      "Category",
+      "Tags",
+      "Brand",
+      "Model",
+      "Condition",
+      "Material",
+    ];
+    const rows = listingHistory.map((item) => [
+      `"${item.title.replace(/"/g, '""')}"`,
+      `"${item.description.replace(/"/g, '""')}"`,
+      `"${item.category}"`,
+      `"${item.tags.join(", ")}"`,
+      `"${item.specs?.Brand || ""}"`,
+      `"${item.specs?.Model || ""}"`,
+      `"${item.specs?.Condition || ""}"`,
+      `"${item.specs?.["Material/Type"] || ""}"`,
+    ]);
+    const csvContent = [headers, ...rows].map((e) => e.join(",")).join("\n");
+
+    // 2. Create a File object (required for navigator.share)
+    const filename = `listings_${new Date().toISOString().split("T")[0]}.csv`;
+    const file = new File([csvContent], filename, { type: "text/csv" });
+
+    // 3. Check if the browser supports sharing files
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({
+          files: [file],
+          title: "My SEO Listings Export",
+          text: "Attached is the CSV export of my generated listings.",
+        });
+      } catch (err) {
+        console.error("Error sharing:", err);
+        // Fallback to download if user cancels or error occurs
+        downloadCSV();
+      }
+    } else {
+      // Fallback for browsers that don't support file sharing (Desktop)
+      downloadCSV();
     }
   };
 
@@ -119,6 +212,10 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       if (res.ok) {
         setResult(data);
         incrementScans();
+
+        if (isBusiness) {
+          setListingHistory((prev) => [...prev, data]);
+        }
       } else {
         setAlertModal({
           title: "Generation Error",
@@ -215,7 +312,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       console.error("Studio Error:", err);
       setAlertModal({
         title: "Studio Error",
-        message: "There was an error while processing the image. Please wait a minute and try again.",
+        message:
+          "There was an error while processing the image. Please wait a minute and try again.",
       });
     } finally {
       setIsProcessing(false);
@@ -307,7 +405,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                               className="remove-btn"
                               onClick={() => removeImage(idx)}
                             >
-                              <X size={14} />
+                              <X size={18} />
                             </button>
                           </div>
                         ))}
@@ -369,6 +467,26 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                         images.length !== 1 ? "s" : ""
                       })`}
                 </button>
+
+                {isBusiness && listingHistory.length > 0 && (
+                  <div className="share-grid-container">
+                    <div className="share-grid">
+                      <button onClick={handleShareCSV} className="generate-btn">
+                        <Upload size={13} />
+                        Share / Email
+                      </button>
+
+                      <button onClick={downloadCSV} className="secondary-btn">
+                        <Download size={13} />
+                        Save to File
+                      </button>
+                    </div>
+                    <p className="download-hint">
+                      CSV includes all {listingHistory.length} item(s) from this
+                      session. Past sessions are not saved.
+                    </p>
+                  </div>
+                )}
               </div>
             </section>
 
@@ -391,7 +509,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     </div> */}
                     <div className="result-group__header">
                       <label>
-                        <Tag size={14} /> Optimized Title
+                        <Tag size={18} /> Optimized Title
                       </label>
                       <button
                         onClick={() => copyToClipboard(result.title, "title")}
@@ -405,10 +523,57 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     </div>
                     <p className="result-value--title">{result.title}</p>
                   </div>
+
                   <div className="result-group card">
                     <div className="result-group__header">
                       <label>
-                        <Info size={14} /> Product Description
+                        <BadgeDollarSign size={18} /> Suggested resale price
+                      </label>
+                      <button
+                        onClick={() =>
+                          copyToClipboard(result.suggestedPrice, "price")
+                        }
+                      >
+                        {copiedField === "price" ? (
+                          <Check size={16} color="#22c55e" />
+                        ) : (
+                          <Copy size={16} />
+                        )}
+                      </button>
+                    </div>
+                    <div className="result-value--desc whitespace-pre-wrap">
+                      {result.suggestedPrice}
+                    </div>
+                  </div>
+
+                  <div className="result-group card">
+                    <div className="result-group__header">
+                      <label>
+                        <Layout size={18} /> Suggested platform for resale
+                      </label>
+                      <button
+                        onClick={() =>
+                          copyToClipboard(
+                            result.likelyBestPlatformToSellTheItemOn,
+                            "platform",
+                          )
+                        }
+                      >
+                        {copiedField === "platform" ? (
+                          <Check size={16} color="#22c55e" />
+                        ) : (
+                          <Copy size={16} />
+                        )}
+                      </button>
+                    </div>
+                    <div className="result-value--desc whitespace-pre-wrap">
+                      {result.likelyBestPlatformToSellTheItemOn}
+                    </div>
+                  </div>
+                  <div className="result-group card">
+                    <div className="result-group__header">
+                      <label>
+                        <Info size={18} /> Product Description
                       </label>
                       <button
                         onClick={() =>
@@ -432,7 +597,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                 <div className="result-group card">
                   <div className="result-group__header">
                     <label>
-                      <Tags size={14} /> Optimized Tags
+                      <Tags size={18} /> Optimized Tags
                     </label>
                     <span className="hint-text">Click tag to copy</span>
                   </div>
@@ -493,7 +658,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                               setResultImage(null);
                             }}
                           >
-                            <X size={14} />
+                            <X size={18} />
                           </button>
                         </div>
                       </div>
@@ -562,6 +727,9 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     `Remove Background`
                   )}
                 </button>
+                <p className="download-hint">
+                  Photo Studio does not count toward your daily scan limit.
+                </p>
               </div>
             </section>
 
@@ -594,7 +762,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   <div className="result-group card">
                     <div className="result-group__header">
                       <label>
-                        <ImageIcon size={14} /> Generated Image
+                        <ImageIcon size={18} /> Generated Image
                       </label>
                       <a
                         href={resultImage!}

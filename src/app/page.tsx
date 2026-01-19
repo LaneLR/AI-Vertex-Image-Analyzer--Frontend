@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Loading from "@/components/Loading";
 import WebHome from "@/components/WebHomepageClient";
-import LoginClient from "@/components/LoginClient";
+import UnifiedAuthPage from "@/components/AuthPage";
 
 export default function Page() {
   const { status } = useSession();
@@ -22,5 +22,5 @@ export default function Page() {
 
   // Only show the landing page to unauthenticated Web users.
   // Middleware handles mobile redirect, so they never get here.
-  return <LoginClient />;
+  return <UnifiedAuthPage />;
 }
