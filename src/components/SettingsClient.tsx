@@ -637,7 +637,7 @@ export default function SettingsClient({
               onClick={() => setIsModalOpen(true)}
             >
               <div className="settings-item__info">
-                <Trash2 size={18} color="#ef4444" />
+                <Trash2 size={22} color="#ef4444" />
                 <span className="text-danger">Clear All Scan History</span>
               </div>
             </button>
@@ -648,7 +648,7 @@ export default function SettingsClient({
               onClick={() => setShowConfirmDelete(true)}
             >
               <div className="settings-item__info">
-                <BookmarkX size={18} color="#ef4444" />
+                <BookmarkX size={22} color="#ef4444" />
                 <span className="text-danger">Deactivate Account</span>
               </div>
             </button>
