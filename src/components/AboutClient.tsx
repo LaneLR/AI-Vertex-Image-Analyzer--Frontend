@@ -86,7 +86,7 @@ export default function AboutClient() {
 
           <div className="feature-card">
             <div className="feature-card__icon icon-green">
-              <BadgeDollarSignIcon size={20} />
+              <CircleDollarSign size={20} />
             </div>
             <h3>Profit</h3>
             <p>

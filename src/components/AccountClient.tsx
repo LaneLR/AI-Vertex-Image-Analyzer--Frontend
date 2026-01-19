@@ -27,7 +27,7 @@ import { getApiUrl } from "@/lib/api-config";
 import PaymentsClient from "./Payments";
 
 export default function AccountClient({ user: initialUser }: { user: any }) {
-  const { maxFreeScans, dailyScansUsed } = useApp();
+  const { maxFreeScans, dailyScansUsed, setDailyScansUsed } = useApp();
   const [loadingPortal, setLoadingPortal] = useState(false);
   const { data: session, update } = useSession();
   const searchParams = useSearchParams();
@@ -39,7 +39,17 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
   const success = searchParams.get("success");
 
   useEffect(() => {
-    if (success === "true") {
+    if (user?.dailyScansCount !== undefined) {
+      const lastUpdate = new Date(user.lastScanDate || new Date());
+      const now = new Date();
+      const isNewDay = lastUpdate.getUTCDate() !== now.getUTCDate();
+
+      setDailyScansUsed(isNewDay ? 0 : user.dailyScansCount);
+    }
+  }, [user?.dailyScansCount, user?.lastScanDate]);
+
+  useEffect(() => {
+    if (user && update) {
       update();
     }
   }, [success]);

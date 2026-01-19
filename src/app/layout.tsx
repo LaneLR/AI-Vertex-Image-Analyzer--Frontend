@@ -4,17 +4,20 @@ import "./globals.css";
 import "@/styles/main.scss";
 import ClientWrapper from "../components/ClientWrapper";
 import Providers from "@/components/SessionProvider";
+import { authOptions } from "./api/auth/[...nextauth]/route";
+import { getServerSession } from "next-auth";
 
 export const metadata: Metadata = {
   title: "FlipSavvy | AI Thrift Appraisal",
   description: "Identify and value thrift finds instantly with AI",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getServerSession(authOptions)
   return (
     <html lang="en" className="global" suppressHydrationWarning>
       <head>
@@ -38,7 +41,7 @@ export default function RootLayout({
       <body>
         {/* 3. Wrap everything in your custom Providers component */}
         <Providers>
-          <ClientWrapper>{children}</ClientWrapper>
+          <ClientWrapper user={session?.user}>{children}</ClientWrapper>
         </Providers>
       </body>
     </html>

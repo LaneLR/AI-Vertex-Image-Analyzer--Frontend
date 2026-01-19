@@ -23,6 +23,7 @@ import {
   DollarSignIcon,
   BadgeDollarSign,
   DollarSign,
+  CircleDollarSign,
 } from "lucide-react";
 import Loading from "./Loading";
 import Link from "next/link";
@@ -527,7 +528,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   <div className="result-group card">
                     <div className="result-group__header">
                       <label>
-                        <BadgeDollarSign size={18} /> Suggested resale price
+                        <CircleDollarSign size={18} /> Suggested resale price
                       </label>
                       <button
                         onClick={() =>

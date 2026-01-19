@@ -8,8 +8,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
-  background: var(--bg-nav);
+  padding: 1rem;
+  background: var(--bg-header);
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-primary);
@@ -126,7 +126,7 @@
 }
 
 .image-subtext {
-  color: var(--text-secondary)
+  color: var(--text-secondary);
 }
 
 .preview-grid.multi img:first-child:nth-last-child(3) {
