@@ -85,7 +85,7 @@ export default function CalculatorClient({
           <section className="calc-card">
             <div className="calc-card__group">
               <label className="label-with-icon">
-                <History size={16} /> Import from Scan History
+                <History size={18} /> Select from Scan History
               </label>
               <select
                 className="calc-input"

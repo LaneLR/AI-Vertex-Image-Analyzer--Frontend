@@ -6,8 +6,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px;
-    background: var(--bg-nav);
+    padding: 1.25rem;
+    background: var(--bg-header);
     color: var(--text-primary);
     h1 {
       font-size: 1.1rem;
@@ -105,8 +105,7 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 1rem;
-        border: 1px solid var(--border-color);
-
+    border: 1px solid var(--border-color);
 
     &.icon-blue {
       background: rgba(0, 0, 0, 0.15);

@@ -2,161 +2,146 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
-  Menu,
   User,
   Settings,
-  ShieldCheck,
   LogOut,
-  X,
   LayoutDashboard,
+  MoreHorizontal,
+  ToolCase,
+  Settings2,
+  Calculator,
+  Wand2,
+  Boxes,
+  History,
+  BadgeDollarSign,
+  CircleDollarSign,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 
-export default function Header() {
+interface HeaderProps {
+  user: any;
+}
+
+export default function Header({ user }: HeaderProps) {
   const { data: session, update } = useSession();
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const pathname = usePathname();
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  const subscriptionStatus =
+    session?.user?.subscriptionStatus || user?.subscriptionStatus;
+  const isPro = subscriptionStatus?.toLowerCase() === "pro";
+  const isHobby = subscriptionStatus?.toLowerCase() === "hobby";
+  const isBusiness = subscriptionStatus?.toLowerCase() === "business";
+
+  useEffect(() => {
+    if (user && update) {
+      update();
+    }
+  }, [user]);
+
+  // Close "More" menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsMenuOpen(false);
+        setIsMoreOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  if (!session) return null; // Don't show nav if not logged in
+
   const handleLogout = async () => {
     await signOut({ callbackUrl: "/login" });
   };
 
+  const navItems = [
+    { label: "Home", href: "/dashboard", icon: LayoutDashboard },
+    { label: "Account", href: "/account", icon: User },
+    { label: "Settings", href: "/settings", icon: Settings2 },
+  ];
+
   return (
-    <header className="main-header">
-      <div className="header-container" ref={menuRef}>
-        {/* LEFT: MENU TOGGLE */}
-        {!session ? (
-          <div className="filler" />
-        ) : (
-          <button
-            className={`menu-toggle ${isMenuOpen ? "is-active" : ""}`}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="Toggle Menu"
+    <nav className="mobile-nav" ref={menuRef}>
+      <div className="mobile-nav__container">
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={`mobile-nav__link ${isActive ? "is-active" : ""}`}
+            >
+              <Icon size={24} />
+              <span>{item.label}</span>
+            </Link>
+          );
+        })}
+
+        {/* MORE MENU TOGGLE */}
+        <button
+          className={`mobile-nav__link ${isMoreOpen ? "is-active" : ""}`}
+          onClick={() => setIsMoreOpen(!isMoreOpen)}
+        >
+          <MoreHorizontal size={24} />
+          <span>More</span>
+        </button>
+
+        {/* POPUP MENU */}
+        <div
+          className={`mobile-nav__popover ${isMoreOpen ? "is-visible" : ""}`}
+        >
+          {(isPro || isBusiness) && (
+            <Link
+              href="/inventory"
+              className="popover-item"
+              onClick={() => setIsMoreOpen(false)}
+            >
+              <Boxes size={20} />
+              <span>Inventory</span>
+            </Link>
+          )}
+          {(isPro || isBusiness) && (
+            <Link
+              href="/listing"
+              className="popover-item"
+              onClick={() => setIsMoreOpen(false)}
+            >
+              <Wand2 size={20} />
+              <span>Listing Studio</span>
+            </Link>
+          )}
+
+          {(isHobby || isPro || isBusiness) && (
+            <Link
+              href="/calculator"
+              className="popover-item"
+              onClick={() => setIsMoreOpen(false)}
+            >
+              <CircleDollarSign size={20} />
+              <span>Calculator</span>
+            </Link>
+          )}
+
+          <Link
+            href="/settings"
+            className="popover-item"
+            onClick={() => setIsMoreOpen(false)}
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+            <History size={20} />
+            <span>Scan History</span>
+          </Link>
+          <button className="popover-item logout" onClick={handleLogout}>
+            <LogOut size={20} />
+            <span>Sign Out</span>
           </button>
-        )}
-
-        {/* CENTER: BRAND */}
-
-        {!session ? (
-          <Link
-            href="/"
-            className="brand-link"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            {/* <span className="brand-logo-small">FF</span> */}
-            <h1 className="brand-text">
-              Flip<span>Savvy</span>
-            </h1>
-          </Link>
-        ) : (
-          <Link
-            href="/dashboard"
-            className="brand-link"
-            onClick={() => setIsMenuOpen(false)}
-          >
-            {/* <span className="brand-logo-small">FF</span> */}
-            <h1 className="brand-text">
-              Flip<span>Savvy</span>
-            </h1>
-          </Link>
-        )}
-        {/* RIGHT: QUICK ACTION */}
-        {!session ? (
-          // <Link href={"/login"}>
-          //   <button className="login-btn">Sign in</button>
-          // </Link>
-          ""
-        ) : (
-          <Link href="/account" className="account-quick-link">
-            <div className="avatar-placeholder">
-              <User size={20} />
-            </div>
-          </Link>
-        )}
-
-        {/* OVERLAY NAVIGATION */}
-        <div className={`nav-overlay ${isMenuOpen ? "is-visible" : ""}`}>
-          <nav className="dropdown-nav">
-            <div className="nav-header">
-              <span>Studio Navigation</span>
-            </div>
-            <ul className="nav-list">
-              <li>
-                <Link
-                  href="/dashboard"
-                  className="nav-item"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <LayoutDashboard size={20} />
-                  <div className="nav-item-content">
-                    <span className="nav-label">Dashboard</span>
-                    <span className="nav-desc">Start a new appraisal</span>
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/account"
-                  className="nav-item"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <User size={20} />
-                  <div className="nav-item-content">
-                    <span className="nav-label">Profile</span>
-                    <span className="nav-desc">Account & Subscription</span>
-                  </div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/settings"
-                  className="nav-item"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <Settings size={20} />
-                  <div className="nav-item-content">
-                    <span className="nav-label">Settings</span>
-                    <span className="nav-desc">Tools & Preferences</span>
-                  </div>
-                </Link>
-              </li>
-              {/* <li>
-                <Link
-                  href="/privacy"
-                  className="nav-item"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  <ShieldCheck size={20} />
-                  <div className="nav-item-content">
-                    <span className="nav-label">Privacy</span>
-                    <span className="nav-desc">Data & Security</span>
-                  </div>
-                </Link>
-              </li> */}
-              <li className="nav-divider"></li>
-              <li>
-                <button className="nav-item logout-btn" onClick={handleLogout}>
-                  <LogOut size={20} />
-                  <span className="nav-label">Sign Out</span>
-                </button>
-              </li>
-            </ul>
-          </nav>
         </div>
       </div>
-    </header>
+    </nav>
   );
 }

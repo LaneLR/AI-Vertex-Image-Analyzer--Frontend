@@ -1,5 +1,5 @@
 .profit-calc {
-  padding: 1rem;
+  padding: 2rem 1.25rem 4.5rem 1.25rem;
   max-width: 800px;
   margin: 0 auto;
   background-color: var(--bg-primary);
@@ -24,8 +24,17 @@
   }
 }
 
+.label-with-icon {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+  text-align: left;
+  gap: 4px;
+  width: 100%;
+}
+
 .calc-card {
-  background: var(--card-bg);
+  background: var(--bg-card);
   padding: 1.25rem;
   border-radius: 12px;
   border: 1px solid var(--border-color);
@@ -58,7 +67,7 @@
   padding: 0.75rem;
   border-radius: 8px;
   border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  background: var(--bg-main);
   color: var(--text-primary);
   font-size: 1rem;
 

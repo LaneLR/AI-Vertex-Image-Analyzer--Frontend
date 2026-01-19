@@ -350,7 +350,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
           </section>
         )}
 
-        <nav className="home-nav-grid">
+        {/* <nav className="home-nav-grid">
           <Link href="/history" className="nav-card nav-card--pro">
             <History />
             <span>Scan History</span>
@@ -361,7 +361,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
               <span>Listing Studio</span>
             </Link>
           )}
-        </nav>
+        </nav> */}
       </div>
 
       <InfoModal
