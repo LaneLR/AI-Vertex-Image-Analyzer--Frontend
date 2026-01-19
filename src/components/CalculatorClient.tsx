@@ -189,6 +189,7 @@ export default function CalculatorClient({
               <div className="calc-card__group">
                 <label>Fee Percentage (%)</label>
                 <input
+                  className="calc-input"
                   type="number"
                   inputMode="decimal"
                   pattern="[0-9]*"
@@ -210,7 +211,6 @@ export default function CalculatorClient({
                   onBlur={() => {
                     if (platformFeePercent === "") setPlatformFeePercent(0);
                   }}
-                  className="calc-input"
                 />
               </div>
 
