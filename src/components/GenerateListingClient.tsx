@@ -549,12 +549,14 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   <div className="result-group card">
                     <div className="result-group__header">
                       <label>
-                        <Layout size={18} /> Suggested platform for
-                        resale
+                        <Layout size={18} /> Suggested platform for resale
                       </label>
                       <button
                         onClick={() =>
-                          copyToClipboard(result.likelyBestPlatformToSellTheItemOn, "platform")
+                          copyToClipboard(
+                            result.likelyBestPlatformToSellTheItemOn,
+                            "platform",
+                          )
                         }
                       >
                         {copiedField === "platform" ? (
@@ -725,6 +727,9 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     `Remove Background`
                   )}
                 </button>
+                <p className="download-hint">
+                  Photo Studio does not count toward your daily scan limit.
+                </p>
               </div>
             </section>
 
