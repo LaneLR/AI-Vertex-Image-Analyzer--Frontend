@@ -16,6 +16,7 @@ import {
   Minus,
 } from "lucide-react";
 import { getApiUrl } from "@/lib/api-config";
+import { useRouter } from "next/navigation";
 
 interface InventoryItem {
   id: string;
@@ -46,6 +47,16 @@ export default function InventoryClient({
       purchasePrice: item?.purchasePrice || 0,
     })),
   );
+
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
 
   const totalValue = useMemo(() => {
     return items.reduce((sum, item) => {
@@ -127,9 +138,9 @@ export default function InventoryClient({
   return (
     <>
       <header className="help-page__header">
-        <Link href="/" className="back-btn">
+        <button onClick={handleBack} className="back-btn">
           <ArrowLeft size={20} />
-        </Link>
+        </button>
         <h1>Inventory Manager</h1>
         <div className="header-spacer" />
       </header>

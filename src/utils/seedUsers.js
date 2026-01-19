@@ -12,7 +12,6 @@ async function createTestUser() {
     // 2. Ensure connection and Sync
     // { alter: true } ensures the table matches your model exactly on Render
     await sequelize.authenticate();
-    console.log('✅ Connection has been established successfully.');
     await sequelize.sync({ alter: false }); 
 
     const testEmail = 'test@flipsavvy.com';
@@ -22,7 +21,6 @@ async function createTestUser() {
     const existingUser = await User.findOne({ where: { email: testEmail } });
 
     if (existingUser) {
-      console.log('⚠️ Test user already exists. Updating to ensure Pro status.');
       await existingUser.update({
         subscriptionStatus: 'pro',
         isVerified: true,
@@ -47,8 +45,6 @@ async function createTestUser() {
         isActive: true,
         verificationCode: null,
       });
-
-      console.log('🚀 Test user created successfully!');
     }
 
     process.exit(0);

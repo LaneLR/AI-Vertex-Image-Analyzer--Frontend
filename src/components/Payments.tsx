@@ -18,6 +18,14 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
   const isAndroid = platform === "android";
   const isNative = platform !== "web";
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
   const isBusiness = user?.subscriptionStatus === "business";
@@ -73,9 +81,9 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
   return (
     <>
       <header className="help-page__header">
-        <Link href="/" className="back-btn">
+        <button onClick={handleBack} className="back-btn">
           <ArrowLeft size={20} />
-        </Link>
+        </button>
         <h1>Payment Center</h1>
         <div className="header-spacer" />
       </header>

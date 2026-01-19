@@ -7,24 +7,26 @@ import { Mail, Lock, ArrowRight, Chrome } from "lucide-react";
 import InfoModal from "./InfoModal";
 import Loading from "./Loading";
 import Image from "next/image";
-import logo from "../../public/images/FlipFinderLogo.png";
+import logo from "../../public/images/flipsavvy-icon.png";
 import { getApiUrl } from "@/lib/api-config";
+import Link from "next/link";
 
 export default function UnifiedAuthPage() {
   const { status } = useSession();
   const [view, setView] = useState<"login" | "register" | "verify" | "forgot">(
-    "login"
+    "login",
   );
   const [sourceView, setSourceView] = useState<"register" | "forgot" | null>(
-    null
+    null,
   );
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState(""); // Plain password for Registration
+  const [password, setPassword] = useState("");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
@@ -49,6 +51,10 @@ export default function UnifiedAuthPage() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!agreedToTerms) {
+      setError("You must agree to the Terms and Privacy Policy.");
+      return;
+    }
     setLoading(true);
     setError("");
     try {
@@ -159,7 +165,7 @@ export default function UnifiedAuthPage() {
         setSourceView(null);
         openModal(
           "Password updated",
-          "You password has been updated. You can now log in."
+          "You password has been updated. You can now log in.",
         );
         setView("login");
       } else {
@@ -188,7 +194,7 @@ export default function UnifiedAuthPage() {
               router.push("/dashboard");
               router.refresh();
             }
-          }
+          },
         );
       };
     if (view === "register") return handleRegister;
@@ -203,7 +209,7 @@ export default function UnifiedAuthPage() {
           <Image width={125} height={125} alt="Logo" src={logo} priority />
           <h1 className="auth-title">
             {view === "login" && "Welcome Back"}
-            {view === "register" && "Join the Hunt"}
+            {view === "register" && "Join & Start Flipping"}
             {view === "verify" && "Enter Code"}
             {view === "forgot" && "Find Account"}
           </h1>
@@ -275,23 +281,55 @@ export default function UnifiedAuthPage() {
             </div>
           )}
 
-          <button type="submit" className="auth-submit-btn" disabled={loading}>
+          {view === "register" && (
+            <div className="terms-checkbox-wrapper">
+              <input
+                type="checkbox"
+                id="terms"
+                checked={agreedToTerms}
+                onChange={(e) => setAgreedToTerms(e.target.checked)}
+                className="custom-checkbox"
+              />
+              <label htmlFor="terms" className="terms-label">
+                I agree to the{" "}
+                <Link href="/terms" target="_blank" className="terms-link">
+                  Terms of Service
+                </Link>{" "}
+                and{" "}
+                <Link href="/privacy" target="_blank" className="terms-link">
+                  Privacy Policy
+                </Link>
+              </label>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            className="auth-submit-btn"
+            disabled={loading || (view === "register" && !agreedToTerms)}
+          >
             {loading
               ? "Processing..."
               : view === "forgot"
-              ? "Send reset code"
-              : view === "verify"
-              ? "Verify code"
-              : view === "register"
-              ? "Create account"
-              : "Log in"}
+                ? "Send reset code"
+                : view === "verify"
+                  ? "Verify code"
+                  : view === "register"
+                    ? "Create account"
+                    : "Log in"}
             {!loading && <ArrowRight size={18} />}
           </button>
 
-           {(view === "login" || view === "register") && (
+          {(view === "login" || view === "register") && (
             <>
-              <div className="auth-divider"><span>OR</span></div>
-              <button type="button" className="google-auth-btn" onClick={() => signIn("google", { callbackUrl: "/" })}>
+              <div className="auth-divider">
+                <span>OR</span>
+              </div>
+              <button
+                type="button"
+                className="google-auth-btn"
+                onClick={() => signIn("google", { callbackUrl: "/" })}
+              >
                 <Chrome size={18} />
                 Continue with Google
               </button>

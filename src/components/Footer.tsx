@@ -1,11 +1,21 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { HelpCircle, ShieldCheck, Info, Github, Sparkles } from "lucide-react";
+import {
+  ShieldCheck,
+  Info,
+  Sparkles,
+  Target,
+  ScanEye,
+  TrendingUp,
+  BadgeDollarSignIcon,
+} from "lucide-react";
+import InfoModal from "./InfoModal";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 
   return (
     <footer className="footer">
@@ -16,7 +26,6 @@ export default function Footer() {
             <div className="footer__brand-container">
               <div className="footer__logo">
                 <Link href="/" className="brand-link">
-                  {/* <span className="brand-logo-small">FF</span> */}
                   <h1 className="brand-text">
                     Flip<span>Savvy</span>
                   </h1>
@@ -25,58 +34,144 @@ export default function Footer() {
               <div className="footer__badges">
                 <span className="badge-pill">
                   <Sparkles size={12} />
-                  Powered by Gemini
+                  Powered by Vertex AI
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Navigation Links */}
-          <div className="footer__section-group">
-            <div className="footer__section">
-              <h4 className="footer__label">Resources</h4>
-              <ul className="footer__list">
-                <li>
-                  <Link href="/help" className="footer__link">
-                    <HelpCircle size={16} />
-                    Help Center
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/about" className="footer__link">
-                    <Info size={16} />
-                    About Us
-                  </Link>
-                </li>
-              </ul>
-            </div>
-
-            <div className="footer__section">
-              <h4 className="footer__label">LEGAL</h4>
-              <ul className="footer__list">
-                <li>
-                  <Link href="/terms" className="footer__link">
-                    <ShieldCheck size={16} />
-                    Terms of Service
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/privacy" className="footer__link">
-                    <ShieldCheck size={16} />
-                    Privacy
-                  </Link>
-                </li>
-              </ul>
-            </div>
+          {/* Consolidated Resources Flex Container */}
+          <div className="footer__resources">
+            <button
+              className="footer__link"
+              onClick={() => setIsAboutModalOpen(true)}
+            >
+              <Info size={16} />
+              About Us
+            </button>
+            <Link href="/terms" className="footer__link">
+              <ShieldCheck size={16} />
+              Terms
+            </Link>
+            <Link href="/privacy" className="footer__link">
+              <ShieldCheck size={16} />
+              Privacy
+            </Link>
           </div>
         </div>
+
         <div className="footer__bottom">
           <div className="footer__copyright">
-            {/* ©  */}
-            {currentYear} FlipSavvy • {process.env.NEXT_PUBLIC_APP_VERSION}
+            {currentYear} FlipSavvy • v{process.env.NEXT_PUBLIC_APP_VERSION}
           </div>
         </div>
       </div>
+
+      {/* About Us Modal Content */}
+      <InfoModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+        title="About FlipSavvy"
+      >
+        <div className="feature-info-modal">
+          <div
+            className="about-hero"
+            style={{ textAlign: "center", marginBottom: "1.5rem" }}
+          >
+            <ScanEye
+              size={40}
+              color="var(--primary-theme)"
+              style={{ marginBottom: "0.5rem" }}
+            />
+            <p style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
+              Empowering thrifters with AI-driven market insights.
+            </p>
+          </div>
+
+          <div className="about-section" style={{ marginBottom: "1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "5px",
+                fontSize: "0.75rem",
+                fontWeight: "bold",
+                textTransform: "uppercase",
+                marginBottom: "0.5rem",
+                color: "var(--text-muted)",
+              }}
+            >
+              <Target size={14} /> Our Mission
+            </div>
+            <p style={{ fontSize: "0.95rem", lineHeight: "1.5" }}>
+              FlipSavvy was built for the modern treasure hunter. We combine AI
+              vision technology with market data to help you flip finds with
+              confidence.
+            </p>
+          </div>
+
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+          >
+            <div
+              style={{
+                background: "var(--bg-secondary)",
+                padding: "1rem",
+                borderRadius: "12px",
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: "0.95rem",
+                  marginBottom: "0.25rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <ScanEye size={16} /> Identify
+              </h3>
+              <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                Snap a photo and let AI recognize brands and styles instantly.
+              </p>
+            </div>
+            <div
+              style={{
+                background: "var(--bg-secondary)",
+                padding: "1rem",
+                borderRadius: "12px",
+              }}
+            >
+              <h3
+                style={{
+                  fontSize: "0.95rem",
+                  marginBottom: "0.25rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                }}
+              >
+                <TrendingUp size={16} /> Appraise
+              </h3>
+              <p style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>
+                Get instant price estimates based on resale market trends.
+              </p>
+            </div>
+          </div>
+
+          <div
+            className="delete-modal__actions"
+            style={{ marginTop: "1.5rem" }}
+          >
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setIsAboutModalOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </InfoModal>
     </footer>
   );
 }

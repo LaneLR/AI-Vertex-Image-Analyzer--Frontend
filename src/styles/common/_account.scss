@@ -16,7 +16,6 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    .back-btn,
     .logout-icon-btn {
       color: var(--text-primary);
       background: none;
@@ -32,11 +31,19 @@
   }
 }
 
+.back-btn {
+  border: none;
+  display: flex;
+  align-items: center;
+  background: transparent;
+  color: var(--text-primary)
+}
+
 .profile-hero {
   display: flex;
   align-items: center;
   gap: 1.25rem;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.25rem;
 
   &__avatar {
     width: 64px;
@@ -135,7 +142,7 @@
     }
   }
   .usage-hint {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--text-secondary);
     margin-bottom: 1.5rem;
     text-align: center;
@@ -166,14 +173,11 @@
     svg {
       color: var(--primary-theme);
     }
-
-
   }
 
   svg {
     color: var(--text-primary);
   }
-
 }
 
 .history-preview {

@@ -24,6 +24,8 @@ import Loading from "./Loading";
 import Link from "next/link";
 import { getApiUrl } from "@/lib/api-config";
 import { useApp } from "@/context/AppContext";
+import { useRouter } from "next/navigation";
+import InfoModal from "./InfoModal";
 
 interface GenerateListingProps {
   user: any;
@@ -42,11 +44,17 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [useWhiteBackground, setUseWhiteBackground] = useState(false);
   const { dailyScansUsed, setDailyScansUsed, incrementScans } = useApp();
+  const [alertModal, setAlertModal] = useState<{
+    title: string;
+    message: string;
+  } | null>(null);
 
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
   const isBusiness = user?.subscriptionStatus === "business";
-  const maxPhotos = isPro || isHobby || isBusiness ? 3 : 1;
+  const maxPhotos = isPro || isBusiness ? 3 : isHobby ? 2 : 1;
+
+  const router = useRouter();
 
   useEffect(() => {
     if (user?.dailyScansCount !== undefined) {
@@ -57,7 +65,15 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       setDailyScansUsed(isNewDay ? 0 : user.dailyScansCount);
     }
   }, [user?.dailyScansCount, user?.lastScanDate]);
-  // --- SEO HANDLERS ---
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -103,9 +119,19 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       if (res.ok) {
         setResult(data);
         incrementScans();
-      } else alert(data.error || "Error generating listing");
+      } else {
+        setAlertModal({
+          title: "Generation Error",
+          message:
+            "We couldn't generate your listing. Please check your connection and try again.",
+        });
+      }
     } catch (err) {
-      alert("Error generating listing");
+      setAlertModal({
+        title: "Connection Error",
+        message:
+          "An unexpected error occurred while connecting to Listing Studio.",
+      });
     } finally {
       setLoading(false);
     }
@@ -187,7 +213,10 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       }
     } catch (err: any) {
       console.error("Studio Error:", err);
-      alert(err.message);
+      setAlertModal({
+        title: "Studio Error",
+        message: "There was an error while processing the image. Please wait a minute and try again.",
+      });
     } finally {
       setIsProcessing(false);
     }
@@ -202,9 +231,9 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
   return (
     <main className="listing-page">
       <header className="listing-page__header">
-        <Link href="/" className="back-btn">
+        <button onClick={handleBack} className="back-btn">
           <ArrowLeft size={20} />
-        </Link>
+        </button>
         <div className="listing-page__header-content">
           <div className="listing-page__header-container">
             <div className="listing-page__header-title">
@@ -541,7 +570,11 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                 <div className="empty-state">
                   <ImageIcon size={48} />
                   <h3>Your listing photo will appear here</h3>
-                  {useWhiteBackground ? <p>The image will be have a white background.</p> : <p>The image will be have a transparent background.</p>}
+                  {useWhiteBackground ? (
+                    <p>The image will be have a white background.</p>
+                  ) : (
+                    <p>The image will be have a transparent background.</p>
+                  )}
                 </div>
               ) : isProcessing ? (
                 <div className="loading-state">
@@ -593,6 +626,23 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
           </div>
         )}
       </div>
+      <InfoModal
+        isOpen={!!alertModal}
+        onClose={() => setAlertModal(null)}
+        title={alertModal?.title || "Notice"}
+      >
+        <div className="help-article">
+          <p className="help-article__text">{alertModal?.message}</p>
+          <div className="help-article__actions">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setAlertModal(null)}
+            >
+              Dismiss
+            </button>
+          </div>
+        </div>
+      </InfoModal>
     </main>
   );
 }

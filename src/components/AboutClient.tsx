@@ -2,17 +2,36 @@
 
 import React from "react";
 import Link from "next/link";
-import { ArrowLeft, Target, ScanEye, TrendingUp, Info, DollarSign, DollarSignIcon, CircleDollarSign, BadgeDollarSignIcon } from "lucide-react";
-
+import {
+  ArrowLeft,
+  Target,
+  ScanEye,
+  TrendingUp,
+  Info,
+  DollarSign,
+  DollarSignIcon,
+  CircleDollarSign,
+  BadgeDollarSignIcon,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export default function AboutClient() {
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
   return (
     <main className="about-page">
       {/* Navigation */}
       <header className="about-page__header">
-        <Link href="/" className="back-btn">
+        <button onClick={handleBack} className="back-btn">
           <ArrowLeft size={20} />
-        </Link>
+        </button>
         <h1>About Us</h1>
         <div className="header-spacer" />
       </header>
@@ -36,8 +55,8 @@ export default function AboutClient() {
           </div>
           <p className="about-text">
             FlipSavvy was built for the modern treasure hunter. We combine
-            cutting-edge AI vision technology with real-time market data to
-            help you identify, value, and flip thrift store finds with confidence.
+            cutting-edge AI vision technology with real-time market data to help
+            you identify, value, and flip thrift store finds with confidence.
           </p>
         </section>
 
@@ -48,7 +67,10 @@ export default function AboutClient() {
               <ScanEye size={20} />
             </div>
             <h3>Identify</h3>
-            <p>Snap a photo and let our AI recognize brands, styles, and eras instantly.</p>
+            <p>
+              Snap a photo and let our AI recognize brands, styles, and eras
+              instantly.
+            </p>
           </div>
 
           <div className="feature-card feature-card--featured">
@@ -56,7 +78,10 @@ export default function AboutClient() {
               <TrendingUp size={20} />
             </div>
             <h3>Appraise</h3>
-            <p>Get instant price estimates based on current resale market trends.*</p>
+            <p>
+              Get instant price estimates based on current resale market
+              trends.*
+            </p>
           </div>
 
           <div className="feature-card">
@@ -64,7 +89,9 @@ export default function AboutClient() {
               <BadgeDollarSignIcon size={20} />
             </div>
             <h3>Profit</h3>
-            <p>Turn your hobby into a hustle with data-backed buying decisions.**</p>
+            <p>
+              Turn your hobby into a hustle with data-backed buying decisions.**
+            </p>
           </div>
         </div>
 
@@ -76,12 +103,13 @@ export default function AboutClient() {
               <span>Legal Disclaimers</span>
             </div>
             <p>
-              *FlipSavvy is an AI tool that provides price estimates and does not 
-              guarantee accuracy. AI-generated appraisals can be incorrect or unreliable. 
-              Please perform your own research.
+              *FlipSavvy is an AI tool that provides price estimates and does
+              not guarantee accuracy. AI-generated appraisals can be incorrect
+              or unreliable. Please perform your own research.
             </p>
             <p>
-              **FlipSavvy does not guarantee profit or success in resale activities.
+              **FlipSavvy does not guarantee profit or success in resale
+              activities.
             </p>
           </div>
         </footer>

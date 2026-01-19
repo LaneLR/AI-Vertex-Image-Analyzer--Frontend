@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { ArrowLeft, Calculator, History, Trash2, Info } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface ScanHistoryItem {
   id: string;
@@ -36,6 +37,16 @@ export default function CalculatorClient({
   const [platformFeePercent, setPlatformFeePercent] = useState<number>(13.25);
   const [otherCosts, setOtherCosts] = useState<number | "">("");
 
+  const router = useRouter();
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
   // Handle selecting an item from history
   const handleSelectItem = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const item = history.find((h) => h.id === e.target.value);
@@ -62,9 +73,9 @@ export default function CalculatorClient({
   return (
     <>
       <header className="help-page__header">
-        <Link href="/" className="back-btn">
+        <button onClick={handleBack} className="back-btn">
           <ArrowLeft size={20} />
-        </Link>
+        </button>
         <h1>Profit Calculator</h1>
         <div className="header-spacer" />
       </header>

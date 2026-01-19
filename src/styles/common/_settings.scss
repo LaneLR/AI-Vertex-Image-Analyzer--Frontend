@@ -89,10 +89,13 @@
   &:last-child {
     border-bottom: none;
   }
-  &--clickable:active {
-    background: var(--bg-header);
-    opacity: 0.8;
-  }
+  // &--clickable:hover {
+  //   background: var(--bg-hover);
+  // }
+  // &--clickable:active {
+  //   background: var(--bg-card);
+  //   opacity: 0.8;
+  // }
   &--btn {
     width: 100%;
     border: none;
