@@ -69,12 +69,22 @@
       max-width: 500px;
       width: 100%;
       top: 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
   }
 
   @media (min-width: 992px) {
     grid-template-columns: 400px 1fr;
   }
+}
+
+.download-hint {
+  font-size: 11px;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  text-align: center;
 }
 
 .listing-card--title {
@@ -722,4 +732,21 @@
     border-radius: 50%;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
+}
+
+
+.share-grid-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.share-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  width: 100%;
 }

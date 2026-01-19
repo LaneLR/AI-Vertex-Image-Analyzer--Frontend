@@ -50,31 +50,32 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
     basic: ["5 Scans per day", "1 Image per scan", "Basic price estimates"],
     hobby: [
       "50 scans per day",
-      "Profit calculator",
       "2 Images per scan",
-      "Improved accuracy price estimates",
-      "Access to SEO Generator to create SEO-optimized listing details",
+      "Improved accuracy and price estimates",
+      "Access to Profit Calculator",
+      "Receive Profitability Grades on appraised items"
     ],
     pro: [
       "100 scans per day",
-      "Profit calculator",
       "3 Images per scan",
       "High accuracy price estimates",
+      "Access to Profit Calculator",
+      "Receive Profitability Grades on appraised items",
       "Access to SEO Generator to create SEO-optimized listing details",
-      "Access to Photo Studio to automatically remove backgrounds for listing photos",
+      "Access to Photo Studio to automatically create listing photos",
       "Multi-platform and marketplace price comparison",
-      "Item sell-through rates and demand indicators",
     ],
     business: [
       "250 scans per day",
-      "Profit calculator",
       "3 Images per scan",
       "High accuracy price estimates",
+      "Access to Profit Calculator",
+      "Receive Profitability Grades on appraised items",
       "Access to SEO Generator to create SEO-optimized listing details",
-      "Access to Photo Studio to automatically remove backgrounds for listing photos",
+      "Access to Photo Studio to automatically create listing photos",
       "Multi-platform and marketplace price comparison",
-      "Item sell-through rates and demand indicators",
-      "CSV download of listings for bulk uploading",
+      "Access to Inventory Manager for tracking and managing items",
+      "CSV download of inventory and listings for bulk uploading",
     ],
   };
 
@@ -90,90 +91,93 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
 
       <main className="pricing-section">
         <header className="pricing-section__header">
-          <h1 className="pricing-section__title">Upgrade Your Sourcing</h1>
+          <h1 className="pricing-section__title">Upgrade Your Experience</h1>
           <p className="pricing-section__subtitle">
             Choose the plan that fits you.
           </p>
         </header>
 
-        <div className="pricing-section__grid">
-          <div className="web__pricingWrapper">
-            {/* BUSINESS CARD */}
-            <div className="paymentCard planCardPro">
-              <h3 className="paymentCard__name">Business</h3>
-              <div className="paymentCard__price">
-                34.99<span>/ mo</span>
-              </div>
-              <ul className="paymentCard__list">
-                {features.business.map((f, i) => (
-                  <li key={i}>
-                    <Check size={18} /> {f}
-                  </li>
-                ))}
-              </ul>
-              <SubscribeButton
-                priceId={process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID!}
-                isBusiness={isBusiness}
-              />
-            </div>
+        <div className="pricing-grid">
+  {/* BUSINESS CARD */}
+  <div className="plan-card">
+    <h3 className="plan-card__name">Business</h3>
+    <div className="plan-card__price">
+      34.99<span className="plan-card__month">/ mo</span>
+    </div>
+    <ul className="plan-card__feature-list">
+      {features.business.map((f, i) => (
+        <li key={i} className="plan-card__feature-item">
+          <Check className="plan-card__icon" size={18} /> 
+          <span className="plan-card__feature-text">{f}</span>
+        </li>
+      ))}
+    </ul>
+    <SubscribeButton
+      priceId={process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID!}
+      isBusiness={isBusiness}
+    />
+  </div>
 
-            {/* PRO CARD */}
-            <div className="paymentCard planCardPro">
-              <h3 className="paymentCard__name">Pro</h3>
-              <div className="paymentCard__price">
-                19.99<span>/ mo</span>
-              </div>
-              <ul className="paymentCard__list">
-                {features.pro.map((f, i) => (
-                  <li key={i}>
-                    <Check size={18} /> {f}
-                  </li>
-                ))}
-              </ul>
-              <SubscribeButton
-                priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
-                isPro={isPro}
-              />
-            </div>
+  {/* PRO CARD (Featured) */}
+  <div className="plan-card plan-card--featured">
+    <div className="plan-card__badge">Most Popular</div>
+    <h3 className="plan-card__name">Pro</h3>
+    <div className="plan-card__price">
+      19.99<span className="plan-card__month">/ mo</span>
+    </div>
+    <ul className="plan-card__feature-list">
+      {features.pro.map((f, i) => (
+        <li key={i} className="plan-card__feature-item">
+          <Check className="plan-card__icon" size={18} /> 
+          <span className="plan-card__feature-text">{f}</span>
+        </li>
+      ))}
+    </ul>
+    <SubscribeButton
+      priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
+      isPro={isPro}
+    />
+  </div>
 
-            {/* HOBBYIST CARD */}
-            <div className="paymentCard planCardPro">
-              <h3 className="paymentCard__name">Hobbyist</h3>
-              <div className="paymentCard__price">
-                9.99<span>/ mo</span>
-              </div>
-              <ul className="paymentCard__list">
-                {features.hobby.map((f, i) => (
-                  <li key={i}>
-                    <Check size={18} /> {f}
-                  </li>
-                ))}
-              </ul>
-              <SubscribeButton
-                priceId={process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID!}
-                isHobby={isHobby}
-              />
-            </div>
+  {/* HOBBYIST CARD */}
+  <div className="plan-card">
+    <h3 className="plan-card__name">Hobbyist</h3>
+    <div className="plan-card__price">
+      9.99<span className="plan-card__month">/ mo</span>
+    </div>
+    <ul className="plan-card__feature-list">
+      {features.hobby.map((f, i) => (
+        <li key={i} className="plan-card__feature-item">
+          <Check className="plan-card__icon" size={18} /> 
+          <span className="plan-card__feature-text">{f}</span>
+        </li>
+      ))}
+    </ul>
+    <SubscribeButton
+      priceId={process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID!}
+      isHobby={isHobby}
+    />
+  </div>
 
-            {/* BASIC CARD */}
-            <div className="paymentCard">
-              <h3 className="paymentCard__name">Basic</h3>
-              <div className="paymentCard__price">
-                0<span>/ mo</span>
-              </div>
-              <ul className="paymentCard__list">
-                {features.basic.map((f, i) => (
-                  <li key={i}>
-                    <Check size={18} /> {f}
-                  </li>
-                ))}
-              </ul>
-              <button className="generate-btn" disabled={isBasic}>
-                {isBasic ? "Current Plan" : "Free"}
-              </button>
-            </div>
-          </div>
-        </div>
+  {/* BASIC CARD */}
+  <div className="plan-card">
+    <h3 className="plan-card__name">Free</h3>
+    <div className="plan-card__price">
+      0<span className="plan-card__month">/ mo</span>
+    </div>
+    <ul className="plan-card__feature-list">
+      {features.basic.map((f, i) => (
+        <li key={i} className="plan-card__feature-item">
+          <Check className="plan-card__icon" size={18} /> 
+          <span className="plan-card__feature-text">{f}</span>
+        </li>
+      ))}
+    </ul>
+    <button className="generate-btn" disabled={isBasic}>
+      {isBasic ? "Current Plan" : "Free"}
+    </button>
+  </div>
+</div>
       </main>
     </>
   );
