@@ -108,9 +108,10 @@ export async function POST(req: Request) {
   await connectDB();
 
   // 2. Map your Stripe Price IDs to your database tiers
-  const getTierFromPriceId = (priceId: string): "hobby" | "pro" | "basic" => {
+  const getTierFromPriceId = (priceId: string): "hobby" | "pro" | "business" | "basic" => {
     if (priceId === process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID) return "pro";
     if (priceId === process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID) return "hobby";
+    if (priceId === process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID) return "business";
     return "basic";
   };
 
