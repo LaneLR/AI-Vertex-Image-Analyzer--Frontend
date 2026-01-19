@@ -84,7 +84,7 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
         {
           title: "App performance",
           content:
-            "If the app feels sluggish, go to your phone's Settings and cler your cache. This removes temporary image data without deleting your scan history. Ensure you are using the latest version of the app from the App Store or Google Play. If you are using FlipSavvy on the web, ensure your browser (Chrome, Safari, or Firefox) is up to date and that you aren't using 'Incognito Mode,' which can sometimes block the local storage needed for your preferences.",
+            "If the app feels sluggish, go to your phone's Settings and cler your cache. This removes temporary image data without deleting your scan history. Ensure you are using the latest version of the app from the App Store or Google Play.",
         },
         {
           title: "Scan history missing",
