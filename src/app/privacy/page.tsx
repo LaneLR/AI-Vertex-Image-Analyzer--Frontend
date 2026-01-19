@@ -6,7 +6,5 @@ export const metadata = {
 };
 
 export default function PrivacyPage() {
-  // Logic: Static for now, but ready for dynamic data 
-  // if legal updates are ever pulled from a database.
   return <PrivacyClient />;
 }

@@ -96,7 +96,7 @@ export default function Header({ user }: HeaderProps) {
         <div
           className={`mobile-nav__popover ${isMoreOpen ? "is-visible" : ""}`}
         >
-          {(isPro || isBusiness) && (
+          {(isBusiness) && (
             <Link
               href="/inventory"
               className="popover-item"

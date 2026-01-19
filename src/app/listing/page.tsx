@@ -11,7 +11,7 @@ export default async function ListingPage() {
     redirect("/login");
   }
 
-  if (session?.user?.subscriptionStatus === "basic") {
+  if (session?.user?.subscriptionStatus === "basic" || session?.user?.subscriptionStatus === "hobby") {
     redirect("/account");
   }
 

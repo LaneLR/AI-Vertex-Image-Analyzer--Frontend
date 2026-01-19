@@ -227,7 +227,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
         )}
 
         {/* TOOLS SHORTCUTS */}
-        {(isPro || isHobby || isBusiness) && (
+        {(isPro || isBusiness) && (
           <Link href="/listing" className="account-card listing-shortcut">
             <div className="shortcut-info">
               <Wand2 size={20} />
@@ -240,7 +240,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
           </Link>
         )}
 
-        {(isBusiness || isPro) && (
+        {(isBusiness) && (
           <Link href="/inventory" className="account-card listing-shortcut">
             <div className="shortcut-info">
               <Boxes size={20} />

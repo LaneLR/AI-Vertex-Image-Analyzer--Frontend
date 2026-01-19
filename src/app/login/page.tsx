@@ -17,13 +17,10 @@ export default async function LoginPage() {
     } else {
       redirect("/login");
     }
-    return null;
   }
 
-  // Web: If authenticated, redirect to dashboard
   if (session) {
     redirect("/dashboard");
-    return null;
   }
 
   // Web: Unauthenticated users can see login page
