@@ -127,7 +127,7 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
                 {cat.items.map((item) => (
                   <button
                     key={item.title}
-                    className="settings-item settings-item--btn"
+                    className="settings-item settings-item--clickable"
                     onClick={() =>
                       setActiveModal({
                         title: item.title,
@@ -135,7 +135,7 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
                       })
                     }
                   >
-                    <span className="item-label">{item.title}</span>
+                    <span className="item-label-help">{item.title}</span>
                     <ChevronRight size={18} className="chevron" />
                   </button>
                 ))}
@@ -160,7 +160,7 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
         <div className="help-article">
           <p className="help-article__text">{activeModal?.content}</p>
 
-          <div className="help-article__feedback">
+          {/* <div className="help-article__feedback">
             <span>Was this helpful?</span>
             <div className="feedback-btns">
               <button
@@ -176,7 +176,7 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
                 No
               </button>
             </div>
-          </div>
+          </div> */}
 
           <div className="help-article__actions">
             <button

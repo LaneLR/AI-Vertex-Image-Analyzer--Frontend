@@ -67,7 +67,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
   const isBusiness = user?.subscriptionStatus === "business";
-  const maxPhotos = isPro || isHobby || isBusiness ? 3 : 1;
+  const maxPhotos = isPro || isBusiness ? 3 : isHobby ? 2 : 1;
 
   // --- 1. Robust Extraction Helper ---
   const extractFirstNumber = (val: any): number => {
