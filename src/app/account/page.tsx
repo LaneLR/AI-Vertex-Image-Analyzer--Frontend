@@ -9,7 +9,6 @@ export default async function AccountPage() {
 
   // 2. If no session, redirect to login
   if (!session) {
-    console.log("[account/page.tsx] No session found. Redirecting to /login.");
     redirect("/login");
   }
 

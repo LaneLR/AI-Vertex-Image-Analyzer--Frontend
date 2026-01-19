@@ -19,6 +19,7 @@ import { getApiUrl } from "@/lib/api-config";
 import getGradeColor from "@/helpers/colorGrade";
 import InfoModal from "./InfoModal";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 interface HistoryItem {
   id: string;
@@ -44,6 +45,7 @@ export default function HistoryClient({ user: initialUser }: { user: any }) {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const { data: session, update } = useSession();
   const user = session?.user || initialUser;
+  const router = useRouter();
 
   const isHobby = user?.subscriptionStatus === "hobby";
   const isPro = user?.subscriptionStatus === "pro";
@@ -122,6 +124,14 @@ export default function HistoryClient({ user: initialUser }: { user: any }) {
     }
   };
 
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
   const groupHistoryByDate = (items: HistoryItem[]) => {
     const groups: { [key: string]: HistoryItem[] } = {};
     const now = new Date();
@@ -165,11 +175,11 @@ export default function HistoryClient({ user: initialUser }: { user: any }) {
   return (
     <main className="history-page">
       <nav className="history-page__nav">
-        <Link href="/account" className="history-page__nav-back">
-          <ArrowLeft size={24} />
-        </Link>
+        <button onClick={handleBack} className="back-btn">
+          <ArrowLeft size={20} />
+        </button>
         <h1 className="history-page__nav-title">Scan History</h1>
-        <div className="header-placeholder" />
+        <div className="header-spacer" />
       </nav>
 
       <div className="history-page__container">
@@ -251,18 +261,19 @@ export default function HistoryClient({ user: initialUser }: { user: any }) {
                                     >
                                       <Trash2 size={18} />
                                     </button>
-                                    {isBusiness || isPro && (
-                                      <button
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          handleAddToInventory(item.id);
-                                        }}
-                                        className="history-card__inventory-btn"
-                                        title="Add to Inventory"
-                                      >
-                                        <Boxes size={18} />
-                                      </button>
-                                    )}
+                                    {isBusiness ||
+                                      (isPro && (
+                                        <button
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleAddToInventory(item.id);
+                                          }}
+                                          className="history-card__inventory-btn"
+                                          title="Add to Inventory"
+                                        >
+                                          <Boxes size={18} />
+                                        </button>
+                                      ))}
                                   </div>
                                 </div>
                                 <div className="history-card__meta">

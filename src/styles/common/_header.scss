@@ -1,5 +1,5 @@
 .main-header {
-  // position: sticky;
+  position: sticky;
   top: 0;
   z-index: 1000;
   background: var(--bg-header);
@@ -82,6 +82,7 @@
   padding: 8px;
   border-radius: 12px;
   transition: background 0.2s;
+  width: 52px;
 
   &:hover {
     background: rgba(var(--text-primary-rgb), 0.05);

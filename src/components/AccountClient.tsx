@@ -21,7 +21,7 @@ import {
 import Link from "next/link";
 import { Capacitor } from "@capacitor/core";
 import { useSession } from "next-auth/react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import InfoModal from "./InfoModal";
 import { getApiUrl } from "@/lib/api-config";
 import PaymentsClient from "./Payments";
@@ -34,6 +34,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
   const [errorModal, setErrorModal] = useState(false);
 
   const user = session?.user || initialUser;
+  const router = useRouter();
 
   const success = searchParams.get("success");
 
@@ -42,6 +43,14 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
       update();
     }
   }, [success]);
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
 
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const isHobby = user?.subscriptionStatus?.toLowerCase() === "hobby";
@@ -73,11 +82,11 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
   return (
     <main className="account-page">
       <header className="account-page__header">
-        <Link href="/" className="back-btn">
+        <button onClick={handleBack} className="back-btn">
           <ArrowLeft size={20} />
-        </Link>
+        </button>
         <h1>Account Settings</h1>
-        <div />
+        <div className="header-spacer" />
       </header>
 
       <div className="account-page__content">
@@ -220,7 +229,6 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
             <ChevronRight size={18} />
           </Link>
         )}
-
 
         {(isBusiness || isPro) && (
           <Link href="/inventory" className="account-card listing-shortcut">

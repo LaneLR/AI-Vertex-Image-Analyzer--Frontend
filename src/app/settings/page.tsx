@@ -8,11 +8,8 @@ export default async function SettingsPage() {
   const session = await getServerSession(authOptions);
 
   if (!session) {
-    console.log("[settings/page.tsx] No session found. Redirecting to /login.");
     redirect("/login");
   }
-
-  console.log(`[settings/page.tsx] Session verified for: ${session.user?.email}. Rendering SettingsClient.`);
 
   return <SettingsClient user={session.user} />;
 }

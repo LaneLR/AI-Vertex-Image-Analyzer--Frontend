@@ -268,29 +268,27 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
               </div>
             </label>
           )}
-          {(isBusiness || isPro) && (
-              <div
-                className={`studio-option ${addToInventory ? "active" : ""}`}
-              >
-                <div className="studio-option__content">
-                  <label
-                    htmlFor="inventory-toggle"
-                    className="studio-option__label"
-                  >
-                    Auto-add to Inventory
-                  </label>
-                  <label className="toggle-switch">
-                    <input
-                      type="checkbox"
-                      id="inventory-toggle"
-                      checked={addToInventory}
-                      onChange={(e) => setAddToInventory(e.target.checked)}
-                    />
-                    <span className="toggle-slider"></span>
-                  </label>
-                </div>
+          {isBusiness && (
+            <div className={`studio-option ${addToInventory ? "active" : ""}`}>
+              <div className="studio-option__content">
+                <label
+                  htmlFor="inventory-toggle"
+                  className="studio-option__label"
+                >
+                  Auto-add to Inventory
+                </label>
+                <label className="toggle-switch">
+                  <input
+                    type="checkbox"
+                    id="inventory-toggle"
+                    checked={addToInventory}
+                    onChange={(e) => setAddToInventory(e.target.checked)}
+                  />
+                  <span className="toggle-slider"></span>
+                </label>
               </div>
-            )}
+            </div>
+          )}
           <button
             className={`generate-btn ${loading ? "loading" : ""}`}
             disabled={images.length === 0 || loading}

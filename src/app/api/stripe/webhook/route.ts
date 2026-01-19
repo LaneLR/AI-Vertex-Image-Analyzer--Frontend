@@ -31,8 +31,6 @@
 //         const session = event.data.object as Stripe.Checkout.Session;
 //         const userId = session.client_reference_id;
 
-//         console.log(`DEBUG: Processing Checkout for UserID: ${userId}`);
-
 //         // Safe UUID lookup
 //         const user = await User.findByPk(userId as string);
 
@@ -51,8 +49,6 @@
 //           subscriptionEndDate: new Date((subscription as any)["current_period_end"] * 1000),
 //           cancelAtPeriodEnd: false
 //         });
-
-//         console.log(`✅ SUCCESS: User ${user.email} is now PRO.`);
 //         break;
 //       }
 
@@ -70,7 +66,6 @@
 //             cancelAtPeriodEnd: sub.cancel_at_period_end,
 //             subscriptionEndDate: new Date((sub as any)["current_period_end"] * 1000),
 //           });
-//           console.log(`ℹ️ Subscription updated for ${user.email}`);
 //         }
 //         break;
 //       }
@@ -144,7 +139,6 @@ export async function POST(req: Request) {
           cancelAtPeriodEnd: false
         });
 
-        console.log(`✅ User ${user.email} upgraded to ${tier.toUpperCase()}`);
         break;
       }
 
@@ -167,7 +161,6 @@ export async function POST(req: Request) {
             cancelAtPeriodEnd: sub.cancel_at_period_end,
             subscriptionEndDate: new Date((sub as any)["current_period_end"] * 1000),
           });
-          console.log(`ℹ️ Subscription synced: ${user.email} is now ${tier}`);
         }
         break;
       }

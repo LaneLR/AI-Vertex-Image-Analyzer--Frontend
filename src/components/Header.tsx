@@ -75,9 +75,10 @@ export default function Header() {
         )}
         {/* RIGHT: QUICK ACTION */}
         {!session ? (
-          <Link href={"/login"}>
-            <button className="login-btn">Sign in</button>
-          </Link>
+          // <Link href={"/login"}>
+          //   <button className="login-btn">Sign in</button>
+          // </Link>
+          ""
         ) : (
           <Link href="/account" className="account-quick-link">
             <div className="avatar-placeholder">
@@ -128,11 +129,11 @@ export default function Header() {
                   <Settings size={20} />
                   <div className="nav-item-content">
                     <span className="nav-label">Settings</span>
-                    <span className="nav-desc">Preferences & History</span>
+                    <span className="nav-desc">Tools & Preferences</span>
                   </div>
                 </Link>
               </li>
-              <li>
+              {/* <li>
                 <Link
                   href="/privacy"
                   className="nav-item"
@@ -144,7 +145,7 @@ export default function Header() {
                     <span className="nav-desc">Data & Security</span>
                   </div>
                 </Link>
-              </li>
+              </li> */}
               <li className="nav-divider"></li>
               <li>
                 <button className="nav-item logout-btn" onClick={handleLogout}>

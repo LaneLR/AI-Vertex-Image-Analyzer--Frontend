@@ -1,6 +1,6 @@
 .help-page {
   background: var(--bg-main);
-  min-height: 100vh;
+  min-height: fit-content;
 
   &__header {
     display: flex;
@@ -139,36 +139,68 @@
 }
 
 .help-article {
-  p {
+  &__text {
     color: var(--text-secondary);
     line-height: 1.6;
+    font-size: 0.95rem;
+    margin-bottom: 1.5rem;
   }
 
   &__feedback {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
+    margin: 1.5rem 0;
+    padding: 1.25rem 0;
     border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: 1rem;
+    justify-content: space-between;
+
     span {
       font-size: 0.85rem;
       font-weight: 600;
+      color: var(--text-muted);
     }
+  }
+
+  &__actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
   }
 }
 
-.feedback-btns {
-  display: flex;
-  gap: 0.5rem;
-  button {
-    color: var(--text-primary);
-    padding: 0.5rem 1.5rem;
-    border-radius: 8px;
-    border: 1px solid var(--border-color);
-    background: var(--bg-main);
-    cursor: pointer;
-    font-weight: 600;
+.feedback-btn {
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+
+  &:active {
+    transform: scale(0.95);
+    background: var(--bg-hover);
   }
+}
+
+.contact-trigger {
+  margin-top: 1rem;
+  background: var(--bg-card);
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
+  color: var(--primary-theme) !important;
+  
+  .item-label {
+    font-weight: 700;
+  }
+  
+  svg {
+    color: var(--primary-theme);
+  }
+}
+
+.header-spacer {
+  width: 20px;
 }

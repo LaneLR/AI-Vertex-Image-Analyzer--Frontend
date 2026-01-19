@@ -9,12 +9,11 @@ import {
   CreditCard,
   AlertCircle,
   Mail,
-  Search,
-  MessageCircle,
 } from "lucide-react";
 import InfoModal from "./InfoModal";
 import { Capacitor } from "@capacitor/core";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function HelpClient({ user: initialUser }: { user: any }) {
   const [activeModal, setActiveModal] = useState<{
@@ -22,18 +21,21 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
     content: string;
   } | null>(null);
   const [platform, setPlatform] = useState<string>("web");
-  const { data: session, update } = useSession();
+  const { data: session } = useSession();
   const user = session?.user || initialUser;
+  const router = useRouter();
 
   useEffect(() => {
-    // This returns 'ios', 'android', or 'web'
-    const currentPlatform = Capacitor.getPlatform();
-    setPlatform(currentPlatform);
+    setPlatform(Capacitor.getPlatform());
   }, []);
 
-  const isIOS = platform === "ios";
-  const isAndroid = platform === "android";
-  const isNative = platform !== "web";
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
 
   const categories = [
     {
@@ -44,12 +46,12 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
         {
           title: "How to value your first item",
           content:
-            "Tap the camera icon on your dashboard. For the best results, place your item on a neutral background with good lighting. Simply take a picture or upload a clear photo of your item. Capturing the brand logo, serial number or other identifiable features in the image significantly increases accuracy. Our AI will analyze the brand, model, and condition to provide a market-accurate resale estimate and a description of the item in seconds.",
+            "Tap the camera icon on your dashboard. For the best results, place your item on a neutral background with good lighting. Our AI analyzes the brand, model, and condition to provide a market-accurate resale estimate and description in seconds.",
         },
         {
           title: "Understanding AI appraisals",
           content:
-            "FlipSavvy uses deep learning models trained on millions of marketplace data points. We cross-reference your item against live and sold listings on platforms like eBay, Poshmark, and Mercari. The price shown is an 'Estimated Market Value,' a range representing what you should realistically expect to resell the item for. Note that highly unique, vintage, or counterfeit-heavy items may require manual verification.",
+            "FlipSavvy uses deep learning models trained on millions of marketplace data points. The price shown is an 'Estimated Market Value,' representing realistic resale expectations. Highly unique or vintage items may require manual verification.",
         },
       ],
     },
@@ -61,12 +63,12 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
         {
           title: "Manage your subscription",
           content:
-            "You can manage your Pro plan directly from the Account page. Click the 'Manage Billing Settings' button to view details about your current plan. If you would like to upgrade to a Pro plan, click the 'Upgrade to Pro' button on your Account page.",
+            "Manage your Pro plan directly from the Account page. Click 'Manage Billing Settings' to view current plan details or 'Upgrade to Pro' to access advanced features.",
         },
         {
           title: "Deleting your account",
           content:
-            "To permanently close your account, go to your Account page and click on the 'Delete account' button at the bottom. Deleting your account will immediately wipe your scan history. This action is irreversible. Important: You must manually cancel any active Pro subscriptions before deleting your account to ensure the third-party payment processors stop further billing cycles.",
+            "To permanently close your account, use the 'Delete account' button at the bottom of the Account page. This action is irreversible and wipes all history. Ensure you cancel active Pro subscriptions first.",
         },
       ],
     },
@@ -79,43 +81,34 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
         {
           title: "Image upload & errors",
           content:
-            "If an image fails to upload, verify that it is a JPG, PNG, or HEIC file under 5MB. If the AI returns a 'Could Not Identify' error, try taking the photo from a different angle. High-glare or blurry photos are the most common cause of identification failure. Ensure you have a stable internet connection.",
+            "Ensure images are JPG, PNG, or HEIC under 5MB. If identification fails, try a different angle. Blurry or high-glare photos are the most common causes of identification errors.",
         },
         {
           title: "App performance",
           content:
-            "If the app feels sluggish, go to your phone's Settings and cler your cache. This removes temporary image data without deleting your scan history. Ensure you are using the latest version of the app from the App Store or Google Play.",
-        },
-        {
-          title: "Scan history missing",
-          content:
-            "If your previous scans aren't appearing, ensure you are logged into the correct account. If you recently switched devices, make sure 'Cloud Save' was enabled in your Settings on the old device.",
+            "If the app feels sluggish, clear your cache in phone settings. This removes temporary data without deleting your scan history. Always use the latest version from the App Store or Play Store.",
         },
       ],
     },
   ];
 
-  // const handleSupportClick = () => {
-  //   window.location.href = "mailto:support@fliSavvy.com";
-  // };
+  const handleSupportClick = () => {
+    window.location.href = "mailto:support@flipsavvy.com";
+  };
 
   return (
     <main className="help-page">
       <header className="help-page__header">
-        <Link href="/" className="back-btn">
+        <button onClick={handleBack} className="back-btn">
           <ArrowLeft size={20} />
-        </Link>
-        <h1>Support Center</h1>
+        </button>
+        <h1>Help Center</h1>
         <div className="header-spacer" />
       </header>
 
       <div className="help-page__content">
         <section className="help-hero">
           <h2>How can we help?</h2>
-          {/* <div className="help-hero__search">
-            <Search size={18} />
-            <input type="text" placeholder="Search for articles..." />
-          </div> */}
         </section>
 
         <div className="help-grid">
@@ -146,32 +139,17 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
                     <ChevronRight size={18} className="chevron" />
                   </button>
                 ))}
-
-                {/* {cat.id === "troubleshooting" && (
-                  <button className="settings-item settings-item--btn contact-trigger" onClick={handleSupportClick}>
-                    <span className="item-label">Still having issues? Contact support</span>
-                    <Mail size={16} />
-                  </button>
-                )} */}
               </div>
             </section>
           ))}
-        </div>
 
-        {/* <footer className="help-footer">
-          <div className="help-footer__card">
-            <div className="footer-info">
-              <MessageCircle size={24} />
-              <div>
-                <h4>Didn't find an answer?</h4>
-                <p>Email us directly</p>
-              </div>
-            </div>
-            <button className="help-btn" onClick={handleSupportClick}>
-              Email Support
-            </button>
-          </div>
-        </footer> */}
+          {/* Native-style Contact Support trigger */}
+          {/* <button className="settings-item settings-item--btn contact-trigger" onClick={handleSupportClick}>
+            <Mail size={18} />
+            <span className="item-label">Contact Support</span>
+            <ChevronRight size={18} className="chevron" />
+          </button> */}
+        </div>
       </div>
 
       <InfoModal
@@ -180,13 +158,33 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
         title={activeModal?.title || ""}
       >
         <div className="help-article">
-          <p>{activeModal?.content}</p>
+          <p className="help-article__text">{activeModal?.content}</p>
+
           <div className="help-article__feedback">
             <span>Was this helpful?</span>
             <div className="feedback-btns">
-              <button onClick={() => setActiveModal(null)}>Yes</button>
-              <button onClick={() => setActiveModal(null)}>No</button>
+              <button
+                className="feedback-btn"
+                onClick={() => setActiveModal(null)}
+              >
+                Yes
+              </button>
+              <button
+                className="feedback-btn"
+                onClick={() => setActiveModal(null)}
+              >
+                No
+              </button>
             </div>
+          </div>
+
+          <div className="help-article__actions">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setActiveModal(null)}
+            >
+              Close
+            </button>
           </div>
         </div>
       </InfoModal>

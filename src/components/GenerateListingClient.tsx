@@ -24,6 +24,7 @@ import Loading from "./Loading";
 import Link from "next/link";
 import { getApiUrl } from "@/lib/api-config";
 import { useApp } from "@/context/AppContext";
+import { useRouter } from "next/navigation";
 
 interface GenerateListingProps {
   user: any;
@@ -48,6 +49,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
   const isBusiness = user?.subscriptionStatus === "business";
   const maxPhotos = isPro || isHobby || isBusiness ? 3 : 1;
 
+  const router = useRouter();
+
   useEffect(() => {
     if (user?.dailyScansCount !== undefined) {
       const lastUpdate = new Date(user.lastScanDate || new Date());
@@ -57,7 +60,15 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       setDailyScansUsed(isNewDay ? 0 : user.dailyScansCount);
     }
   }, [user?.dailyScansCount, user?.lastScanDate]);
-  // --- SEO HANDLERS ---
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -202,9 +213,9 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
   return (
     <main className="listing-page">
       <header className="listing-page__header">
-        <Link href="/" className="back-btn">
+        <button onClick={handleBack} className="back-btn">
           <ArrowLeft size={20} />
-        </Link>
+        </button>
         <div className="listing-page__header-content">
           <div className="listing-page__header-container">
             <div className="listing-page__header-title">
@@ -541,7 +552,11 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                 <div className="empty-state">
                   <ImageIcon size={48} />
                   <h3>Your listing photo will appear here</h3>
-                  {useWhiteBackground ? <p>The image will be have a white background.</p> : <p>The image will be have a transparent background.</p>}
+                  {useWhiteBackground ? (
+                    <p>The image will be have a white background.</p>
+                  ) : (
+                    <p>The image will be have a transparent background.</p>
+                  )}
                 </div>
               ) : isProcessing ? (
                 <div className="loading-state">

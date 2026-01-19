@@ -21,11 +21,14 @@ import {
   AArrowUp,
   ALargeSmall,
   Camera,
+  Cross,
+  ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import InfoModal from "./InfoModal";
 import { getApiUrl } from "@/lib/api-config";
+import { useRouter } from "next/navigation";
 
 type User = {
   name?: string | null;
@@ -59,6 +62,7 @@ export default function SettingsClient({
   const [isGradesModalOpen, setIsGradesModalOpen] = useState(false);
   const [isPhotoStudioModalOpen, setIsPhotoStudioModalOpen] = useState(false);
   const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
+  const router = useRouter();
 
   const handleDeleteAll = async () => {
     setIsDeleting(true);
@@ -84,6 +88,14 @@ export default function SettingsClient({
       document.documentElement.classList.remove("dark");
     }
   }, [user?.darkMode]);
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/");
+    }
+  };
 
   const toggleDarkMode = async () => {
     if (isUpdating) return;
@@ -142,9 +154,9 @@ export default function SettingsClient({
   return (
     <main className="settings-page">
       <header className="help-page__header">
-        <Link href="/" className="back-btn">
+        <button onClick={handleBack} className="back-btn">
           <ArrowLeft size={20} />
-        </Link>
+        </button>
         <h1>Settings</h1>
         <div className="header-spacer" />
       </header>
@@ -343,7 +355,7 @@ export default function SettingsClient({
                     href="/listing"
                     className="modal-btn modal-btn--primary"
                   >
-                    Listing Studio
+                    Go to Listing Studio
                   </Link>
                 )}
               </div>
@@ -385,7 +397,7 @@ export default function SettingsClient({
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
                 <Link href="/history" className="modal-btn modal-btn--primary">
-                  Scan History
+                  Go to Scan History
                 </Link>
               </div>
             </div>
@@ -402,7 +414,7 @@ export default function SettingsClient({
             <p>
               Flip Grades provide an instant visual indicator of an item's
               resale potential based on demand, margin, and sell-through rate.
-              The higher the grade, the better the flip.
+              The higher the grade, the faster it will likely sell.
             </p>
             <br />
             <div className="feature-benefits">
@@ -469,7 +481,7 @@ export default function SettingsClient({
                     href="/calculator"
                     className="modal-btn modal-btn--primary"
                   >
-                    Profit Calculator
+                    Go to Profit Calculator
                   </Link>
                 )}
               </div>
@@ -516,7 +528,7 @@ export default function SettingsClient({
                     href="/listing"
                     className="modal-btn modal-btn--primary"
                   >
-                    Listing Generator
+                    Go to Listing Generator
                   </Link>
                 )}
               </div>
@@ -562,7 +574,7 @@ export default function SettingsClient({
                     href="/inventory"
                     className="modal-btn modal-btn--primary"
                   >
-                    Inventory Manager
+                    Go to Inventory Manager
                   </Link>
                 )}
               </div>
@@ -575,12 +587,25 @@ export default function SettingsClient({
           <h2 className="settings-group__title">Preferences</h2>
           <div className="settings-list">
             <Link
+              href="/help"
+              className="settings-item settings-item--clickable"
+            >
+              <div className="settings-item__info">
+                <div className="icon-box icon-box--shield">
+                  <Cross size={22} />
+                </div>
+                <p className="item-label">Help</p>
+              </div>
+              <ChevronRight size={18} className="chevron" />
+            </Link>
+
+            <Link
               href="/privacy"
               className="settings-item settings-item--clickable"
             >
               <div className="settings-item__info">
                 <div className="icon-box icon-box--shield">
-                  <Shield size={22} />
+                  <ShieldCheck size={22} />
                 </div>
                 <p className="item-label">Data & Privacy</p>
               </div>
@@ -594,7 +619,9 @@ export default function SettingsClient({
                 </div>
                 <p className="item-label">App Version</p>
               </div>
-              <span className="version-tag">{process.env.NEXT_PUBLIC_APP_VERSION}</span>
+              <span className="version-tag">
+                {process.env.NEXT_PUBLIC_APP_VERSION}
+              </span>
             </div>
           </div>
         </section>

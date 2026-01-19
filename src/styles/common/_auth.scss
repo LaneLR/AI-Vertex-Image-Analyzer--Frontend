@@ -18,6 +18,38 @@
   margin-top: 20px;
 }
 
+.terms-checkbox-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 15px 0;
+  padding: 0 5px;
+
+  .custom-checkbox {
+    width: 18px;
+    height: 18px;
+    margin-top: 2px;
+    cursor: pointer;
+    accent-color: var(--primary-theme); 
+  }
+
+  .terms-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.4;
+  }
+
+  .terms-link {
+    color: var(--primary-theme);
+    text-decoration: underline;
+    font-weight: 600;
+
+    // &:hover {
+    //   opacity: 0.8;
+    // }
+  }
+}
+
 .auth-header {
   text-align: center;
   margin-bottom: 2rem;

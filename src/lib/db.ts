@@ -37,11 +37,9 @@ export const connectDB = async () => {
   try {
     // authenticate() verifies the credentials and network path
     await sequelize.authenticate();
-    console.log('📦 Connected to Remote DB via VPN.');
 
     //  await sequelize.sync({ force: true });
     await sequelize.sync({ alter: true });
-    console.log('✅ Remote Database Synced.');
   } catch (err) {
     console.error('❌ VPN/Database Connection Error:', err);
     // Log more detail to see if it's a timeout or a credential issue

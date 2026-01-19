@@ -16,7 +16,6 @@
       text-transform: uppercase;
       letter-spacing: 0.05em;
     }
-    .back-btn,
     .logout-icon-btn {
       color: var(--text-primary);
       background: none;
@@ -30,6 +29,12 @@
     margin: 0 auto;
     padding: 2rem 1.25rem;
   }
+}
+
+.back-btn {
+  border: none;
+  display: flex;
+  align-items: center;
 }
 
 .profile-hero {
@@ -166,14 +171,11 @@
     svg {
       color: var(--primary-theme);
     }
-
-
   }
 
   svg {
     color: var(--text-primary);
   }
-
 }
 
 .history-preview {
