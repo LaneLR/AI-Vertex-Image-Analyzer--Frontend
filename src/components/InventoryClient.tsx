@@ -16,6 +16,7 @@ import {
   Minus,
   Eraser,
   AlertTriangle,
+  TrendingDown,
 } from "lucide-react";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
@@ -228,7 +229,7 @@ export default function InventoryClient({
               >
                 ${stats.profit.toFixed(2)}
               </h2>
-              <TrendingUp size={20} className="profit-icon" />
+              {/* {stats.profit > 0 ? <TrendingUp size={20} className="profit-icon-pos" /> : <TrendingDown size={20} className="profit-icon-neg" />} */}
             </div>
 
             <div className="inventory__stat-card secondary">
@@ -314,7 +315,7 @@ export default function InventoryClient({
                     <div className="control-group">
                       <label>Unit Cost</label>
                       <div className="inventory-card__cost">
-                        <DollarSign size={14} />
+                        <DollarSign size={18} />
                         <input
                           type="number"
                           className="inventory-card__cost-input"
