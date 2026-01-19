@@ -64,7 +64,7 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
       "Access to Profit Calculator.",
       "Profitability grading on appraised items.",
       "Access to SEO Generator to create SEO-optimized listing details.",
-      "Access to Photo Studio to automatically create unlimited listing photos.",
+      "Unlimited access to Photo Studio to automatically create listing photos.",
     ],
     business: [
       "250 scans per day.",
@@ -74,7 +74,7 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
       "Access to Profit Calculator.",
       "Profitability grading on appraised items.",
       "Access to SEO Generator to create SEO-optimized listing details.",
-      "Access to Photo Studio to automatically create unlimited listing photos.",
+      "Unlimited access to Photo Studio to automatically create listing photos.",
       "Multi-platform and marketplace price comparison.",
       "Access to Inventory Manager for tracking and managing items.",
       "CSV download of inventory and listings for bulk uploading.",
@@ -104,7 +104,7 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
   <div className="plan-card">
     <h3 className="plan-card__name">Business</h3>
     <div className="plan-card__price">
-      34.99<span className="plan-card__month">/ mo</span>
+      39.99<span className="plan-card__month">/ mo</span>
     </div>
     <ul className="plan-card__feature-list">
       {features.business.map((f, i) => (
@@ -125,7 +125,7 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
     <div className="plan-card__badge">Most Popular</div>
     <h3 className="plan-card__name">Pro</h3>
     <div className="plan-card__price">
-      19.99<span className="plan-card__month">/ mo</span>
+      24.99<span className="plan-card__month">/ mo</span>
     </div>
     <ul className="plan-card__feature-list">
       {features.pro.map((f, i) => (
