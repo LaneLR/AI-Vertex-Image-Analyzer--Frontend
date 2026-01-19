@@ -154,7 +154,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
                   backgroundColor:
                     usagePercentage > 90
                       ? "var(--error-color)"
-                      : "var(--primary-color)",
+                      : "var(--primary-theme)",
                 }}
               />
             </div>
@@ -165,9 +165,9 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
                 className="subscription-manage-area"
                 style={{ marginTop: "1.5rem" }}
               >
-                {/* <p className="usage-hint">
-                  Your daily scans resets every 24 hours.
-                </p> */}
+                <p className="usage-hint">
+                  Your daily scans resets at midnight.
+                </p>
                 <button
                   className="secondary-btn"
                   onClick={handleManageSubscription}
