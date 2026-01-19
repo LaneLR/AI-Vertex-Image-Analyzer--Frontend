@@ -13,63 +13,67 @@ export default function Footer() {
         <div className="footer__grid">
           {/* Brand Info */}
           <div className="footer__section footer__section--brand">
-            <div className="footer__logo">
-              <Link
-                href="/"
-                className="brand-link"
-              >
-                {/* <span className="brand-logo-small">FF</span> */}
-                <h1 className="brand-text">
-                  Flip<span>Savvy</span>
-                </h1>
-              </Link>
-            </div>
-            <div className="footer__badges">
-              <span className="badge-pill">
-                <Sparkles size={12} />Powered by Gemini
-              </span>
+            <div className="footer__brand-container">
+              <div className="footer__logo">
+                <Link href="/" className="brand-link">
+                  {/* <span className="brand-logo-small">FF</span> */}
+                  <h1 className="brand-text">
+                    Flip<span>Savvy</span>
+                  </h1>
+                </Link>
+              </div>
+              <div className="footer__badges">
+                <span className="badge-pill">
+                  <Sparkles size={12} />
+                  Powered by Gemini
+                </span>
+              </div>
             </div>
           </div>
 
           {/* Navigation Links */}
           <div className="footer__section-group">
-          <div className="footer__section">
-            <h4 className="footer__label">Resources</h4>
-            <ul className="footer__list">
-              <li>
-                <Link href="/help" className="footer__link">
-                  <HelpCircle size={16} />Help Center
-                </Link>
-              </li>
-              <li>
-                <Link href="/about" className="footer__link">
-                  <Info size={16} />About Us
-                </Link>
-              </li>
-            </ul>
-          </div>
+            <div className="footer__section">
+              <h4 className="footer__label">Resources</h4>
+              <ul className="footer__list">
+                <li>
+                  <Link href="/help" className="footer__link">
+                    <HelpCircle size={16} />
+                    Help Center
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/about" className="footer__link">
+                    <Info size={16} />
+                    About Us
+                  </Link>
+                </li>
+              </ul>
+            </div>
 
-          <div className="footer__section">
-            <h4 className="footer__label">LEGAL</h4>
-            <ul className="footer__list">
-              <li>
-                <Link href="/terms" className="footer__link">
-                  <ShieldCheck size={16} />Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link href="/privacy" className="footer__link">
-                  <ShieldCheck size={16} />Privacy
-                </Link>
-              </li>
-            </ul>
+            <div className="footer__section">
+              <h4 className="footer__label">LEGAL</h4>
+              <ul className="footer__list">
+                <li>
+                  <Link href="/terms" className="footer__link">
+                    <ShieldCheck size={16} />
+                    Terms of Service
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/privacy" className="footer__link">
+                    <ShieldCheck size={16} />
+                    Privacy
+                  </Link>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
-</div>
         <div className="footer__bottom">
           <div className="footer__copyright">
             {/* ©  */}
-            {currentYear} FlipSavvy • v1.13.7
+            {currentYear} FlipSavvy • {process.env.NEXT_PUBLIC_APP_VERSION}
           </div>
         </div>
       </div>

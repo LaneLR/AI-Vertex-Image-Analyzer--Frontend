@@ -141,8 +141,8 @@ export default function SettingsClient({
 
   return (
     <main className="settings-page">
-      <header className="settings-page__header">
-        <Link href="/account" className="back-circle">
+      <header className="help-page__header">
+        <Link href="/" className="back-btn">
           <ArrowLeft size={20} />
         </Link>
         <h1>Settings</h1>
@@ -594,7 +594,7 @@ export default function SettingsClient({
                 </div>
                 <p className="item-label">App Version</p>
               </div>
-              <span className="version-tag">1.17.4</span>
+              <span className="version-tag">{process.env.NEXT_PUBLIC_APP_VERSION}</span>
             </div>
           </div>
         </section>

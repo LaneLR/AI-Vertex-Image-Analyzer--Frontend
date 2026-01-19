@@ -189,8 +189,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
           <BarChart3 size={16} className="orange-icon" />
           <span className="home-stats__item">
             {dailyScansUsed} /{" "}
-            {isPro ? "100" : isHobby ? "50" : isBusiness ? "250" : "5"} daily
-            scans
+            {isPro ? "100" : isHobby ? "50" : isBusiness ? "250" : "5"} scans
           </span>
         </div>
       </section>

@@ -5,6 +5,35 @@
   min-height: 100vh;
   background: var(--bg-main);
 
+  &__header-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    // position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg-nav);
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-primary);
+
+    h1 {
+      font-size: 1.1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .back-circle {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--bg-header);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+  }
+
   &__header {
     margin-bottom: 2.5rem;
   }
@@ -22,7 +51,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    background: var(--bg-surface);
+    background: var(--bg-card);
     padding: 1.5rem 2.5rem;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -35,8 +64,8 @@
 
   &__stat-icon {
     color: #10b981; // Success green
-    width: 32px;
-    height: 32px;
+    width: 48px;
+    height: 48px;
   }
 
   &__stat-label {
@@ -85,7 +114,7 @@
 }
 
 .inventory-card {
-  background: var(--bg-surface);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
@@ -159,16 +188,18 @@
     background: var(--bg-secondary);
     border-radius: 8px;
     padding: 4px;
+    gap: 4px;
   }
 
   &__qty-btn {
     padding: 6px;
-    background: transparent;
+    background: #000;
     border: none;
     cursor: pointer;
     color: var(--text-primary);
     display: flex;
     align-items: center;
+    border-radius: 50px;
 
     &:hover {
       color: var(--primary-theme);
@@ -179,7 +210,7 @@
     font-weight: 700;
     min-width: 24px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 1rem;
   }
 
   &__cost {

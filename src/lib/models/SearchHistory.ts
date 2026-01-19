@@ -12,9 +12,9 @@ class SearchHistory extends Model {
   public grade!: string;
   public estimatedShippingCost!: string;
   public inInventory!: boolean;
-  public specs!: Record<string, any>
+  public specs!: Record<string, any>;
   public purchasePrice!: number;
-  public quantity!: number
+  public quantity!: number;
 }
 
 SearchHistory.init(
@@ -61,14 +61,14 @@ SearchHistory.init(
       defaultValue: false,
     },
     quantity: {
-      type: DataTypes.NUMBER,
+      type: DataTypes.INTEGER,
       defaultValue: 1,
-      allowNull: true,
+      allowNull: false,
     },
     purchasePrice: {
-      type: DataTypes.NUMBER,
-      defaultValue: 0,
-      allowNull: true,
+      type: DataTypes.DECIMAL(10, 2),
+      defaultValue: 0.0,
+      allowNull: false,
     },
     specs: {
       type: DataTypes.TEXT,

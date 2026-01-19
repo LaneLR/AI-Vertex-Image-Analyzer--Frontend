@@ -258,7 +258,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                             : isBusiness
                               ? "250"
                               : "5"}{" "}
-                        daily scans
+                        scans
                       </b>
                     </span>
                   </div>

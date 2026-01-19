@@ -5,7 +5,7 @@
   background: var(--bg-header);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-color);
-  height: 70px;
+  min-height: 60px;
   display: flex;
   align-items: center;
 }
