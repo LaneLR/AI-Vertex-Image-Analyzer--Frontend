@@ -17,20 +17,18 @@ export default async function InventoryPage() {
     redirect("/login");
   }
 
-  // 2. Protection: Must be Business Tier
-  if (session?.user?.subscriptionStatus !== "business" && session?.user?.subscriptionStatus !== "pro") {
+  if (session?.user?.subscriptionStatus !== "business") {
     redirect("/account");
   }
 
-  // 3. Fetch Inventory Items from DB
   await connectDB();
-  
+
   const inventoryData = await SearchHistory.findAll({
     where: {
       userId: session.user.id,
-      inInventory: true, 
+      inInventory: true,
     },
-    order: [['updatedAt', 'DESC']], 
+    order: [["updatedAt", "DESC"]],
   });
 
   const initialItems = inventoryData.map((item) => ({
@@ -40,7 +38,7 @@ export default async function InventoryPage() {
     description: item.description,
     grade: item.grade,
     platform: item.platform,
-    specs: item.specs || {}, 
+    specs: item.specs || {},
   }));
 
   return <InventoryClient initialItems={initialItems} />;

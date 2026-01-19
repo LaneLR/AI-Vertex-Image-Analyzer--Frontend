@@ -339,7 +339,6 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
               <Wand2 className="icon-primary" />
               <h1>Listing Studio</h1>
             </div>
-
             <div className="tab-switcher">
               <button
                 className={`listing-page__pointer ${
@@ -349,16 +348,15 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
               >
                 SEO Generator
               </button>
-              {isPro && (
-                <button
-                  className={`listing-page__pointer ${
-                    activeTab === "studio" ? "active" : ""
-                  }`}
-                  onClick={() => setActiveTab("studio")}
-                >
-                  Photo Studio
-                </button>
-              )}
+
+              <button
+                className={`listing-page__pointer ${
+                  activeTab === "studio" ? "active" : ""
+                }`}
+                onClick={() => setActiveTab("studio")}
+              >
+                Photo Studio
+              </button>
             </div>
           </div>
         </div>

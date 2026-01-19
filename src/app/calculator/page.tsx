@@ -22,7 +22,7 @@ export default async function CalculatorPage() {
 
   const history = rawHistory.map((item) => {
     const plainItem = item.get({ plain: true });
-    
+
     const prices = plainItem.priceRange.match(/\d+/g)?.map(Number) || [0, 0];
 
     return {
@@ -30,7 +30,7 @@ export default async function CalculatorPage() {
       title: plainItem.itemTitle,
       lowResellValue: prices[0] || 0,
       highResellValue: prices[1] || prices[0] || 0,
-      estimatedShipping: 10, // Default fallback
+      estimatedShipping: 10,
       imageUrl: plainItem.imageUrl || null,
     };
   });
