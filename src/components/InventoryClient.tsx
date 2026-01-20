@@ -263,7 +263,7 @@ export default function InventoryClient({
               >
                 <Eraser size={16} /> Clear All
               </button>
-              <button onClick={downloadCSV} className="inventory__download-btn">
+              <button onClick={downloadCSV} className="inventory__download-btn" disabled={items.length === 0}>
                 <Download size={16} /> Export CSV
               </button>
             </div>
