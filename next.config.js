@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Uncomment the line below when you are ready to build for Capacitor/Xcode
-  // output: 'export', 
+  output: 'export', 
   
   trailingSlash: false,
   eslint: {
