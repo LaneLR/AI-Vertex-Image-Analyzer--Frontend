@@ -61,12 +61,17 @@ jobs:
         run: npm ci
 
       - name: Next.js Static Export
-        run: npm run build
+        run: |
+          # Create a copy of the app without API routes for the static export
+          # OR just run the build with the App flag
+          npm run build
         env:
-          # Ensure output: 'export' is set in next.config.js
-          DATABASE_URL: postgres://dummy@localhost:5432/dummy
+          IS_APP_BUILD: "true"
           NEXT_PUBLIC_BASE_URL: https://your-render-url.onrender.com
-          NEXT_TELEMETRY_DISABLED: 1
+          # We provide dummy strings for auth because the static export 
+          # won't actually execute these routes
+          NEXTAUTH_SECRET: ${{ secrets.NEXTAUTH_SECRET || 'dummy_secret' }}
+          NEXTAUTH_URL: https://your-render-url.onrender.com
 
       - name: Install Capacitor Core
         run: npm install @capacitor/cli @capacitor/core @capacitor/ios
