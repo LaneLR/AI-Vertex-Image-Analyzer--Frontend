@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 /** @type {import('next').NextConfig} */
 const isAppBuild = process.env.IS_APP_BUILD === 'true';
 
