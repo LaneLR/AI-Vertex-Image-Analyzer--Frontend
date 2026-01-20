@@ -1,13 +1,51 @@
-name: Build Verification (CI)
+# name: Build Verification (CI)
+
+# on:
+#   push:
+#     branches: ["**"]
+#   workflow_dispatch:
+
+# jobs:
+#   verify-build:
+#     runs-on: ubuntu-latest
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v4
+
+#       - name: Setup Node
+#         uses: actions/setup-node@v4
+#         with:
+#           node-version: "20"
+#           cache: 'npm'
+
+#       - name: Install dependencies
+#         run: npm ci
+
+#       - name: Build Next.js app
+#         run: npm run build
+#         env:
+#           # Dummy values to satisfy the Next.js build-time check
+#           DATABASE_URL: postgres://dummy:dummy@localhost:5432/dummy
+#           NEXT_TELEMETRY_DISABLED: 1
+#           # If your code uses these, they need dummy values too:
+#         #   AUTH0_SECRET: 'some-very-long-dummy-string-for-build-purposes'
+#         #   AUTH0_BASE_URL: 'http://localhost:3000'
+#         #   STRIPE_SECRET_KEY: 'sk_test_dummy'
+
+#       - name: Success message
+#         run: echo "Build passed! Ready for Render."
+
+name: iOS Build & Export
 
 on:
   push:
-    branches: ["**"]
+    branches: ["main", "master"] # Only run heavy iOS builds on main branches to save minutes
   workflow_dispatch:
 
 jobs:
-  verify-build:
-    runs-on: ubuntu-latest
+  build-ios:
+    runs-on: macos-latest # Required to run Xcode tools
 
     steps:
       - name: Checkout code
@@ -19,19 +57,40 @@ jobs:
           node-version: "20"
           cache: 'npm'
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: npm ci
 
-      - name: Build Next.js app
+      - name: Next.js Static Export
         run: npm run build
         env:
-          # Dummy values to satisfy the Next.js build-time check
-          DATABASE_URL: postgres://dummy:dummy@localhost:5432/dummy
+          # Ensure output: 'export' is set in next.config.js
+          DATABASE_URL: postgres://dummy@localhost:5432/dummy
+          NEXT_PUBLIC_BASE_URL: https://your-render-url.onrender.com
           NEXT_TELEMETRY_DISABLED: 1
-          # If your code uses these, they need dummy values too:
-        #   AUTH0_SECRET: 'some-very-long-dummy-string-for-build-purposes'
-        #   AUTH0_BASE_URL: 'http://localhost:3000'
-        #   STRIPE_SECRET_KEY: 'sk_test_dummy'
 
-      - name: Success message
-        run: echo "Build passed! Ready for Render."
+      - name: Install Capacitor Core
+        run: npm install @capacitor/cli @capacitor/core @capacitor/ios
+
+      - name: Capacitor Sync
+        run: |
+          npx cap init "ResaleApp" "com.yourname.resaleapp" --web-dir out
+          npx cap add ios
+          npx cap copy ios
+          npx cap update ios
+
+      - name: Build Xcode Project
+        run: |
+          xcodebuild -workspace ios/App/App.xcworkspace \
+                     -scheme App \
+                     -configuration Debug \
+                     -sdk iphoneos \
+                     -allowProvisioningUpdates \
+                     build
+        # Note: For a "Release" build you'll eventually need to set up certificates.
+        # This "Debug" build verifies that the code compiles for iOS.
+
+      - name: Upload iOS Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-app-bundle
+          path: ios/App
