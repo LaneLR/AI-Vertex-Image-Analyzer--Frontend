@@ -1,16 +1,13 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import type { CapacitorConfig } from '@capacitor/cli'; 
 
 const config: CapacitorConfig = {
   appId: 'com.flipsavvy.app',
   appName: 'Flip Savvy',
-  webDir: 'out',
+  webDir: 'out', // Matches your Next.js 'output: export' directory
   server: {
-    // Correct property name for most Capacitor versions to add custom strings
     androidScheme: 'https',
     iosScheme: 'https'
   },
-  // If your version supports global override, it goes here, 
-  // but appending is more standard:
   ios: {
     appendUserAgent: 'FlipSavvy-Mobile-App'
   },

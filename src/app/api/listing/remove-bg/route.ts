@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 // app/api/listing/remove-bg/route.ts
 import { NextResponse } from "next/server";
 

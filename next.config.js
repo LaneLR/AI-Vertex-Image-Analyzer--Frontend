@@ -1,11 +1,10 @@
-export const dynamic = 'force-dynamic';
 /** @type {import('next').NextConfig} */
 const isAppBuild = process.env.IS_APP_BUILD === 'true';
 
 const nextConfig = {
   // Uncomment the line below when you are ready to build for Capacitor/Xcode
-  output: isAppBuild ? 'export' : undefined, 
-  
+  output: 'export', // Force this manually for a second to test locally
+  distDir: 'out',   // Ensure this matches your capacitor.config.ts  
   trailingSlash: true,
   eslint: {
     ignoreDuringBuilds: true,
@@ -31,7 +30,7 @@ const nextConfig = {
       },
     ];
   },
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
   webpack: (config, { isServer }) => {
     if (isServer) {
       config.externals = config.externals || [];
