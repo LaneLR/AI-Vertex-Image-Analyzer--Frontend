@@ -1,22 +1,19 @@
 "use client";
 
-import { AppProvider } from "@/context/AppContext";
+import { AppProvider, useApp } from "@/context/AppContext";
 import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 interface ClientWrapperProps {
   children: React.ReactNode;
-  user: any;
 }
 
-export default function ClientWrapper({ children, user }: ClientWrapperProps){
+export default function ClientWrapper({ children }: ClientWrapperProps) {
+  const { user } = useApp(); // Get user from our new custom context
+
   return (
     <AppProvider>
-      <div>{children}</div>
-      {/* <Footer /> */}
-      <Header user={user}/>
+      <div className="main-content-wrapper">{children}</div>
+      <Header />
     </AppProvider>
   );
 }

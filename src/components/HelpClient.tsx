@@ -12,22 +12,54 @@ import {
 } from "lucide-react";
 import InfoModal from "./InfoModal";
 import { Capacitor } from "@capacitor/core";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Loading from "./Loading";
 
-export default function HelpClient({ user: initialUser }: { user: any }) {
+export default function HelpClient() {
   const [activeModal, setActiveModal] = useState<{
     title: string;
     content: string;
   } | null>(null);
   const [platform, setPlatform] = useState<string>("web");
-  const { data: session } = useSession();
-  const user = session?.user || initialUser;
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     setPlatform(Capacitor.getPlatform());
-  }, []);
+
+    const checkAuth = async () => {
+      try {
+        // We call our new Express endpoint
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              // Assuming you store your JWT in a cookie or localStorage
+              // If using cookies with 'credentials: true', headers might not be needed
+            },
+          },
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          // If not logged in, redirect to login
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("Auth check failed", error);
+        router.push("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -36,7 +68,6 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
       router.push("/");
     }
   };
-
   const categories = [
     {
       id: "getting-started",
@@ -95,6 +126,15 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
   const handleSupportClick = () => {
     window.location.href = "mailto:support@flipsavvy.com";
   };
+
+  if (loading) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
+  if (!user) return null;
 
   return (
     <main className="help-page">

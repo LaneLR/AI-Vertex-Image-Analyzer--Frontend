@@ -1,26 +1,14 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
-  Package,
-  Trash2,
-  Download,
-  TrendingUp,
-  Tag,
-  ExternalLink,
-  Link,
-  ArrowLeft,
-  ArrowRight,
-  DollarSign,
-  Plus,
-  Minus,
-  Eraser,
-  AlertTriangle,
-  TrendingDown,
+  Package, Trash2, Download, ArrowLeft, Plus, Minus, Eraser, DollarSign
 } from "lucide-react";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
 import InfoModal from "./InfoModal";
+import Loading from "./Loading";
+import { useApp } from "@/context/AppContext";
 
 interface InventoryItem {
   id: string;
@@ -39,23 +27,17 @@ interface InventoryItem {
   };
 }
 
-export default function InventoryClient({
-  initialItems,
-}: {
-  initialItems: InventoryItem[];
-}) {
-  const [items, setItems] = useState(
-    initialItems.map((item) => ({
-      ...item,
-      quantity: item?.quantity || 1,
-      purchasePrice: item?.purchasePrice || 0,
-    })),
-  );
-
+export default function InventoryClient() {
+  const { user, isLoading, setIsLoading } = useApp();
+  const [items, setItems] = useState<InventoryItem[]>([]);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
-
   const router = useRouter();
+
+  const getHeaders = () => ({
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+  });
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -65,23 +47,56 @@ export default function InventoryClient({
     }
   };
 
-  const handleClearAll = async () => {
+  const fetchInventory = async () => {
+    try {
+      const res = await fetch(getApiUrl("/api/user/history?inInventory=true"), {
+        headers: getHeaders(),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setItems(data.map((item: any) => ({
+          ...item,
+          quantity: item.quantity || 1,
+          purchasePrice: item.purchasePrice || 0,
+        })));
+      }
+    } catch (err) {
+      console.error("Failed to fetch inventory", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (!user) {
+      router.push("/login");
+    } else if (user.subscriptionStatus !== "business") {
+      router.push("/account");
+    } else {
+      fetchInventory();
+    }
+  }, [user, isLoading, router]);
+
+ const handleClearAll = async () => {
     setIsClearing(true);
     try {
-      // Map all current items to a removal promise
-      const deletePromises = items.map((item) =>
-        fetch(getApiUrl(`/api/user/history/${item.id}`), {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ inInventory: false }),
-        }),
+      // It is more efficient to have a bulk endpoint, 
+      // but sticking to your current logic:
+      await Promise.all(
+        items.map((item) =>
+          fetch(getApiUrl(`/api/user/history/${item.id}`), {
+            method: "PATCH",
+            headers: getHeaders(),
+            body: JSON.stringify({ inInventory: false }),
+          })
+        )
       );
-
-      await Promise.all(deletePromises);
-      setItems([]); // Clear local state
+      setItems([]);
       setIsClearModalOpen(false);
     } catch (err) {
-      console.error("Failed to clear inventory:", err);
+      console.error("Clear error:", err);
     } finally {
       setIsClearing(false);
     }
@@ -108,39 +123,32 @@ export default function InventoryClient({
     };
   }, [items]);
 
-  const updateItemMetadata = async (
-    id: string,
-    updates: Partial<InventoryItem>,
-  ) => {
+ const updateItemMetadata = async (id: string, updates: Partial<InventoryItem>) => {
+    // Optimistic Update
     setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...updates } : item)),
+      prev.map((item) => (item.id === id ? { ...item, ...updates } : item))
     );
 
     await fetch(getApiUrl(`/api/user/history/${id}`), {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: getHeaders(),
       body: JSON.stringify(updates),
     });
   };
 
-  const removeItem = async (id: string) => {
+const removeItem = async (id: string) => {
     try {
       const res = await fetch(getApiUrl(`/api/user/history/${id}`), {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ inInventory: false }), // This triggers the 'Removed from inventory' logic
+        headers: getHeaders(),
+        body: JSON.stringify({ inInventory: false }),
       });
 
       if (res.ok) {
         setItems((prev) => prev.filter((i) => i.id !== id));
-      } else {
-        const errorData = await res.json();
-        console.error("Failed to remove item:", errorData.error);
       }
     } catch (err) {
-      console.error("Connection error during removal:", err);
+      console.error("Removal error:", err);
     }
   };
 
@@ -206,6 +214,10 @@ export default function InventoryClient({
     // Cleanup
     URL.revokeObjectURL(url);
   };
+
+  if (isLoading) {
+    return <div className="loading-state"><Loading /></div>;
+  }
 
   return (
     <>

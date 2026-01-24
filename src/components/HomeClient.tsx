@@ -1,30 +1,31 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Camera,
   Zap,
   BarChart3,
-  History,
   Search,
   Sparkles,
   X,
-  Wand2,
   BriefcaseBusiness,
   Flame,
   ZapOff,
 } from "lucide-react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation"; // Added router
 import Loading from "./Loading";
 import InfoModal from "./InfoModal";
-import SubscribeButton from "./Payments";
 import { getApiUrl } from "@/lib/api-config";
 import { useApp } from "@/context/AppContext";
 import getGradeColor from "@/helpers/colorGrade";
+import { resizeImage } from "@/utils/imageUtils";
 
-export default function HomeClient({ user: initialUser }: { user: any }) {
-  const { dailyScansUsed, setDailyScansUsed, incrementScans } = useApp();
+export default function HomeClient() {
+  const { user, isLoading, dailyScansUsed, setDailyScansUsed, incrementScans } =
+    useApp();
+  const router = useRouter();
+  const resultsRef = useRef<HTMLDivElement>(null);
   const [images, setImages] = useState<File[]>([]);
   const [previews, setPreviews] = useState<string[]>([]);
   const [result, setResult] = useState<any>(null);
@@ -33,61 +34,34 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
   const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
   const [addToInventory, setAddToInventory] = useState(false);
 
-  const { data: session, status } = useSession();
-  const user = session?.user || initialUser;
-
-  // useEffect(() => {
-  //   if (user?.dailyScansCount !== undefined && user?.lastScanDate) {
-  //     const lastUpdate = new Date(user.lastScanDate);
-  //     const now = new Date();
-
-  //     const isNewDay =
-  //       lastUpdate.getUTCFullYear() !== now.getUTCFullYear() ||
-  //       lastUpdate.getUTCMonth() !== now.getUTCMonth() ||
-  //       lastUpdate.getUTCDate() !== now.getUTCDate();
-
-  //     if (isNewDay) {
-  //       setScansCount(0);
-  //     } else {
-  //       setScansCount(user.dailyScansCount);
-  //     }
-  //   }
-  // }, [user?.dailyScansCount, user?.updatedAt]);
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace("/login");
+    }
+  }, [user, isLoading, router]);
 
   useEffect(() => {
     if (user?.dailyScansCount !== undefined) {
       const lastUpdate = new Date(user.lastScanDate || new Date());
       const now = new Date();
       const isNewDay = lastUpdate.getUTCDate() !== now.getUTCDate();
-
       setDailyScansUsed(isNewDay ? 0 : user.dailyScansCount);
     }
-  }, [user?.dailyScansCount, user?.lastScanDate]);
+  }, [user, setDailyScansUsed]);
+
+  if (isLoading || !user) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
 
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
   const isBusiness = user?.subscriptionStatus === "business";
   const maxPhotos = isPro || isBusiness ? 3 : isHobby ? 2 : 1;
 
-  // --- 1. Robust Extraction Helper ---
-  const extractFirstNumber = (val: any): number => {
-    if (typeof val === "number") return val;
-    if (typeof val !== "string") return 0;
-    const noCommas = val.replace(/,/g, "");
-    const match = noCommas.match(/\d+(\.\d+)?/);
-    return match ? parseFloat(match[0]) : 0;
-  };
-
-  // --- 2. Consistent Profit Calculation ---
-  const calculateNet = (value: any, cost: string, shippingVal: any) => {
-    const cleanValue = extractFirstNumber(value);
-    const numericCost = parseFloat(cost) || 0;
-    const shipping = extractFirstNumber(shippingVal);
-    const fees = cleanValue * 0.13;
-    return cleanValue - fees - shipping - numericCost;
-  };
-
-  // --- Updated File Handler ---
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(e.target.files || []);
     if (selectedFiles.length === 0) return;
@@ -107,38 +81,57 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
     setLoading(true);
 
     const formData = new FormData();
-    images.forEach((img) => {
-      formData.append("image", img);
-    });
-    formData.append("mode", "appraisal");
-    formData.append("addToInventory", String(addToInventory));
 
     try {
+      // 1. Resize all images in parallel before sending
+      // This reduces the payload from ~20MB down to ~300KB
+      const resizedImageBlobs = await Promise.all(
+        images.map((img) => resizeImage(img, 768)),
+      );
+
+      // 2. Append the resized Blobs to FormData
+      resizedImageBlobs.forEach((blob, index) => {
+        // We give it a filename so the backend Multer knows it's an image
+        formData.append("image", blob, `image-${index}.jpg`);
+      });
+
+      formData.append("mode", "appraisal");
+      formData.append("addToInventory", String(addToInventory));
+
+      const token = localStorage.getItem("token");
       const res = await fetch(getApiUrl("/api/analyze"), {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
         body: formData,
       });
+
       const data = await res.json();
 
       if (res.ok) {
         setResult(data);
         incrementScans();
+        setTimeout(() => {
+          resultsRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
       } else if (res.status === 429) {
         setShowModal(true);
+      } else if (res.status === 401) {
+        router.push("/login");
       } else {
         setShowErrorModal(true);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Analysis Error:", err);
       setShowErrorModal(true);
     } finally {
       setLoading(false);
     }
   };
-
-  if (status === "loading" && !initialUser) {
-    return <Loading />;
-  }
 
   const handleAdditionalFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -309,7 +302,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
 
         {result && (
           <section className="home-result animate-fade-in">
-            <div className="card result-card">
+            <div className="card result-card" ref={resultsRef}>
               <div className="result-card__header-flex">
                 <div className="result-card__price-tag">
                   <label>Estimated Value</label>
@@ -337,7 +330,7 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
               </div>
 
               {result.sources && (
-                <div className="result-card__sources">
+                <div className="result-card__sources" ref={resultsRef}>
                   <h4>Market Evidence</h4>
                   {result.sources.map((s: string, i: number) => (
                     <div key={i} className="source-pill">
@@ -365,18 +358,28 @@ export default function HomeClient({ user: initialUser }: { user: any }) {
       </div>
 
       <InfoModal
-        isOpen={!!showModal}
+        isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={"Too many scans"}
+        title={"Limit Reached"}
       >
         <div className="too-many-scans-cont">
-          <div>
+          <p>
             You've reached your max scans for today. Upgrade your account for
-            more scans!
-          </div>
-          <div className="upgrade-btn-cont">
-            <SubscribeButton user={user} />
-          </div>
+            more!
+          </p>
+          <Link href="/payments" className="secondary-btn">
+            View Plans
+          </Link>
+        </div>
+      </InfoModal>
+
+      <InfoModal
+        isOpen={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        title={"Error"}
+      >
+        <div className="errorModal-cont">
+          <p>One or more images could not be scanned. Please try again.</p>
         </div>
       </InfoModal>
 

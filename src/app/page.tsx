@@ -1,26 +1,37 @@
 "use client";
 
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Loading from "@/components/Loading";
-import WebHome from "@/components/WebHomepageClient";
 import UnifiedAuthPage from "@/components/AuthPage";
+import { useApp } from "@/context/AppContext"; 
+import { Capacitor } from "@capacitor/core";
 
 export default function Page() {
-  const { status } = useSession();
+  const { user, isLoading } = useApp(); 
   const router = useRouter();
 
   useEffect(() => {
-    // If a user lands here and IS logged in, send them to dashboard.
-    if (status === "authenticated") {
-      router.replace("/dashboard");
+    if (isLoading) return;
+
+    const isApp = Capacitor.getPlatform() !== "web";
+    
+    if (isApp) {
+      if (user) {
+        router.replace("/dashboard");
+      } else {
+        router.replace("/login");
+      }
     }
-  }, [status, router]);
+  }, [user, isLoading, router]);
 
-  if (status === "loading") return <Loading />;
+  if (isLoading) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
 
-  // Only show the landing page to unauthenticated Web users.
-  // Middleware handles mobile redirect, so they never get here.
   return <UnifiedAuthPage />;
 }

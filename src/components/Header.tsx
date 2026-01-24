@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   User,
   Settings,
@@ -18,31 +18,20 @@ import {
   BadgeDollarSign,
   CircleDollarSign,
 } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { useApp } from "@/context/AppContext";
 
-interface HeaderProps {
-  user: any;
-}
-
-export default function Header({ user }: HeaderProps) {
-  const { data: session, update } = useSession();
+export default function Header() {
+  const { user, setUser } = useApp();
   const pathname = usePathname();
+  const router = useRouter();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const subscriptionStatus =
-    session?.user?.subscriptionStatus || user?.subscriptionStatus;
-  const isPro = subscriptionStatus?.toLowerCase() === "pro";
-  const isHobby = subscriptionStatus?.toLowerCase() === "hobby";
-  const isBusiness = subscriptionStatus?.toLowerCase() === "business";
+  const subscriptionStatus = user?.subscriptionStatus?.toLowerCase() || "basic";
+  const isPro = subscriptionStatus === "pro";
+  const isHobby = subscriptionStatus === "hobby";
+  const isBusiness = subscriptionStatus === "business";
 
-  useEffect(() => {
-    if (user && update) {
-      update();
-    }
-  }, [user]);
-
-  // Close "More" menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -53,10 +42,13 @@ export default function Header({ user }: HeaderProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (!session) return null; // Don't show nav if not logged in
+  if (!user) return null;
 
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: "/login" });
+  const handleLogout = () => {
+    // 1. Clear the token (adjust based on where you store it: localStorage or Cookie)
+    localStorage.removeItem("token");
+    setUser(null);
+    router.push("/login");
   };
 
   const navItems = [
@@ -96,7 +88,7 @@ export default function Header({ user }: HeaderProps) {
         <div
           className={`mobile-nav__popover ${isMoreOpen ? "is-visible" : ""}`}
         >
-          {(isBusiness) && (
+          {isBusiness && (
             <Link
               href="/inventory"
               className="popover-item"

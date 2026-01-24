@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Calculator, History, Trash2, Info } from "lucide-react";
-import Link from "next/link";
+import { ArrowLeft, History, Trash2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useApp } from "@/context/AppContext";
+import { getApiUrl } from "@/lib/api-config";
+import Loading from "./Loading";
 
 interface ScanHistoryItem {
   id: string;
@@ -23,14 +25,16 @@ const PLATFORMS = [
   { name: "Depop", fee: 10 },
 ];
 
-export default function CalculatorClient({
-  history,
-}: {
-  history: ScanHistoryItem[];
-}) {
+export default function CalculatorClient() {
+  const { user, isLoading: authLoading } = useApp();
+  const router = useRouter();
+
+  const [history, setHistory] = useState<ScanHistoryItem[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const [selectedItem, setSelectedItem] = useState<ScanHistoryItem | null>(
     null,
   );
+
   const [buyCost, setBuyCost] = useState<number | "">("");
   const [sellPrice, setSellPrice] = useState<number | "">("");
   const [shippingCost, setShippingCost] = useState<number | "">("");
@@ -39,7 +43,52 @@ export default function CalculatorClient({
   );
   const [otherCosts, setOtherCosts] = useState<number | "">("");
 
-  const router = useRouter();
+  useEffect(() => {
+    if (!authLoading && (!user || user.subscriptionStatus === "basic")) {
+      router.replace(user ? "/account" : "/login");
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(getApiUrl("/api/history"), {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const formatted = data.map((item: any) => {
+            const prices = item.priceRange.match(/\d+/g)?.map(Number) || [0, 0];
+            return {
+              id: item.id.toString(),
+              title: item.itemTitle,
+              lowResellValue: prices[0] || 0,
+              highResellValue: prices[1] || prices[0] || 0,
+              estimatedShipping: 10,
+              imageUrl: item.imageUrl,
+            };
+          });
+          setHistory(formatted);
+        }
+      } catch (err) {
+        console.error("Failed to fetch history", err);
+      } finally {
+        setLoadingHistory(false);
+      }
+    };
+
+    if (user) fetchHistory();
+  }, [user]);
+
+  if (authLoading || !user) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
 
   const handleBack = () => {
     if (window.history.length > 1) {

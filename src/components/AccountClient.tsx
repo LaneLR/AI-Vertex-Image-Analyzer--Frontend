@@ -9,50 +9,56 @@ import {
   ArrowLeft,
   Settings,
   Wand2,
-  ShieldCheck,
   HistoryIcon,
   CircleDollarSign,
   BriefcaseBusiness,
   Flame,
   ZapOff,
-  Package,
   Boxes,
+  Loader2,
 } from "lucide-react";
 import Link from "next/link";
-import { Capacitor } from "@capacitor/core";
-import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import InfoModal from "./InfoModal";
 import { getApiUrl } from "@/lib/api-config";
-import PaymentsClient from "./Payments";
+import Loading from "./Loading";
 
-export default function AccountClient({ user: initialUser }: { user: any }) {
-  const { maxFreeScans, dailyScansUsed, setDailyScansUsed } = useApp();
+export default function AccountClient() {
+  const {
+    user,
+    isLoading,
+    maxFreeScans,
+    dailyScansUsed,
+    setDailyScansUsed,
+    refreshUser,
+  } = useApp();
   const [loadingPortal, setLoadingPortal] = useState(false);
-  const { data: session, update } = useSession();
-  const searchParams = useSearchParams();
   const [errorModal, setErrorModal] = useState(false);
 
-  const user = session?.user || initialUser;
+  const searchParams = useSearchParams();
   const router = useRouter();
-
   const success = searchParams.get("success");
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace("/login");
+    }
+  }, [user, isLoading, router]);
 
   useEffect(() => {
     if (user?.dailyScansCount !== undefined) {
       const lastUpdate = new Date(user.lastScanDate || new Date());
       const now = new Date();
       const isNewDay = lastUpdate.getUTCDate() !== now.getUTCDate();
-
       setDailyScansUsed(isNewDay ? 0 : user.dailyScansCount);
     }
-  }, [user?.dailyScansCount, user?.lastScanDate]);
+  }, [user, setDailyScansUsed]);
 
   useEffect(() => {
-    if (user && update) {
-      update();
+    if (success && refreshUser) {
+      refreshUser();
     }
-  }, [success]);
+  }, [success, refreshUser]);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -61,6 +67,14 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
       router.push("/");
     }
   };
+
+  if (isLoading || !user) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
 
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const isHobby = user?.subscriptionStatus?.toLowerCase() === "hobby";
@@ -71,13 +85,20 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
 
   const handleManageSubscription = async () => {
     setLoadingPortal(true);
+    const token = localStorage.getItem("token");
+
     if (user?.paymentProvider === "stripe") {
       try {
         const res = await fetch(getApiUrl("/api/stripe/portal"), {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // Identify user to Express
+            "Content-Type": "application/json",
+          },
         });
         const data = await res.json();
         if (data.url) window.location.href = data.url;
+        else throw new Error("No URL returned");
       } catch (err) {
         setErrorModal(true);
       } finally {
@@ -190,8 +211,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
             ) : (
               <div className="upgrade-area">
                 <p className="usage-hint">
-                  Get over 100 scans and Listing Studio with our Hobbyist or Pro
-                  plans!
+                  Get more scans with the Hobbyist or Pro plans!
                 </p>
                 {/* <PaymentsClient user={user} /> */}
                 <Link href={"/payments"}>
@@ -240,7 +260,7 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
           </Link>
         )}
 
-        {(isBusiness) && (
+        {isBusiness && (
           <Link href="/inventory" className="account-card listing-shortcut">
             <div className="shortcut-info">
               <Boxes size={20} />

@@ -5,11 +5,9 @@ import React, { useEffect, useState } from "react";
 import {
   ArrowLeft,
   Search,
-  Clock,
   ChevronDown,
   ChevronUp,
   Tag,
-  ExternalLink,
   Trash2,
   Package,
   Boxes,
@@ -18,8 +16,9 @@ import Link from "next/link";
 import { getApiUrl } from "@/lib/api-config";
 import getGradeColor from "@/helpers/colorGrade";
 import InfoModal from "./InfoModal";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Loading from "./Loading";
+import { useApp } from "@/context/AppContext";
 
 interface HistoryItem {
   id: string;
@@ -32,9 +31,9 @@ interface HistoryItem {
   grade?: string;
 }
 
-export default function HistoryClient({ user: initialUser }: { user: any }) {
+export default function HistoryClient() {
+  const { user, isLoading, setIsLoading } = useApp();
   const [history, setHistory] = useState<HistoryItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -43,8 +42,6 @@ export default function HistoryClient({ user: initialUser }: { user: any }) {
     "Last 7 Days",
   ]);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const { data: session, update } = useSession();
-  const user = session?.user || initialUser;
   const router = useRouter();
 
   const isHobby = user?.subscriptionStatus === "hobby";
@@ -52,19 +49,48 @@ export default function HistoryClient({ user: initialUser }: { user: any }) {
   const isBusiness = user?.subscriptionStatus === "business";
 
   useEffect(() => {
+    // Only fetch if we have a user and auth is finished loading
+    if (isLoading) return;
+    if (!user) {
+      router.push("/login");
+      return;
+    }
+
     async function fetchHistory() {
       try {
-        const res = await fetch(getApiUrl("/api/user/history"));
-        const data = await res.json();
-        if (Array.isArray(data)) setHistory(data);
+        const token = localStorage.getItem("token"); // Retrieve your JWT
+        const res = await fetch(getApiUrl("/api/user/history"), {
+          headers: {
+            Authorization: `Bearer ${token}`, // Pass token to Express
+          },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) setHistory(data);
+        } else if (res.status === 401) {
+          router.push("/login");
+        }
       } catch (err) {
         console.error("Failed to load history", err);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
     fetchHistory();
-  }, []);
+  }, [user, isLoading, router]);
+
+  const authFetch = (url: string, options: RequestInit = {}) => {
+    const token = localStorage.getItem("token");
+    return fetch(getApiUrl(url), {
+      ...options,
+      headers: {
+        ...options.headers,
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+  };
 
   const toggleExpand = (id: string) => {
     setExpandedId(expandedId === id ? null : id);
@@ -72,39 +98,32 @@ export default function HistoryClient({ user: initialUser }: { user: any }) {
 
   const handleAddToInventory = async (id: string) => {
     try {
-      const res = await fetch(getApiUrl(`/api/user/history/${id}`), {
+      const res = await authFetch(`/api/user/history/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ inInventory: true }),
       });
 
       if (res.ok) {
         setSuccessMessage("Item added to your business inventory!");
-        // Optional: Remove from current history view if you want it to "move"
-        // setHistory(prev => prev.filter(item => item.id !== id));
-
         setTimeout(() => setSuccessMessage(null), 3000);
       } else {
         const data = await res.json();
         setErrorMessage(data.error || "Failed to add to inventory.");
       }
     } catch (err) {
-      console.error("Inventory Add Error:", err);
       setErrorMessage("An error occurred.");
     }
   };
 
   const handleDeleteClick = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    // Instead of confirm(), we set the target ID to trigger the Confirm Modal
     setDeleteTarget(id);
   };
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
-
     try {
-      const res = await fetch(getApiUrl(`/api/user/history/${deleteTarget}`), {
+      const res = await authFetch(`/api/user/history/${deleteTarget}`, {
         method: "DELETE",
       });
 
@@ -113,14 +132,10 @@ export default function HistoryClient({ user: initialUser }: { user: any }) {
         if (expandedId === deleteTarget) setExpandedId(null);
         setDeleteTarget(null);
       } else {
-        const data = await res.json();
-        setDeleteTarget(null);
-        setErrorMessage(data.error || "Failed to delete scan.");
+        setErrorMessage("Failed to delete scan.");
       }
     } catch (err) {
-      console.error("Failed to delete", err);
-      setDeleteTarget(null);
-      setErrorMessage("An error occurred while connecting to the server.");
+      setErrorMessage("An error occurred.");
     }
   };
 
@@ -172,6 +187,15 @@ export default function HistoryClient({ user: initialUser }: { user: any }) {
 
   const groupedHistory = groupHistoryByDate(history);
 
+  if (isLoading) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
+  if (!user) return null;
+
   return (
     <main className="history-page">
       <nav className="history-page__nav">
@@ -183,7 +207,7 @@ export default function HistoryClient({ user: initialUser }: { user: any }) {
       </nav>
 
       <div className="history-page__container">
-        {loading ? (
+        {isLoading ? (
           <div className="history-page__loading">
             <div className="spinner"></div>
             <p>Loading your scans...</p>

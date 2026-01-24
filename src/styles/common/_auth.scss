@@ -1,7 +1,7 @@
 .auth-page {
   min-height: 100vh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   background: var(--bg-main);
   padding: 1.5rem;
@@ -22,7 +22,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin: 15px 0;
+  margin: 20px 0;
   padding: 0 5px;
 
   .custom-checkbox {
@@ -123,7 +123,7 @@
 
 .forgot-btn {
   display: block;
-  width: 100%;
+  width: fit-content;
   text-align: right;
   font-size: 0.8rem;
   font-weight: 600;
@@ -132,14 +132,31 @@
   background: none;
   border: none;
   cursor: pointer;
-  text-decoration: underline;
+  letter-spacing: 0.25px;
+}
+
+.underlined-btn-container {
+  width: 100%;
+  display: flex;
+  justify-content: right;
+  text-align: right;
+}
+
+.underline-container {
+  width: fit-content;
+}
+
+.underline {
+  width: 100%;
+  border-top: 1px solid var(--primary-theme);
+  margin-top: 1px;
 }
 
 .auth-submit-btn {
   width: 100%;
   padding: 1rem;
   background: var(--primary-theme);
-  color: white;
+  color: var(--text-primary);
   border-radius: 14px;
   font-weight: 700;
   border: none;
@@ -194,6 +211,10 @@
   cursor: pointer;
 }
 
+.letter-spacing-textlink {
+  letter-spacing: 0.35px;
+}
+
 .auth-footer {
   margin-top: 2rem;
   text-align: center;
@@ -205,9 +226,7 @@
     border: none;
     color: var(--primary-theme);
     font-weight: 700;
-    margin-left: 0.5rem;
     cursor: pointer;
-    text-decoration: underline;
   }
 }
 

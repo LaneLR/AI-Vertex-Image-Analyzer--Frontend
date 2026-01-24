@@ -17,36 +17,23 @@ import {
   BookmarkX,
   DollarSign,
   Boxes,
-  ArrowUpNarrowWide,
-  AArrowUp,
   ALargeSmall,
   Camera,
   Cross,
   ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+// IMPORT YOUR CONTEXT
+import { useApp } from "@/context/AppContext"; 
 import InfoModal from "./InfoModal";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
+import Loading from "./Loading"
 
-type User = {
-  name?: string | null;
-  email?: string | null;
-  image?: string | null;
-  darkMode?: boolean;
-  subscriptionStatus?: string | null;
-};
-
-interface SettingsClientProps {
-  user?: User;
-}
-
-export default function SettingsClient({
-  user: initialUser,
-}: SettingsClientProps) {
-  const { data: session, update } = useSession();
-  const user = session?.user || initialUser;
+export default function SettingsClient() {
+  // Use custom context instead of useSession
+  const { user, isLoading } = useApp();
+  const router = useRouter();
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [localDarkMode, setLocalDarkMode] = useState(user?.darkMode ?? false);
@@ -54,40 +41,20 @@ export default function SettingsClient({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showSubWarning, setShowSubWarning] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [isListingStudioModalOpen, setIsListingStudioModalOpen] =
-    useState(false);
+  
+  // Modal states
+  const [isListingStudioModalOpen, setIsListingStudioModalOpen] = useState(false);
   const [isScanHistoryModalOpen, setIsScanHistoryModalOpen] = useState(false);
   const [isProfitCalcModalOpen, setIsProfitCalcModalOpen] = useState(false);
   const [isGradesModalOpen, setIsGradesModalOpen] = useState(false);
   const [isPhotoStudioModalOpen, setIsPhotoStudioModalOpen] = useState(false);
   const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
-  const router = useRouter();
 
-  const handleDeleteAll = async () => {
-    setIsDeleting(true);
-    try {
-      const res = await fetch(getApiUrl("/api/user/clear-history"), {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setIsModalOpen(false);
-      }
-    } catch (err) {
-      console.error("Failed to clear history", err);
-    } finally {
-      setIsDeleting(false);
+useEffect(() => {
+    if (user) {
+      setLocalDarkMode(user.darkMode);
     }
-  };
-
-  useEffect(() => {
-    setLocalDarkMode(user?.darkMode ?? false);
-    if (user?.darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-    }
-  }, [user?.darkMode]);
+  }, [user]);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -97,14 +64,37 @@ export default function SettingsClient({
     }
   };
 
-  const toggleDarkMode = async () => {
+  const getAuthHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  });
+
+  const handleDeleteAll = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch(getApiUrl("/api/user/clear-history"), {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (res.ok) {
+        setIsModalOpen(false);
+        // Optional: Refresh data or show toast
+      }
+    } catch (err) {
+      console.error("Failed to clear history", err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+ const toggleDarkMode = async () => {
     if (isUpdating) return;
     setIsUpdating(true);
     const newDarkModeStatus = !localDarkMode;
 
     setLocalDarkMode(newDarkModeStatus);
-    localStorage.setItem("darkMode", newDarkModeStatus ? "true" : "false");
-
+    
+    // Immediate UI feedback
     if (newDarkModeStatus) {
       document.documentElement.classList.add("dark");
     } else {
@@ -112,15 +102,13 @@ export default function SettingsClient({
     }
 
     try {
-      const res = await fetch(getApiUrl("/api/user/update-settings"), {
+      await fetch(getApiUrl("/api/user/update-settings"), {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify({ darkMode: newDarkModeStatus }),
       });
-
-      if (res.ok) {
-        await update({ darkMode: newDarkModeStatus });
-      }
+      // Note: We don't have 'update()' from next-auth anymore. 
+      // You may want to call a fetchUser() function from your Context here to sync globally.
     } catch (err) {
       console.error("Failed to sync dark mode to DB", err);
     } finally {
@@ -133,6 +121,7 @@ export default function SettingsClient({
     try {
       const res = await fetch(getApiUrl("/api/user/delete-account"), {
         method: "POST",
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
 
@@ -140,9 +129,9 @@ export default function SettingsClient({
         setShowConfirmDelete(false);
         setShowSubWarning(true);
       } else if (res.ok) {
-        window.location.href = "/api/auth/signout";
-      } else {
-        setShowErrorModal(true);
+        // Manual Signout Logic
+        localStorage.removeItem("token");
+        window.location.href = "/login"; 
       }
     } catch (err) {
       console.error(err);
@@ -150,6 +139,14 @@ export default function SettingsClient({
       setIsDeleting(false);
     }
   };
+
+  if (isLoading) {
+        return (
+          <div className="loading-state">
+            <Loading />
+          </div>
+        );
+  }
 
   return (
     <main className="settings-page">

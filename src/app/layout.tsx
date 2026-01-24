@@ -3,21 +3,19 @@ import type { Metadata } from "next";
 import "./globals.css";
 import "@/styles/main.scss";
 import ClientWrapper from "../components/ClientWrapper";
-import Providers from "@/components/SessionProvider";
-import { authOptions } from "./api/auth/[...nextauth]/route";
-import { getServerSession } from "next-auth";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { AppProvider } from "@/context/AppContext";
 
 export const metadata: Metadata = {
   title: "FlipSavvy | AI Thrift Appraisal",
   description: "Identify and value thrift finds instantly with AI",
 };
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions)
   return (
     <html lang="en" className="global" suppressHydrationWarning>
       <head>
@@ -39,10 +37,11 @@ export default async function RootLayout({
         />
       </head>
       <body>
-        {/* 3. Wrap everything in your custom Providers component */}
-        <Providers>
-          <ClientWrapper user={session?.user}>{children}</ClientWrapper>
-        </Providers>
+        <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID!}>
+          <AppProvider>
+            <ClientWrapper>{children}</ClientWrapper>
+          </AppProvider>
+        </GoogleOAuthProvider>
       </body>
     </html>
   );

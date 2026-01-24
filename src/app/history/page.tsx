@@ -1,14 +1,16 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
 import HistoryClient from "@/components/HistoryClient";
+import Loading from "@/components/Loading";
+import { Suspense } from "react";
+
+export const metadata = {
+  title: "Scan History | Flip Savvy",
+  description: "Review your scanned items.",
+};
 
 export default async function HistoryPage() {
-  const session = await getServerSession(authOptions);
-
-  if (!session || !session.user) {
-    redirect("/login");
-  }
-
-  return <HistoryClient user={session.user} />;
+    return (
+      <Suspense fallback={<Loading />}>
+        <HistoryClient />;
+      </Suspense>
+    );
 }
