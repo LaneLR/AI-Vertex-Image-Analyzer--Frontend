@@ -121,7 +121,7 @@ export default function Header() {
           )}
 
           <Link
-            href="/settings"
+            href="/history"
             className="popover-item"
             onClick={() => setIsMoreOpen(false)}
           >
