@@ -114,7 +114,7 @@
       width: 64px;
       height: 64px;
       background: rgba(239, 68, 68, 0.1);
-      color: #ef4444;
+      color: var(--error-text);
       border-radius: 50%;
       display: flex;
       align-items: center;
@@ -134,7 +134,7 @@
       color: var(--text-secondary);
       line-height: 1.5;
       strong {
-        color: #ef4444;
+        color: var(--error-text);
         font-weight: 700;
       }
     }
@@ -208,11 +208,11 @@
   }
 
   &--danger {
-    background: #ef4444;
+    background: var(--error-text);
     color: white;
 
     &:hover:not(:disabled) {
-      background: #dc2626;
+      background: var(--error-bg);
       box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
 

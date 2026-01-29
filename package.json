@@ -1,7 +1,7 @@
 {
-  "name": "flipsavvy",
+  "name": "thriftsavvy",
   "version": "1.0.8",
-  "description": "Find items to flip with Flip Savvy",
+  "description": "Find items to thrift with ThriftSavvy",
   "main": "next.config.js",
   "scripts": {
     "dev": "next dev",

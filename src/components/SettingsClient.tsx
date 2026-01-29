@@ -24,15 +24,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 // IMPORT YOUR CONTEXT
-import { useApp } from "@/context/AppContext"; 
+import { useApp } from "@/context/AppContext";
 import InfoModal from "./InfoModal";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
-import Loading from "./Loading"
+import Loading from "./Loading";
 
 export default function SettingsClient() {
   // Use custom context instead of useSession
-  const { user, isLoading } = useApp();
+  const { user, isLoading, refreshUser, setUser, deletionCountdown } = useApp();
   const router = useRouter();
 
   const [isUpdating, setIsUpdating] = useState(false);
@@ -41,16 +41,21 @@ export default function SettingsClient() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showSubWarning, setShowSubWarning] = useState(false);
-  
+
   // Modal states
-  const [isListingStudioModalOpen, setIsListingStudioModalOpen] = useState(false);
+  const [isListingStudioModalOpen, setIsListingStudioModalOpen] =
+    useState(false);
   const [isScanHistoryModalOpen, setIsScanHistoryModalOpen] = useState(false);
   const [isProfitCalcModalOpen, setIsProfitCalcModalOpen] = useState(false);
   const [isGradesModalOpen, setIsGradesModalOpen] = useState(false);
   const [isPhotoStudioModalOpen, setIsPhotoStudioModalOpen] = useState(false);
   const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [reactivateModal, setReactivateModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
-useEffect(() => {
+  useEffect(() => {
     if (user) {
       setLocalDarkMode(user.darkMode);
     }
@@ -72,7 +77,7 @@ useEffect(() => {
   const handleDeleteAll = async () => {
     setIsDeleting(true);
     try {
-      const res = await fetch(getApiUrl("/api/user/clear-history"), {
+      const res = await fetch(getApiUrl("/api/user/history"), {
         method: "DELETE",
         headers: getAuthHeaders(),
       });
@@ -87,14 +92,38 @@ useEffect(() => {
     }
   };
 
- const toggleDarkMode = async () => {
+  const handleKeepAccount = async () => {
+    try {
+      const res = await fetch(getApiUrl("/api/user/keep-active"), {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+      });
+
+      if (res.ok) {
+        // Clear deactivation fields in local state
+        setIsProcessing(true);
+        if (setUser) {
+          setUser((prev: any) => ({
+            ...prev,
+            scheduledDeletionDate: null,
+            deactivationRequestedAt: null,
+          }));
+        }
+
+        setReactivateModal(true);
+      }
+    } catch (err) {
+      console.error("KEEP_ACTIVE_ERROR:", err);
+    }
+  };
+
+  const toggleDarkMode = async () => {
     if (isUpdating) return;
     setIsUpdating(true);
     const newDarkModeStatus = !localDarkMode;
 
     setLocalDarkMode(newDarkModeStatus);
-    
-    // Immediate UI feedback
+
     if (newDarkModeStatus) {
       document.documentElement.classList.add("dark");
     } else {
@@ -104,11 +133,13 @@ useEffect(() => {
     try {
       await fetch(getApiUrl("/api/user/update-settings"), {
         method: "PATCH",
-        headers: getAuthHeaders(),
+        headers: {
+          ...getAuthHeaders(),
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ darkMode: newDarkModeStatus }),
       });
-      // Note: We don't have 'update()' from next-auth anymore. 
-      // You may want to call a fetchUser() function from your Context here to sync globally.
+      refreshUser();
     } catch (err) {
       console.error("Failed to sync dark mode to DB", err);
     } finally {
@@ -119,33 +150,42 @@ useEffect(() => {
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
     try {
-      const res = await fetch(getApiUrl("/api/user/delete-account"), {
+      // Updated endpoint to /api/user/deactivate
+      const res = await fetch(getApiUrl("/api/user/deactivate"), {
         method: "POST",
         headers: getAuthHeaders(),
       });
+
       const data = await res.json();
 
       if (!res.ok && data.error === "ACTIVE_SUBSCRIPTION") {
         setShowConfirmDelete(false);
         setShowSubWarning(true);
       } else if (res.ok) {
-        // Manual Signout Logic
-        localStorage.removeItem("token");
-        window.location.href = "/login"; 
+        // SUCCESS: Instead of logging out, we update the user object
+        // to show the deactivation banner and countdown.
+        if (setUser) {
+          setUser((prev: any) => ({
+            ...prev,
+            scheduledDeletionDate: data.scheduledDeletionDate,
+            deactivationRequestedAt: new Date(),
+          }));
+        }
+        setShowConfirmDelete(false);
       }
     } catch (err) {
-      console.error(err);
+      console.error("DEACTIVATE_ERROR:", err);
     } finally {
       setIsDeleting(false);
     }
   };
 
   if (isLoading) {
-        return (
-          <div className="loading-state">
-            <Loading />
-          </div>
-        );
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
   }
 
   return (
@@ -165,8 +205,8 @@ useEffect(() => {
           <div className="settings-list">
             <div className="settings-item">
               <div className="settings-item__info">
-                <div className="icon-box icon-box--moon">
-                  <Moon size={22} />
+                <div className="icon-box ">
+                  <Moon size={20} />
                 </div>
                 <div>
                   <p className="item-label">Dark Mode</p>
@@ -185,50 +225,6 @@ useEffect(() => {
           </div>
         </section>
 
-        {/* AI ENGINE GROUP */}
-        {/* <section className="settings-group">
-          <h2 className="settings-group__title">
-            <Sparkles size={14} /> AI Engine Configuration
-          </h2>
-          <div className="settings-list">
-            <div className="settings-item">
-              <div className="settings-item__info">
-                <div className="icon-box icon-box--eye">
-                  <Eye size={18} />
-                </div>
-                <div>
-                  <p className="item-label">High Accuracy Mode</p>
-                  <p className="item-desc">Advanced visual tiling for detail</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setHighAccuracy(!highAccuracy)}
-                className={`ios-toggle ${highAccuracy ? "active" : ""}`}
-              >
-                <div className="ios-toggle__knob" />
-              </button>
-            </div>
-
-            <div className="settings-item">
-              <div className="settings-item__info">
-                <div className="icon-box icon-box--db">
-                  <Database size={18} />
-                </div>
-                <div>
-                  <p className="item-label">Cloud Save History</p>
-                  <p className="item-desc">Sync scans across all devices</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setSaveHistory(!saveHistory)}
-                className={`ios-toggle ${saveHistory ? "active" : ""}`}
-              >
-                <div className="ios-toggle__knob" />
-              </button>
-            </div>
-          </div>
-        </section> */}
-
         {/* TOOLS GROUP */}
         <section className="settings-group">
           <h2 className="settings-group__title">TOOLS</h2>
@@ -238,8 +234,8 @@ useEffect(() => {
               className="settings-item settings-item--clickable cursor-pointer"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <History size={22} />
+                <div className="icon-box">
+                  <History size={20} />
                 </div>
                 <p className="item-label">Scan History</p>
               </div>
@@ -251,10 +247,10 @@ useEffect(() => {
               className="settings-item settings-item--clickable cursor-pointer"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <ALargeSmall size={22} />
+                <div className="icon-box">
+                  <ALargeSmall size={20} />
                 </div>
-                <p className="item-label">Grades</p>
+                <p className="item-label">Thrift Grades</p>
               </div>
               <ChevronRight size={18} className="chevron" />
             </div>
@@ -264,8 +260,8 @@ useEffect(() => {
               className="settings-item settings-item--clickable cursor-pointer"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <DollarSign size={22} />
+                <div className="icon-box">
+                  <DollarSign size={20} />
                 </div>
                 <p className="item-label">Profit Calculator</p>
               </div>
@@ -277,8 +273,8 @@ useEffect(() => {
               className="settings-item settings-item--clickable cursor-pointer"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <Wand2 size={22} />
+                <div className="icon-box">
+                  <Wand2 size={20} />
                 </div>
                 <p className="item-label">SEO Generator</p>
               </div>
@@ -290,8 +286,8 @@ useEffect(() => {
               className="settings-item settings-item--clickable cursor-pointer"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <Camera size={22} />
+                <div className="icon-box">
+                  <Camera size={20} />
                 </div>
                 <p className="item-label">Photo Generator</p>
               </div>
@@ -303,8 +299,8 @@ useEffect(() => {
               className="settings-item settings-item--clickable cursor-pointer"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <Boxes size={22} />
+                <div className="icon-box">
+                  <Boxes size={20} />
                 </div>
                 <p className="item-label">Inventory Manager</p>
               </div>
@@ -405,11 +401,11 @@ useEffect(() => {
         <InfoModal
           isOpen={isGradesModalOpen}
           onClose={() => setIsGradesModalOpen(false)}
-          title="Item Grades"
+          title="Thrift Grades"
         >
           <div className="feature-info-modal">
             <p>
-              Flip Grades provide an instant visual indicator of an item's
+              Thrift Grades provide an instant visual indicator of an item's
               resale potential based on demand, margin, and sell-through rate.
               The higher the grade, the faster it will likely sell.
             </p>
@@ -556,7 +552,8 @@ useEffect(() => {
               </div>
               <div>
                 <strong>Business Workflow:</strong> Toggle "Auto-Add" on the
-                home screen to skip history and send scans straight to stock.
+                home screen to skip history and send scans straight to
+                inventory.
               </div>
             </div>
             <br />
@@ -581,38 +578,38 @@ useEffect(() => {
 
         {/* PREFERENCES GROUP */}
         <section className="settings-group">
-          <h2 className="settings-group__title">Preferences</h2>
+          <h2 className="settings-group__title">About</h2>
           <div className="settings-list">
-            <Link
-              href="/help"
+            <div
+              onClick={() => setIsHelpModalOpen(true)}
               className="settings-item settings-item--clickable"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <Cross size={22} />
+                <div className="icon-box">
+                  <Cross size={20} />
                 </div>
                 <p className="item-label">Help</p>
               </div>
               <ChevronRight size={18} className="chevron" />
-            </Link>
+            </div>
 
-            <Link
-              href="/privacy"
+            <div
+              onClick={() => setIsPrivacyModalOpen(true)}
               className="settings-item settings-item--clickable"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <ShieldCheck size={22} />
+                <div className="icon-box">
+                  <ShieldCheck size={20} />
                 </div>
                 <p className="item-label">Data & Privacy</p>
               </div>
               <ChevronRight size={18} className="chevron" />
-            </Link>
+            </div>
 
             <div className="settings-item">
               <div className="settings-item__info">
-                <div className="icon-box icon-box--phone">
-                  <Smartphone size={22} />
+                <div className="icon-box">
+                  <Smartphone size={20} />
                 </div>
                 <p className="item-label">App Version</p>
               </div>
@@ -621,33 +618,104 @@ useEffect(() => {
               </span>
             </div>
           </div>
+
+          <InfoModal
+            isOpen={isHelpModalOpen}
+            onClose={() => setIsHelpModalOpen(false)}
+            title="Help"
+          >
+            <div className="feature-info-modal">
+              <p>You can get help here.</p>
+              <br />
+              <div className="delete-modal__actions">
+                <div
+                  className="modal-btn-container"
+                  onClick={() => setIsHelpModalOpen(false)}
+                >
+                  <div className="modal-btn modal-btn--secondary">Close</div>
+                </div>
+              </div>
+            </div>
+          </InfoModal>
+
+          <InfoModal
+            isOpen={isPrivacyModalOpen}
+            onClose={() => setIsPrivacyModalOpen(false)}
+            title="Privacy and Terms"
+          >
+            <div className="feature-info-modal">
+              <p>
+                You can view our <a>Terms of Service</a> and{" "}
+                <a>Privacy Policy</a> here.
+              </p>
+              <br />
+              <div className="delete-modal__actions">
+                <div
+                  className="modal-btn-container"
+                  onClick={() => setIsPrivacyModalOpen(false)}
+                >
+                  <div className="modal-btn modal-btn--secondary">Close</div>
+                </div>
+              </div>
+            </div>
+          </InfoModal>
         </section>
 
         {/* DANGER ZONE SECTION */}
         <section className="settings-group">
           <h2 className="settings-group__title settings-group__title--danger">
             DANGER ZONE
-          </h2>
-          <div className="settings-list settings-list--danger">
+          </h2>{" "}
+          {user.scheduledDeletionDate !== null && (
+            <div className="deactivation-banner">
+              <p>
+                Your account is set to become inactive in{" "}
+                <strong>{deletionCountdown} days</strong>.
+              </p>
+              <button
+                className="cancel-btn"
+                onClick={handleKeepAccount}
+                disabled={isProcessing}
+              >
+                Keep My Account
+              </button>
+            </div>
+          )}
+          <div className="settings-list">
             <button
               className="settings-item settings-item--btn"
               onClick={() => setIsModalOpen(true)}
             >
               <div className="settings-item__info">
-                <Trash2 size={22} color="#ef4444" />
-                <span className="text-danger">Clear All Scan History</span>
+                <div className="icon-box icon-box--alert">
+                  <Trash2 size={20} />
+                </div>
+                <p className="item-label item-label--alert">
+                  Clear All Scan History
+                </p>
               </div>
+              <ChevronRight size={18} className="chevron" />
             </button>
-          </div>
-          <div className="settings-list settings-list--danger">
             <button
               className="settings-item settings-item--btn"
               onClick={() => setShowConfirmDelete(true)}
+              disabled={user.scheduledDeletionDate !== null}
             >
               <div className="settings-item__info">
-                <BookmarkX size={22} color="#ef4444" />
-                <span className="text-danger">Deactivate Account</span>
+                <div className="icon-box icon-box--alert">
+                  <BookmarkX size={20} />
+                </div>
+                <p className="item-label item-label--alert">
+                  {user.scheduledDeletionDate === null ? (
+                    "Deactivate Account"
+                  ) : (
+                    <div>
+                      Deactivation scheduled in <u>{deletionCountdown} days</u>
+                    </div>
+                  )}
+                </p>
               </div>
+              <ChevronRight size={18} className="chevron" />
             </button>
           </div>
         </section>
@@ -683,7 +751,7 @@ useEffect(() => {
                 onClick={handleDeleteAll}
                 disabled={isDeleting}
               >
-                {isDeleting ? "Clearing..." : "Delete Everything"}
+                Delete All Scan History
               </button>
             </div>
           </div>
@@ -692,7 +760,7 @@ useEffect(() => {
         <InfoModal
           isOpen={showConfirmDelete}
           onClose={() => setShowConfirmDelete(false)}
-          title="Delete Account"
+          title="Deactivate account"
         >
           <div className="delete-modal">
             <div className="delete-modal__warning">
@@ -701,9 +769,9 @@ useEffect(() => {
               </div>
               <h3>Are you sure?</h3>
               <p>
-                This will deactivate your account and you will lose access to
-                your scan history.
-                <strong> This cannot be undone.</strong>
+                This will schedule your account to be deactivated in{" "}
+                <strong>30 days</strong>. After this time, you will not be able
+                to log into your account.
               </p>
             </div>
 
@@ -728,72 +796,6 @@ useEffect(() => {
           </div>
         </InfoModal>
 
-        {/* <InfoModal
-          isOpen={showConfirmDelete}
-          onClose={() => setShowConfirmDelete(false)}
-          title="Delete account?"
-        >
-          <div className="modal-content">
-            <p>
-              Are you sure? This will deactivate your account and you will lose
-              access to your scan history.
-            </p>
-            <div className="modal-actions">
-              <button onClick={() => setShowConfirmDelete(false)}>
-                Cancel
-              </button>
-              <button
-                className="btn-danger"
-                onClick={handleDeleteAccount}
-                disabled={isDeleting}
-              >
-                {isDeleting ? "Processing..." : "Confirm Deactivation"}
-              </button>
-            </div>
-          </div>
-        </InfoModal> */}
-
-        {/* <InfoModal
-          isOpen={showSubWarning}
-          onClose={() => setShowSubWarning(false)}
-          title="Action required"
-        >
-          <div className="modal-content">
-            <p>
-              You currently have an active Pro subscription. To prevent further
-              charges to your account, you must cancel your subscription in the
-              billing portal before deactivating your account.
-            </p>
-            <div className="modal-actions">
-              <Link href="/billing" className="btn-primary">
-                Billing
-              </Link>
-              <button onClick={() => setShowSubWarning(false)}>Close</button>
-            </div>
-          </div>
-        </InfoModal> */}
-
-        {/* <InfoModal
-          isOpen={showSubWarning}
-          onClose={() => setShowErrorModal(false)}
-          title="An error occurred"
-        >
-          <div className="modal-content">
-            <p>
-              An error occurred when trying to deactivate your account. If you
-              are a Pro user, please make sure you have canceled any
-              subscriptions to FlipSavvy before requesting to deactivate your
-              account.
-            </p>
-            <div className="modal-actions">
-              <Link href="/billing" className="btn-primary">
-                Billing
-              </Link>
-              <button onClick={() => setShowSubWarning(false)}>Close</button>
-            </div>
-          </div>
-        </InfoModal> */}
-
         <InfoModal
           isOpen={showSubWarning}
           onClose={() => setShowSubWarning(false)}
@@ -807,8 +809,8 @@ useEffect(() => {
               <h3>An error occurred</h3>
               <p>
                 An error occurred while trying to deactivate your account. If
-                you are a Pro user, please make sure you have canceled any
-                subscriptions to FlipSavvy before deactivating your account.
+                you are a subscribed user, please make sure you have cancelled
+                your subscription before deactivating your account.
               </p>
             </div>
 
@@ -820,28 +822,21 @@ useEffect(() => {
               >
                 Cancel
               </button>
-              {user?.subscriptionStatus !== "basic" ? (
-                <Link href={"/listing"}>
-                  <button
-                    className="modal-btn modal-btn--secondary"
-                    // disabled={isDeleting}
-                  >
-                    To SEO Generator
-                  </button>
-                </Link>
-              ) : (
-                ""
-              )}
-
-              <div className="modal-btn modal-btn--danger">
-                <Link href="/account" className="btn-primary">
-                  Account
-                </Link>
-              </div>
             </div>
           </div>
         </InfoModal>
       </div>
+
+      <InfoModal
+        isOpen={reactivateModal}
+        onClose={() => setReactivateModal(false)}
+        title={"Deactivation cancelled"}
+      >
+        <div>
+          The scheduled deactivation for your account has been cancelled.
+        </div>
+        <br />
+      </InfoModal>
     </main>
   );
 }

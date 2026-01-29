@@ -106,7 +106,7 @@ export default function PaymentsClient() {
           <div className="plan-card">
             <h3 className="plan-card__name">Business</h3>
             <div className="plan-card__price">
-              39.99<span className="plan-card__month">/ mo</span>
+              44.99<span className="plan-card__month">/ mo</span>
             </div>
             <ul className="plan-card__feature-list">
               {features.business.map((f, i) => (
@@ -147,7 +147,7 @@ export default function PaymentsClient() {
           <div className="plan-card">
             <h3 className="plan-card__name">Hobbyist</h3>
             <div className="plan-card__price">
-              9.99<span className="plan-card__month">/ mo</span>
+              12.99<span className="plan-card__month">/ mo</span>
             </div>
             <ul className="plan-card__feature-list">
               {features.hobby.map((f, i) => (

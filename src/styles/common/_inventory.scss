@@ -76,7 +76,7 @@
     width: fit-content;
     padding: 1rem;
     background: var(--primary-theme);
-    color: var(--primary-text);
+    color: var(--text-primary);
     border-radius: var(--border-radius);
     font-weight: 700;
     border: none;
@@ -160,7 +160,7 @@
 
     &:hover {
       background: #fef2f2;
-      color: #ef4444;
+      color: var(--error-text);
     }
   }
 
@@ -295,7 +295,7 @@
 }
 
 .profit-text-neutral {
-  color: var(--primary-text);
+  color: var(--text-primary);
   font-size: 2.5rem !important;
 }
 

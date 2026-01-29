@@ -76,34 +76,87 @@ export default function HomeClient() {
     setPreviews(newPreviews);
   };
 
+  // const analyzeItem = async () => {
+  //   if (images.length === 0) return;
+  //   setLoading(true);
+
+  //   const formData = new FormData();
+
+  //   try {
+  //     // 1. Resize all images in parallel before sending
+  //     // This reduces the payload from ~20MB down to ~300KB
+  //     const resizedImageBlobs = await Promise.all(
+  //       images.map((img) => resizeImage(img, 768)),
+  //     );
+
+  //     // 2. Append the resized Blobs to FormData
+  //     resizedImageBlobs.forEach((blob, index) => {
+  //       // We give it a filename so the backend Multer knows it's an image
+  //       formData.append("image", blob, `image-${index}.jpg`);
+  //     });
+
+  //     formData.append("mode", "appraisal");
+  //     formData.append("addToInventory", String(addToInventory));
+
+  //     const token = localStorage.getItem("token");
+  //     const res = await fetch(getApiUrl("/api/analyze"), {
+  //       method: "POST",
+  //       headers: {
+  //         Authorization: `Bearer ${token}`,
+  //       },
+  //       body: formData,
+  //     });
+
+  //     const data = await res.json();
+
+  //     if (res.ok) {
+  //       setResult(data);
+  //       incrementScans();
+  //       setTimeout(() => {
+  //         resultsRef.current?.scrollIntoView({
+  //           behavior: "smooth",
+  //           block: "start",
+  //         });
+  //       }, 100);
+  //     } else if (res.status === 429) {
+  //       setShowModal(true);
+  //     } else if (res.status === 401) {
+  //       router.push("/login");
+  //     } else {
+  //       setShowErrorModal(true);
+  //     }
+  //   } catch (err) {
+  //     console.error("Analysis Error:", err);
+  //     setShowErrorModal(true);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  //not changing image size smaller
   const analyzeItem = async () => {
     if (images.length === 0) return;
+
     setLoading(true);
 
     const formData = new FormData();
 
+    images.forEach((img) => formData.append("image", img));
+
+    formData.append("mode", "appraisal");
+
+    formData.append("addToInventory", String(addToInventory));
+
     try {
-      // 1. Resize all images in parallel before sending
-      // This reduces the payload from ~20MB down to ~300KB
-      const resizedImageBlobs = await Promise.all(
-        images.map((img) => resizeImage(img, 768)),
-      );
-
-      // 2. Append the resized Blobs to FormData
-      resizedImageBlobs.forEach((blob, index) => {
-        // We give it a filename so the backend Multer knows it's an image
-        formData.append("image", blob, `image-${index}.jpg`);
-      });
-
-      formData.append("mode", "appraisal");
-      formData.append("addToInventory", String(addToInventory));
-
       const token = localStorage.getItem("token");
-      const res = await fetch(getApiUrl("/api/analyze"), {
+
+      const res = await fetch(getApiUrl("/api/listing/analyze"), {
         method: "POST",
+
         headers: {
           Authorization: `Bearer ${token}`,
         },
+
         body: formData,
       });
 
@@ -111,13 +164,8 @@ export default function HomeClient() {
 
       if (res.ok) {
         setResult(data);
+
         incrementScans();
-        setTimeout(() => {
-          resultsRef.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }, 100);
       } else if (res.status === 429) {
         setShowModal(true);
       } else if (res.status === 401) {
@@ -126,7 +174,8 @@ export default function HomeClient() {
         setShowErrorModal(true);
       }
     } catch (err) {
-      console.error("Analysis Error:", err);
+      console.error(err);
+
       setShowErrorModal(true);
     } finally {
       setLoading(false);
@@ -175,7 +224,7 @@ export default function HomeClient() {
                 ? "Hobbyist Plan"
                 : isBusiness
                   ? "Business Plan"
-                  : "Basic Plan"}
+                  : "Free Plan"}
           </span>
         </div>
         <div className="home-stats__item">
@@ -331,7 +380,7 @@ export default function HomeClient() {
 
               {result.sources && (
                 <div className="result-card__sources" ref={resultsRef}>
-                  <h4>Market Evidence</h4>
+                  <h4>Details from Online Listings</h4>
                   {result.sources.map((s: string, i: number) => (
                     <div key={i} className="source-pill">
                       {s}

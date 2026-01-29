@@ -21,7 +21,7 @@ import {
 import { useApp } from "@/context/AppContext";
 
 export default function Header() {
-  const { user, setUser } = useApp();
+  const { user, setUser, isLoading } = useApp();
   const pathname = usePathname();
   const router = useRouter();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
@@ -58,82 +58,86 @@ export default function Header() {
   ];
 
   return (
-    <nav className="mobile-nav" ref={menuRef}>
-      <div className="mobile-nav__container">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`mobile-nav__link ${isActive ? "is-active" : ""}`}
-            >
-              <Icon size={24} />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+    <>
+      {!isLoading && (
+        <nav className="mobile-nav" ref={menuRef}>
+          <div className="mobile-nav__container">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`mobile-nav__link ${isActive ? "is-active" : ""}`}
+                >
+                  <Icon size={24} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
 
-        {/* MORE MENU TOGGLE */}
-        <button
-          className={`mobile-nav__link ${isMoreOpen ? "is-active" : ""}`}
-          onClick={() => setIsMoreOpen(!isMoreOpen)}
-        >
-          <MoreHorizontal size={24} />
-          <span>More</span>
-        </button>
-
-        {/* POPUP MENU */}
-        <div
-          className={`mobile-nav__popover ${isMoreOpen ? "is-visible" : ""}`}
-        >
-          {isBusiness && (
-            <Link
-              href="/inventory"
-              className="popover-item"
-              onClick={() => setIsMoreOpen(false)}
+            {/* MORE MENU TOGGLE */}
+            <button
+              className={`mobile-nav__link ${isMoreOpen ? "is-active" : ""}`}
+              onClick={() => setIsMoreOpen(!isMoreOpen)}
             >
-              <Boxes size={20} />
-              <span>Inventory</span>
-            </Link>
-          )}
-          {(isPro || isBusiness) && (
-            <Link
-              href="/listing"
-              className="popover-item"
-              onClick={() => setIsMoreOpen(false)}
-            >
-              <Wand2 size={20} />
-              <span>Listing Studio</span>
-            </Link>
-          )}
+              <MoreHorizontal size={24} />
+              <span>More</span>
+            </button>
 
-          {(isHobby || isPro || isBusiness) && (
-            <Link
-              href="/calculator"
-              className="popover-item"
-              onClick={() => setIsMoreOpen(false)}
+            {/* POPUP MENU */}
+            <div
+              className={`mobile-nav__popover ${isMoreOpen ? "is-visible" : ""}`}
             >
-              <CircleDollarSign size={20} />
-              <span>Calculator</span>
-            </Link>
-          )}
+              {isBusiness && (
+                <Link
+                  href="/inventory"
+                  className="popover-item"
+                  onClick={() => setIsMoreOpen(false)}
+                >
+                  <Boxes size={20} />
+                  <span>Inventory</span>
+                </Link>
+              )}
+              {(isPro || isBusiness) && (
+                <Link
+                  href="/listing"
+                  className="popover-item"
+                  onClick={() => setIsMoreOpen(false)}
+                >
+                  <Wand2 size={20} />
+                  <span>Listing Studio</span>
+                </Link>
+              )}
 
-          <Link
-            href="/history"
-            className="popover-item"
-            onClick={() => setIsMoreOpen(false)}
-          >
-            <History size={20} />
-            <span>Scan History</span>
-          </Link>
-          <button className="popover-item logout" onClick={handleLogout}>
-            <LogOut size={20} />
-            <span>Sign Out</span>
-          </button>
-        </div>
-      </div>
-    </nav>
+              {(isHobby || isPro || isBusiness) && (
+                <Link
+                  href="/calculator"
+                  className="popover-item"
+                  onClick={() => setIsMoreOpen(false)}
+                >
+                  <CircleDollarSign size={20} />
+                  <span>Calculator</span>
+                </Link>
+              )}
+
+              <Link
+                href="/history"
+                className="popover-item"
+                onClick={() => setIsMoreOpen(false)}
+              >
+                <History size={20} />
+                <span>Scan History</span>
+              </Link>
+              <button className="popover-item logout" onClick={handleLogout}>
+                <LogOut size={20} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </div>
+        </nav>
+      )}
+    </>
   );
 }

@@ -32,6 +32,7 @@ export default function GenerateListingClient() {
     useApp();
   const router = useRouter();
   const resultsRef = useRef<HTMLDivElement>(null);
+  const backgroundRef = useRef<HTMLAnchorElement>(null);
   const [activeTab, setActiveTab] = useState<"seo" | "studio">("seo");
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [images, setImages] = useState<File[]>([]);
@@ -209,7 +210,7 @@ export default function GenerateListingClient() {
 
     try {
       // Ensure this points to your Express backend via getApiUrl
-      const res = await fetch(getApiUrl("/api/analyze"), {
+      const res = await fetch(getApiUrl("/api/listing/analyze"), {
         method: "POST",
         headers: {
           // Include your custom auth token if applicable
@@ -291,7 +292,7 @@ export default function GenerateListingClient() {
 
     try {
       // Updated to use getApiUrl for the background removal route
-      const res = await fetch(getApiUrl("/api/listing/remove-bg"), {
+      const res = await fetch(getApiUrl("/api/listing/remove-background"), {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -317,6 +318,12 @@ export default function GenerateListingClient() {
         message: "Error processing image. Please try again.",
       });
     } finally {
+      setTimeout(() => {
+        backgroundRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
       setIsProcessing(false);
     }
   };
@@ -481,7 +488,7 @@ export default function GenerateListingClient() {
                     <div className="share-grid">
                       <button onClick={handleShareCSV} className="generate-btn">
                         <Upload size={13} />
-                        Share / Email
+                        Share
                       </button>
 
                       <button onClick={downloadCSV} className="secondary-btn">
@@ -535,7 +542,7 @@ export default function GenerateListingClient() {
                   <div className="result-group card" ref={resultsRef}>
                     <div className="result-group__header">
                       <label>
-                        <CircleDollarSign size={18} /> Suggested resale price
+                        <CircleDollarSign size={18} /> Estimated resale price
                       </label>
                       <button
                         onClick={() =>
@@ -791,7 +798,7 @@ export default function GenerateListingClient() {
                       href={resultImage!}
                       download="listing-photo.png"
                       className="generate-btn"
-                      style={{ marginTop: "1.5rem", textDecoration: "none" }}
+                      ref={backgroundRef}
                     >
                       <Download size={18} /> Download Image
                     </a>

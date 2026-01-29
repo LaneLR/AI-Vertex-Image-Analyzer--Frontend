@@ -14,8 +14,8 @@
 //   html: string;
 // }
 
-// const APP_NAME = "FlipSavvy";
-// const APP_FIRST_WORD = "FLIP";
+// const APP_NAME = "ThriftSavvy";
+// const APP_FIRST_WORD = "THRIFT";
 // const APP_SECOND_WORD = "SAVVY";
 // const BRAND_COLOR1 = "#ff6000";
 // const BRAND_COLOR2 = "#3b82f6";

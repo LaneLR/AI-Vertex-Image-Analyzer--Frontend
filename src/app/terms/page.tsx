@@ -3,9 +3,9 @@ import TermsClient from "../../components/TermsClient";
 import Loading from "@/components/Loading";
 
 export const metadata = {
-  title: "Terms of Service | Flip Savvy",
+  title: "Terms of Service | ThriftSavvy",
   description:
-    "Read the rules, guidelines, and AI disclaimers for using Flip Savvy.",
+    "Read the rules, guidelines, and AI disclaimers for using ThriftSavvy.",
 };
 
 export default function TermsPage() {

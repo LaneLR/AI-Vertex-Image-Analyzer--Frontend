@@ -262,3 +262,70 @@
   flex-direction: column;
   gap: 8px;
 }
+
+.deactivation-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--primary-theme);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow);
+  // background-color: var(--bg-card);
+  // border-color: rgba(255, 96, 0, 0.5);
+
+  animation: slideDown 0.3s ease-out;
+
+  p {
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin: 0;
+
+    // Highlights the number of days specifically
+    strong {
+      color: var(--primary-theme);
+      font-weight: 700;
+    }
+  }
+
+  .cancel-btn {
+    background-color: var(--primary-theme);
+    color: var(--text-primary);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    white-space: nowrap;
+
+    &:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+:root.dark .deactivation-banner {
+  background-color: rgba(255, 96, 0, 0.15);
+  border-color: rgba(255, 96, 0, 0.5);
+}

@@ -1,18 +1,18 @@
 import type { CapacitorConfig } from '@capacitor/cli'; 
 
 const config: CapacitorConfig = {
-  appId: 'com.flipsavvy.app',
-  appName: 'Flip Savvy',
+  appId: 'com.thriftsavvy.app',
+  appName: 'Thrift Savvy',
   webDir: 'out', // Matches your Next.js 'output: export' directory
   server: {
     androidScheme: 'https',
     iosScheme: 'https'
   },
   ios: {
-    appendUserAgent: 'FlipSavvy-Mobile-App'
+    appendUserAgent: 'ThriftSavvy-Mobile-App'
   },
   android: {
-    appendUserAgent: 'FlipSavvy-Mobile-App'
+    appendUserAgent: 'ThriftSavvy-Mobile-App'
   }
 };
 

@@ -39,7 +39,7 @@ export default function CalculatorClient() {
   const [sellPrice, setSellPrice] = useState<number | "">("");
   const [shippingCost, setShippingCost] = useState<number | "">("");
   const [platformFeePercent, setPlatformFeePercent] = useState<string | number>(
-    13.25,
+    ""
   );
   const [otherCosts, setOtherCosts] = useState<number | "">("");
 
@@ -53,7 +53,7 @@ export default function CalculatorClient() {
     const fetchHistory = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch(getApiUrl("/api/history"), {
+        const res = await fetch(getApiUrl("/api/user/history"), {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -191,7 +191,7 @@ export default function CalculatorClient() {
               </div>
 
               <div className="calc-card__group">
-                <label>Potential Sell Price ($)</label>
+                <label>Sell Price ($)</label>
                 <input
                   type="number"
                   value={sellPrice}
@@ -202,7 +202,7 @@ export default function CalculatorClient() {
               </div>
 
               <div className="calc-card__group">
-                <label>Shipping & Materials ($)</label>
+                <label>Shipping & Materials ($) <span className="hidden-hint">(optional)</span></label>
                 <input
                   type="number"
                   value={shippingCost}
@@ -252,7 +252,7 @@ export default function CalculatorClient() {
                       val.startsWith("0") &&
                       val[1] !== "."
                     ) {
-                      val = val.substring(1);
+                      val = val.substring(0);
                     }
 
                     setPlatformFeePercent(val);
@@ -264,7 +264,7 @@ export default function CalculatorClient() {
               </div>
 
               <div className="calc-card__group">
-                <label>Other Costs (Gas, Promoted Listings, etc.)</label>
+                <label>Other Costs <span className="hidden-hint">(promoted listings, ads, etc.)</span></label>
                 <input
                   type="number"
                   value={otherCosts}

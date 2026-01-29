@@ -1,5 +1,5 @@
 /**
- * SHARED TYPES FOR FLIP SAVVY
+ * SHARED TYPES FOR THRIFTSAVVY
  * Used by both Frontend (Next.js/Capacitor) and Backend (Express)
  */
 

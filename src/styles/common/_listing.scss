@@ -17,7 +17,7 @@
   &__header {
     background: var(--bg-nav);
     padding: 12px 24px;
-    color: var(--primary-text);
+    color: var(--text-primary);
     border-bottom: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
@@ -118,7 +118,7 @@
 
 /* --- Multi-Image Logic from Home Page --- */
 .upload-zone {
-  margin: 1.5rem 0;
+  // margin: 1.5rem 0;
   border-radius: var(--border-radius);
   overflow: hidden;
   transition: var(--transition);
@@ -225,9 +225,10 @@
   width: 100%;
   padding: 1rem;
   background: var(--primary-theme);
-  color: var(--primary-text);
+  color: var(--text-primary);
   border-radius: var(--border-radius);
   font-weight: 700;
+  font-size: 14px;
   border: none;
   cursor: pointer;
   display: flex;
@@ -250,7 +251,7 @@
     margin-bottom: 0.75rem;
     label {
       font-size: 0.75rem;
-      font-weight: 700;
+      font-weight: 800;
       text-transform: uppercase;
       color: var(--text-secondary);
       display: flex;
@@ -573,7 +574,7 @@
 
     &.active {
       background: var(--primary-theme);
-      color: var(--primary-text);
+      color: var(--text-primary);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
   }
@@ -612,7 +613,7 @@
 }
 
 .result-zone {
-  margin-top: 2rem;
+  margin: 2rem 0 12px 0;
   border: 2px solid var(--border-color);
   padding: 20px;
   border-radius: 12px;
@@ -624,7 +625,7 @@
     background: white; // The white background for the listing
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 1.5rem;
+    margin: 1.5rem 0 50px 0;
 
     img {
       position: relative;
@@ -643,7 +644,7 @@
 }
 
 .studio-option {
-  margin-bottom: 1.5rem;
+  // margin-bottom: 1.5rem;
   padding: 1rem;
   background: var(--bg-main);
   border: 1px solid var(--border-color); /* Default border */

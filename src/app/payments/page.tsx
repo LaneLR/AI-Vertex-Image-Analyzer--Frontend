@@ -3,7 +3,7 @@ import PaymentsClient from "@/components/Payments";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Subscription | Flip Savvy",
+  title: "Subscription | ThriftSavvy",
   description: "Select or switch between subscriptions.",
 };
 

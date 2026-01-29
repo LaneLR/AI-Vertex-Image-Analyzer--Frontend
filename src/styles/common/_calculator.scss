@@ -10,7 +10,7 @@
     align-items: center;
     justify-content: space-between;
     margin-bottom: 2rem;
-    
+
     h1 {
       font-size: 1.25rem;
       font-weight: 700;
@@ -95,8 +95,15 @@
 
   &__info {
     flex: 1;
-    h4 { font-size: 0.9rem; margin: 0; }
-    p { font-size: 0.8rem; color: var(--text-tertiary); margin: 0; }
+    h4 {
+      font-size: 0.9rem;
+      margin: 0;
+    }
+    p {
+      font-size: 0.8rem;
+      color: var(--text-tertiary);
+      margin: 0;
+    }
   }
 }
 
@@ -122,7 +129,7 @@
   }
 
   &--neg {
-    background-color: var(--error-bg);
+    background-color: var(--error-text);
     color: var(--text-primary);
   }
 
@@ -133,8 +140,15 @@
 
   &__main {
     margin-bottom: 1.5rem;
-    label { opacity: 0.9; font-size: 0.9rem; }
-    h2 { font-size: 2.5rem; margin: 0.5rem 0; font-weight: 800; }
+    label {
+      opacity: 0.9;
+      font-size: 0.9rem;
+    }
+    h2 {
+      font-size: 2.5rem;
+      margin: 0.5rem 0;
+      font-weight: 800;
+    }
   }
 
   &__stats {
@@ -146,13 +160,24 @@
     .stat {
       display: flex;
       flex-direction: column;
-      label { font-size: 0.75rem; opacity: 0.8; }
-      span { font-weight: 700; font-size: 1.1rem; }
+      label {
+        font-size: 0.75rem;
+        opacity: 0.8;
+      }
+      span {
+        font-weight: 700;
+        font-size: 1.1rem;
+      }
     }
   }
 }
 
 .btn-clear {
-    border: none;
-    background-color: transparent;
+  border: none;
+  background-color: transparent;
+}
+
+.hidden-hint {
+  opacity: 0.4;
+  font-weight: 400;
 }

@@ -62,7 +62,7 @@ export default function WebHome() {
               <span className="web__titleHighlight"> Sold for $200.</span>
             </h1>
             <p className="web__subtitle">
-              Scan items instantly. Analyze market value. Flip with confidence.
+              Scan items instantly. Analyze market value. Thrift and flip with confidence.
               The most powerful tool for thrift hunters and resellers.
             </p>
             <div className="web__actions">
@@ -85,7 +85,7 @@ export default function WebHome() {
                 <div className="web__placeholderImg">
                   <img
                     src="/images/AppDisplay.png"
-                    alt="FlipSavvy App Interface"
+                    alt="ThriftSavvy App Interface"
                   />
                 </div>
                 <div className="web__phoneButton volume"></div>
@@ -171,7 +171,7 @@ export default function WebHome() {
             <div className="planCard planCardPro">
               <h3 className="planCard__name">Hobbyist</h3>
               <div className="planCard__price">
-                9.99<span>/ mo</span>
+                12.99<span>/ mo</span>
               </div>
               <ul className="planCard__list">
                 {features.hobby.map((f, i) => (
@@ -211,7 +211,7 @@ export default function WebHome() {
               {/* <div className="planCard__badge">Recommended</div> */}
               <h3 className="planCard__name">Business</h3>
               <div className="planCard__price">
-                39.99<span>/ mo</span>
+                44.99<span>/ mo</span>
               </div>
               <ul className="planCard__list">
                 {features.business.map((f, i) => (

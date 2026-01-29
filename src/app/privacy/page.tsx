@@ -3,9 +3,9 @@ import PrivacyClient from "../../components/PrivacyClient";
 import Loading from "@/components/Loading";
 
 export const metadata = {
-  title: "Privacy Policy | Flip Savvy",
+  title: "Privacy Policy | ThriftSavvy",
   description:
-    "Learn how Flip Savvy protects your data and manages your uploaded images.",
+    "Learn how ThriftSavvy protects your data and manages your uploaded images.",
 };
 
 export default function PrivacyPage() {

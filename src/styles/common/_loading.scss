@@ -11,7 +11,8 @@
     left: 0;
     width: 100vw;
     height: 100vh;
-    background: var(--bg-color, transparent);
+    background: var(--bg-loading);
+    opacity: 0.4;
     z-index: 9999;
   }
 }
@@ -48,7 +49,7 @@
   margin-top: 1rem;
   font-size: 0.9rem;
   font-weight: 500;
-  color: #666;
+  color: var(--text-primary);
   letter-spacing: 0.05rem;
   text-transform: uppercase;
 }

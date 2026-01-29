@@ -162,8 +162,9 @@ export default function UnifiedAuthPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(getApiUrl("/api/auth/reset-password"), {
+      const res = await fetch(getApiUrl("/api/reset-password"), {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, action: "request" }),
       });
       if (res.ok) {
@@ -187,8 +188,7 @@ export default function UnifiedAuthPage() {
     const isResetPath = sourceView === "forgot";
 
     try {
-      const res = await fetch(getApiUrl("/api/auth/verify"), {
-        // Adjusted path to /api/auth/verify
+      const res = await fetch(getApiUrl("/api/verify-otp"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -221,13 +221,17 @@ export default function UnifiedAuthPage() {
 
   const handleFinalReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword)
+    if (newPassword !== confirmPassword){
+      setShowResetModal(false);
       return setError("Passwords do not match");
+    }
 
     setLoading(true);
+
     try {
-      const res = await fetch(getApiUrl("/api/auth/reset-password"), {
+      const res = await fetch(getApiUrl("/api/reset-password"), {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp, newPassword, action: "reset" }),
       });
       if (res.ok) {
@@ -274,7 +278,7 @@ export default function UnifiedAuthPage() {
           <Image width={125} height={125} alt="Logo" src={logo} priority />
           <h1 className="auth-title">
             {view === "login" && "Welcome Back"}
-            {view === "register" && "Join & Start Flipping"}
+            {view === "register" && "Join & Start Thrifting"}
             {view === "verify" && "Enter Code"}
             {view === "forgot" && "Find Account"}
           </h1>
@@ -485,6 +489,7 @@ export default function UnifiedAuthPage() {
               </button>
             </>
           )}
+          <br />
         </form>
       </InfoModal>
 

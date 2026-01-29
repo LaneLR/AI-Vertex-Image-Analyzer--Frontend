@@ -3,7 +3,7 @@ import AccountClient from "@/components/AccountClient";
 import Loading from "@/components/Loading"; 
 
 export const metadata = {
-  title: "Account | Flip Savvy",
+  title: "Account | ThriftSavvy",
   description: "Your account details.",
 };
 

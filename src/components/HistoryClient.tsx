@@ -60,8 +60,9 @@ export default function HistoryClient() {
       try {
         const token = localStorage.getItem("token"); // Retrieve your JWT
         const res = await fetch(getApiUrl("/api/user/history"), {
+          method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, // Pass token to Express
+            Authorization: `Bearer ${token}`, 
           },
         });
 
@@ -217,7 +218,7 @@ export default function HistoryClient() {
             <Search size={48} className="history-page__empty-icon" />
             <h3>No Scans Yet</h3>
             <p>Items you appraise will appear here.</p>
-            <Link href="/" className="generate-btn">
+            <Link href="/dashboard" className="generate-btn">
               Start Scanning
             </Link>
           </div>

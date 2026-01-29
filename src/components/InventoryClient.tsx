@@ -2,7 +2,14 @@
 
 import React, { useState, useMemo, useEffect } from "react";
 import {
-  Package, Trash2, Download, ArrowLeft, Plus, Minus, Eraser, DollarSign
+  Package,
+  Trash2,
+  Download,
+  ArrowLeft,
+  Plus,
+  Minus,
+  Eraser,
+  DollarSign,
 } from "lucide-react";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
@@ -36,7 +43,7 @@ export default function InventoryClient() {
 
   const getHeaders = () => ({
     "Content-Type": "application/json",
-    "Authorization": `Bearer ${localStorage.getItem("token")}`,
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
   });
 
   const handleBack = () => {
@@ -54,11 +61,13 @@ export default function InventoryClient() {
       });
       if (res.ok) {
         const data = await res.json();
-        setItems(data.map((item: any) => ({
-          ...item,
-          quantity: item.quantity || 1,
-          purchasePrice: item.purchasePrice || 0,
-        })));
+        setItems(
+          data.map((item: any) => ({
+            ...item,
+            quantity: item.quantity || 1,
+            purchasePrice: item.purchasePrice || 0,
+          })),
+        );
       }
     } catch (err) {
       console.error("Failed to fetch inventory", err);
@@ -72,17 +81,18 @@ export default function InventoryClient() {
 
     if (!user) {
       router.push("/login");
-    } else if (user.subscriptionStatus !== "business") {
+      //change back to business, set to pro for testing
+    } else if (user.subscriptionStatus !== "pro") {
       router.push("/account");
     } else {
       fetchInventory();
     }
   }, [user, isLoading, router]);
 
- const handleClearAll = async () => {
+  const handleClearAll = async () => {
     setIsClearing(true);
     try {
-      // It is more efficient to have a bulk endpoint, 
+      // It is more efficient to have a bulk endpoint,
       // but sticking to your current logic:
       await Promise.all(
         items.map((item) =>
@@ -90,8 +100,8 @@ export default function InventoryClient() {
             method: "PATCH",
             headers: getHeaders(),
             body: JSON.stringify({ inInventory: false }),
-          })
-        )
+          }),
+        ),
       );
       setItems([]);
       setIsClearModalOpen(false);
@@ -123,10 +133,13 @@ export default function InventoryClient() {
     };
   }, [items]);
 
- const updateItemMetadata = async (id: string, updates: Partial<InventoryItem>) => {
+  const updateItemMetadata = async (
+    id: string,
+    updates: Partial<InventoryItem>,
+  ) => {
     // Optimistic Update
     setItems((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, ...updates } : item))
+      prev.map((item) => (item.id === id ? { ...item, ...updates } : item)),
     );
 
     await fetch(getApiUrl(`/api/user/history/${id}`), {
@@ -136,7 +149,7 @@ export default function InventoryClient() {
     });
   };
 
-const removeItem = async (id: string) => {
+  const removeItem = async (id: string) => {
     try {
       const res = await fetch(getApiUrl(`/api/user/history/${id}`), {
         method: "PATCH",
@@ -216,7 +229,11 @@ const removeItem = async (id: string) => {
   };
 
   if (isLoading) {
-    return <div className="loading-state"><Loading /></div>;
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
   }
 
   return (
@@ -263,7 +280,9 @@ const removeItem = async (id: string) => {
             <div>
               <p className="inventory__count-hint">Inventory count</p>
               <p>
-                <b>{items.length} item{items.length !== 1 ? "s" : ""}</b>
+                <b>
+                  {items.length} item{items.length !== 1 ? "s" : ""}
+                </b>
               </p>
             </div>
 
@@ -275,7 +294,11 @@ const removeItem = async (id: string) => {
               >
                 <Eraser size={16} /> Clear All
               </button>
-              <button onClick={downloadCSV} className="inventory__download-btn" disabled={items.length === 0}>
+              <button
+                onClick={downloadCSV}
+                className="inventory__download-btn"
+                disabled={items.length === 0}
+              >
                 <Download size={16} /> Export CSV
               </button>
             </div>

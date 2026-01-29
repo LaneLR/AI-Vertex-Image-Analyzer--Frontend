@@ -31,10 +31,14 @@ export default function AccountClient() {
     dailyScansUsed,
     setDailyScansUsed,
     refreshUser,
+    setUser,
+    deletionCountdown,
+    setDeletionCountdown,
   } = useApp();
   const [loadingPortal, setLoadingPortal] = useState(false);
   const [errorModal, setErrorModal] = useState(false);
-
+  const [reactivateModal, setReactivateModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const success = searchParams.get("success");
@@ -110,6 +114,36 @@ export default function AccountClient() {
     }
   };
 
+  const getAuthHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  });
+
+  const handleKeepAccount = async () => {
+    try {
+      const res = await fetch(getApiUrl("/api/user/keep-active"), {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+      });
+
+      if (res.ok) {
+        // Clear deactivation fields in local state
+        setIsProcessing(true);
+        if (setUser) {
+          setUser((prev: any) => ({
+            ...prev,
+            scheduledDeletionDate: null,
+            deactivationRequestedAt: null,
+          }));
+        }
+
+        setReactivateModal(true);
+      }
+    } catch (err) {
+      console.error("KEEP_ACTIVE_ERROR:", err);
+    }
+  };
+
   return (
     <main className="account-page">
       <header className="account-page__header">
@@ -121,6 +155,21 @@ export default function AccountClient() {
       </header>
 
       <div className="account-page__content">
+        {user.scheduledDeletionDate !== null && (
+          <div className="deactivation-banner">
+            <p>
+              Your account is set to become inactive in{" "}
+              <strong>{deletionCountdown} days</strong>.
+            </p>
+            <button
+              className="cancel-btn"
+              onClick={handleKeepAccount}
+              disabled={isProcessing}
+            >
+              Keep My Account
+            </button>
+          </div>
+        )}
         {/* PROFILE HERO */}
         <section className="profile-hero">
           <div className="profile-hero__avatar">
@@ -152,7 +201,7 @@ export default function AccountClient() {
                   ? "Hobbyist"
                   : isBusiness
                     ? "Business"
-                    : "Basic"}
+                    : "Free"}
             </span>
           </div>
         </section>
@@ -283,6 +332,18 @@ export default function AccountClient() {
           There was an error trying to open the billing settings. Please try
           again later.
         </div>
+        <br />
+      </InfoModal>
+
+      <InfoModal
+        isOpen={reactivateModal}
+        onClose={() => setReactivateModal(false)}
+        title={"Deactivation cancelled"}
+      >
+        <div>
+          The scheduled deactivation for your account has been cancelled.
+        </div>
+        <br />
       </InfoModal>
     </main>
   );

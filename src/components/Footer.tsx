@@ -25,9 +25,9 @@ export default function Footer() {
           <div className="footer__section footer__section--brand">
             <div className="footer__brand-container">
               <div className="footer__logo">
-                <Link href="/" className="brand-link">
+                <Link href="/dashboard" className="brand-link">
                   <h1 className="brand-text">
-                    Flip<span>Savvy</span>
+                    Thrift<span>Savvy</span>
                   </h1>
                 </Link>
               </div>
@@ -62,7 +62,7 @@ export default function Footer() {
 
         <div className="footer__bottom">
           <div className="footer__copyright">
-            {currentYear} FlipSavvy • v{process.env.NEXT_PUBLIC_APP_VERSION}
+            {currentYear} ThriftSavvy • v{process.env.NEXT_PUBLIC_APP_VERSION}
           </div>
         </div>
       </div>
@@ -71,7 +71,7 @@ export default function Footer() {
       <InfoModal
         isOpen={isAboutModalOpen}
         onClose={() => setIsAboutModalOpen(false)}
-        title="About FlipSavvy"
+        title="About ThriftSavvy"
       >
         <div className="feature-info-modal">
           <div
@@ -104,7 +104,7 @@ export default function Footer() {
               <Target size={14} /> Our Mission
             </div>
             <p style={{ fontSize: "0.95rem", lineHeight: "1.5" }}>
-              FlipSavvy was built for the modern treasure hunter. We combine AI
+              ThriftSavvy was built for the modern treasure hunter. We combine AI
               vision technology with market data to help you flip finds with
               confidence.
             </p>

@@ -22,6 +22,10 @@ interface AppContextRef {
   maxFreeScans: number;
   refreshUser: () => Promise<void>;
   logout: () => void;
+  isDarkMode: boolean;
+  setIsDarkMode: (val: boolean) => void;
+  deletionCountdown: number | null;
+  setDeletionCountdown: (val: number | null) => void;
 }
 
 const AppContext = createContext<AppContextRef | undefined>(undefined);
@@ -36,6 +40,8 @@ export function AppProvider({
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [dailyScansUsed, setDailyScansUsed] = useState(initialScans);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
+  const [deletionCountdown, setDeletionCountdown] = useState<number | null>(null);
   const router = useRouter();
   const maxFreeScans = 5;
 
@@ -72,7 +78,7 @@ export function AppProvider({
   const logout = useCallback(() => {
     localStorage.removeItem("token");
     setUser(null);
-    setDailyScansUsed(0); 
+    setDailyScansUsed(0);
     router.push("/login");
   }, [router]);
 
@@ -83,6 +89,46 @@ export function AppProvider({
   useEffect(() => {
     if (user?.dailyScansCount !== undefined) {
       setDailyScansUsed(user.dailyScansCount);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        refreshUser();
+      }
+    };
+
+    window.addEventListener("visibilitychange", handleVisibilityChange);
+    window.addEventListener("focus", handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener("visibilitychange", handleVisibilityChange);
+      window.removeEventListener("focus", handleVisibilityChange);
+    };
+  }, [refreshUser]);
+
+  useEffect(() => {
+  if (user?.scheduledDeletionDate) {
+    const end = new Date(user.scheduledDeletionDate).getTime();
+    const now = new Date().getTime();
+    const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+    setDeletionCountdown(diff > 0 ? diff : 0);
+  } else {
+    setDeletionCountdown(null);
+  }
+}, [user]);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("darkMode") === "true";
+    const userTheme = user?.darkMode;
+    const finalTheme = userTheme !== undefined ? userTheme : savedTheme;
+    setIsDarkMode(finalTheme);
+
+    if (finalTheme) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
   }, [user]);
 
@@ -103,6 +149,10 @@ export function AppProvider({
         refreshUser,
         logout,
         setIsLoading,
+        isDarkMode, 
+        setIsDarkMode,
+        deletionCountdown,
+        setDeletionCountdown,
       }}
     >
       {children}

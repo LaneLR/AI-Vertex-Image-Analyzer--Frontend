@@ -3,8 +3,8 @@
   bottom: 0;
   left: 0;
   right: 0;
-  height: 70px;
-  background: var(--bg-header);
+  height: 69px;
+  background: var(--footer-bg);
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--border-color);
   z-index: 1000;
@@ -25,7 +25,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: #6b7280;
+    color: var(--text-tertiary);
     text-decoration: none;
     font-size: 0.75rem;
     font-weight: 500;

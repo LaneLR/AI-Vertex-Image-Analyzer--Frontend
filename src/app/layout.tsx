@@ -7,7 +7,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AppProvider } from "@/context/AppContext";
 
 export const metadata: Metadata = {
-  title: "FlipSavvy | AI Thrift Appraisal",
+  title: "ThriftSavvy | AI Thrift Appraisal",
   description: "Identify and value thrift finds instantly with AI",
 };
 

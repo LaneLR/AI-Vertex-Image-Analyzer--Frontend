@@ -92,7 +92,7 @@ export default function SubscribeButton({
             {getButtonText()}
           </button>
           {error && (
-            <p style={{ color: "#ef4444", fontSize: "0.8rem", marginTop: "5px", textAlign: "center" }}>
+            <p style={{ color: "var(--error-text)", fontSize: "0.8rem", marginTop: "5px", textAlign: "center" }}>
               {error}
             </p>
           )}

@@ -40,7 +40,7 @@ export default function TermsClient() {
           </div>
           <h2 className="terms-hero__title">Terms of Service</h2>
           <p className="terms-hero__subtitle">
-            Please read these terms carefully before using the FlipSavvy studio
+            Please read these terms carefully before using the ThriftSavvy studio
             and AI tools.
           </p>
           <div className="version-pill">Last Updated: Dec 30, 2025</div>
@@ -54,7 +54,7 @@ export default function TermsClient() {
               <h3>1. Acceptance of Terms</h3>
             </div>
             <p>
-              By accessing or using FlipSavvy, you agree to be bound by these
+              By accessing or using ThriftSavvy, you agree to be bound by these
               Terms of Service. If you do not agree, you may not use our AI
               appraisal tools or platform.
             </p>
@@ -81,7 +81,7 @@ export default function TermsClient() {
               <h3>3. AI Accuracy Disclaimer</h3>
             </div>
             <p>
-              FlipSavvy provides AI-generated estimates based on market data.
+              ThriftSavvy provides AI-generated estimates based on market data.
               These are <strong>suggestions</strong>, not professional
               appraisals. We are not liable for financial losses resulting from
               buying or selling decisions made using our data.
