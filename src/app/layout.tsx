@@ -5,6 +5,7 @@ import "@/styles/main.scss";
 import ClientWrapper from "../components/ClientWrapper";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AppProvider } from "@/context/AppContext";
+import { PHProvider } from "@/providers/PosthogProvider";
 
 export const metadata: Metadata = {
   title: "ThriftSavvy | AI Thrift Appraisal",
@@ -37,11 +38,13 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID!}>
-          <AppProvider>
-            <ClientWrapper>{children}</ClientWrapper>
-          </AppProvider>
-        </GoogleOAuthProvider>
+        <PHProvider>
+          <GoogleOAuthProvider clientId={process.env.GOOGLE_CLIENT_ID!}>
+            <AppProvider>
+              <ClientWrapper>{children}</ClientWrapper>
+            </AppProvider>
+          </GoogleOAuthProvider>
+        </PHProvider>
       </body>
     </html>
   );
