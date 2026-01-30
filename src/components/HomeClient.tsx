@@ -11,6 +11,8 @@ import {
   BriefcaseBusiness,
   Flame,
   ZapOff,
+  Layout,
+  Gem,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Added router
@@ -238,119 +240,132 @@ export default function HomeClient() {
 
       <div className="home-container">
         <div className="home-top-section">
-        <section className="home-hero">
-          <h1>Identify & Appraise Instantly</h1>
-          <p>Snapshot any item to get resale values and profit estimates.</p>
-        </section>
+          <section className="home-hero">
+            <h1>Identify & Appraise Instantly</h1>
+            <p>Snapshot any item to get resale values and profit estimates.</p>
+          </section>
 
-        <div className="home-upload card">
-          {previews.length > 0 ? (
-            <div className="home-upload__preview-container">
-              <div className="preview-grid multi">
-                {/* Render existing previews */}
-                {previews.map((src, idx) => (
-                  <div key={idx} className="preview-item">
-                    <img src={src} alt="Preview" className="preview-img" />
-                    <button
-                      className="remove-single"
-                      onClick={() => handleRemoveImage(idx)}
-                    >
-                      <X size={12} />
-                    </button>
-                  </div>
-                ))}
+          <div className="home-upload card">
+            {previews.length > 0 ? (
+              <div className="home-upload__preview-container">
+                <div className="preview-grid multi">
+                  {/* Render existing previews */}
+                  {previews.map((src, idx) => (
+                    <div key={idx} className="preview-item">
+                      <img src={src} alt="Preview" className="preview-img" />
+                      <button
+                        className="remove-single"
+                        onClick={() => handleRemoveImage(idx)}
+                      >
+                        <X size={12} />
+                      </button>
+                    </div>
+                  ))}
 
-                {/* Show empty slots for Pro users to add more (up to 3) */}
-                {(isPro || isHobby || isBusiness) && previews.length < 3 && (
-                  <label className="add-more-slot">
-                    <input
-                      type="file"
-                      onChange={handleAdditionalFile}
-                      accept="image/*"
-                      hidden
-                    />
-                    <Camera size={20} />
-                    <span>Add Photo</span>
-                  </label>
-                )}
-              </div>
-
-              <button
-                className="btn-reset"
-                onClick={() => {
-                  setPreviews([]);
-                  setImages([]);
-                  setResult(null);
-                }}
-              >
-                Clear All
-              </button>
-            </div>
-          ) : (
-            /* Standard Dropzone for the first upload */
-            <label className="home-upload__dropzone">
-              <input
-                type="file"
-                onChange={handleFile}
-                accept="image/*"
-                multiple={isPro || isHobby || isBusiness}
-                hidden
-              />
-              <div className="dropzone-ui">
-                <div className="camera-icon-wrapper">
-                  <Camera size={32} />
+                  {/* Show empty slots for Pro users to add more (up to 3) */}
+                  {(isPro || isHobby || isBusiness) && previews.length < 3 && (
+                    <label className="add-more-slot">
+                      <input
+                        type="file"
+                        onChange={handleAdditionalFile}
+                        accept="image/*"
+                        hidden
+                      />
+                      <Camera size={20} />
+                      <span>Add Photo</span>
+                    </label>
+                  )}
                 </div>
-                <h3>
-                  {isPro || isHobby || isBusiness
-                    ? "Upload up to 3 photos"
-                    : "Capture or Upload"}
-                </h3>
-                <p className="image-subtext">
-                  Show different angles for more accurate anaysis
-                </p>
-              </div>
-            </label>
-          )}
-          {isBusiness && (
-            <div className={`studio-option ${addToInventory ? "active" : ""}`}>
-              <div className="studio-option__content">
-                <label
-                  htmlFor="inventory-toggle"
-                  className="studio-option__label"
-                >
-                  Auto-add to Inventory
-                </label>
-                <label className="toggle-switch">
-                  <input
-                    type="checkbox"
-                    id="inventory-toggle"
-                    checked={addToInventory}
-                    onChange={(e) => setAddToInventory(e.target.checked)}
-                  />
-                  <span className="toggle-slider"></span>
-                </label>
-              </div>
-            </div>
-          )}
-          <button
-            className={`generate-btn ${loading ? "loading" : ""}`}
-            disabled={images.length === 0 || loading}
-            onClick={analyzeItem}
-          >
-            {loading ? (
-              <Sparkles className="animate-spin" />
-            ) : (
-              <Search size={20} />
-            )}
-            {loading
-              ? "Analyzing..."
-              : `Appraise Item (${images.length} Photo${
-                  images.length !== 1 ? "s" : ""
-                })`}
-          </button>
-        </div></div>
 
-        {result && (
+                <button
+                  className="btn-reset"
+                  onClick={() => {
+                    setPreviews([]);
+                    setImages([]);
+                    setResult(null);
+                  }}
+                >
+                  Clear All
+                </button>
+              </div>
+            ) : (
+              /* Standard Dropzone for the first upload */
+              <label className="home-upload__dropzone">
+                <input
+                  type="file"
+                  onChange={handleFile}
+                  accept="image/*"
+                  multiple={isPro || isHobby || isBusiness}
+                  hidden
+                />
+                <div className="dropzone-ui">
+                  <div className="camera-icon-wrapper">
+                    <Camera size={32} />
+                  </div>
+                  <h3>
+                    {isPro || isHobby || isBusiness
+                      ? "Upload up to 3 photos"
+                      : "Capture or Upload"}
+                  </h3>
+                  <p className="image-subtext">
+                    Show different angles for more accurate anaysis
+                  </p>
+                </div>
+              </label>
+            )}
+            {isBusiness && (
+              <div
+                className={`studio-option ${addToInventory ? "active" : ""}`}
+              >
+                <div className="studio-option__content">
+                  <label
+                    htmlFor="inventory-toggle"
+                    className="studio-option__label"
+                  >
+                    Auto-add to Inventory
+                  </label>
+                  <label className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      id="inventory-toggle"
+                      checked={addToInventory}
+                      onChange={(e) => setAddToInventory(e.target.checked)}
+                    />
+                    <span className="toggle-slider"></span>
+                  </label>
+                </div>
+              </div>
+            )}
+            <button
+              className={`generate-btn ${loading ? "loading" : ""}`}
+              disabled={images.length === 0 || loading}
+              onClick={analyzeItem}
+            >
+              {loading ? (
+                <Sparkles className="animate-spin" />
+              ) : (
+                <Search size={20} />
+              )}
+              {loading
+                ? "Analyzing..."
+                : `Appraise Item (${images.length} Photo${
+                    images.length !== 1 ? "s" : ""
+                  })`}
+            </button>
+          </div>
+        </div>
+
+        {!result && !loading ? (
+          <div className="empty-state">
+            <Gem size={48} />
+            <h3>Your item's appraisal details will appear here</h3>
+            <p>For more accurate results, show as many defining details of your item as possible</p>
+          </div>
+        ) : loading ? (
+          <div className="loading-state">
+            <Loading />
+          </div>
+        ) : (
           <section className="home-result animate-fade-in">
             <div className="card result-card" ref={resultsRef}>
               <div className="result-card__header-flex">
@@ -392,19 +407,6 @@ export default function HomeClient() {
             </div>
           </section>
         )}
-
-        {/* <nav className="home-nav-grid">
-          <Link href="/history" className="nav-card nav-card--pro">
-            <History />
-            <span>Scan History</span>
-          </Link>
-          {(isPro || isHobby || isBusiness) && (
-            <Link href="/listing" className="nav-card nav-card--pro">
-              <Wand2 />
-              <span>Listing Studio</span>
-            </Link>
-          )}
-        </nav> */}
       </div>
 
       <InfoModal

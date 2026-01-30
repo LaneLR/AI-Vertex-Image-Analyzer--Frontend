@@ -118,15 +118,11 @@
 
 /* --- Multi-Image Logic from Home Page --- */
 .upload-zone {
-  // margin: 1.5rem 0;
   border-radius: var(--border-radius);
   overflow: hidden;
   transition: var(--transition);
   border: 2px dashed var(--bg-card);
-
-  // &:hover {
-  //   // border-color: var(--primary-theme);
-  // }
+  padding-right: 16px;
 
   .dropzone-label {
     display: block;
@@ -143,8 +139,8 @@
 
 .preview-grid-system {
   display: grid;
-  grid-template-columns: repeat(1, 1fr); /* Matching Home Page multi-logic */
-  gap: 10px;
+  grid-template-columns: repeat(2, 1fr); 
+  gap: 12px;
   margin-bottom: 1rem;
 }
 
@@ -164,7 +160,7 @@
     position: absolute;
     top: -5px;
     right: -5px;
-    background: var(--primary-theme); /* Matching .remove-single from Home */
+    background: var(--primary-theme); 
     color: white;
     border-radius: 50%;
     width: 22px;
@@ -186,7 +182,8 @@
   justify-content: center;
   border: 2px dashed var(--border-color);
   border-radius: 10px;
-  aspect-ratio: 5/2;
+  /* CHANGED: Made square (1/1) to match the images in the grid */
+  aspect-ratio: 1/1; 
   cursor: pointer;
   color: var(--text-tertiary);
   font-size: 0.7rem;
@@ -525,11 +522,15 @@
 
 .empty-state {
   text-align: center;
-  padding: 5rem 2rem;
+  padding: 4rem 2rem;
   color: var(--text-tertiary);
   h3 {
     color: var(--text-primary);
     margin-top: 1rem;
+  }
+
+  @media screen and (max-width: 991px) {
+    padding: 1.5rem;
   }
 }
 

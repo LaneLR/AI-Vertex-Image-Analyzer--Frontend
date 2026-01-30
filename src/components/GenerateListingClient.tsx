@@ -510,7 +510,7 @@ export default function GenerateListingClient() {
                 <div className="empty-state">
                   <Layout size={48} />
                   <h3>Your listing details will appear here</h3>
-                  <p>Upload angles of your item to generate SEO metadata.</p>
+                  <p>Upload angles of your item to generate SEO metadata</p>
                 </div>
               ) : loading ? (
                 <div className="loading-state">
@@ -754,9 +754,9 @@ export default function GenerateListingClient() {
                   <ImageIcon size={48} />
                   <h3>Your listing photo will appear here</h3>
                   {useWhiteBackground ? (
-                    <p>The image will be have a white background.</p>
+                    <p>The image will be have a white background</p>
                   ) : (
-                    <p>The image will be have a transparent background.</p>
+                    <p>The image will be have a transparent background</p>
                   )}
                 </div>
               ) : isProcessing ? (
