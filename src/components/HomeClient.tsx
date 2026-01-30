@@ -237,6 +237,7 @@ export default function HomeClient() {
       </section>
 
       <div className="home-container">
+        <div className="home-top-section">
         <section className="home-hero">
           <h1>Identify & Appraise Instantly</h1>
           <p>Snapshot any item to get resale values and profit estimates.</p>
@@ -347,7 +348,7 @@ export default function HomeClient() {
                   images.length !== 1 ? "s" : ""
                 })`}
           </button>
-        </div>
+        </div></div>
 
         {result && (
           <section className="home-result animate-fade-in">

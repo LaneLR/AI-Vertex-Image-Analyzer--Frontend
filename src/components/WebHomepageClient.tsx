@@ -211,7 +211,7 @@ export default function WebHome() {
               {/* <div className="planCard__badge">Recommended</div> */}
               <h3 className="planCard__name">Business</h3>
               <div className="planCard__price">
-                44.99<span>/ mo</span>
+                59.99<span>/ mo</span>
               </div>
               <ul className="planCard__list">
                 {features.business.map((f, i) => (

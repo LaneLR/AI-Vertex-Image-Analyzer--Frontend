@@ -49,22 +49,23 @@ export default function PaymentsClient() {
       "1 Image per scan.",
       "Basic price estimates.",
       "Access to your scan history.",
+      "Profitability grading on appraised items",
     ],
     hobby: [
       "50 scans per day.",
       "2 Images per scan.",
       "Improved accuracy and price estimates.",
       "Access to your scan history.",
-      "Access to Profit Calculator.",
       "Profitability grading on appraised items",
+      "Access to Profit Calculator.",
     ],
     pro: [
       "100 scans per day.",
       "3 Images per scan.",
       "High accuracy price estimates.",
       "Access to your scan history.",
-      "Access to Profit Calculator.",
       "Profitability grading on appraised items.",
+      "Access to Profit Calculator.",
       "Access to SEO Generator to create SEO-optimized listing details.",
       "Unlimited access to Photo Studio to automatically create listing photos.",
     ],
@@ -73,11 +74,10 @@ export default function PaymentsClient() {
       "3 Images per scan.",
       "High accuracy price estimates.",
       "Access to your scan history.",
-      "Access to Profit Calculator.",
       "Profitability grading on appraised items.",
+      "Access to Profit Calculator.",
       "Access to SEO Generator to create SEO-optimized listing details.",
       "Unlimited access to Photo Studio to automatically create listing photos.",
-      "Multi-platform and marketplace price comparison.",
       "Access to Inventory Manager for tracking and managing items.",
       "CSV download of inventory and listings for bulk uploading.",
     ],
@@ -103,10 +103,11 @@ export default function PaymentsClient() {
 
         <div className="pricing-grid">
           {/* BUSINESS CARD */}
-          <div className="plan-card">
+          <div className="plan-card plan-card--featured">
+            <div className="plan-card__badge">Best Value</div>
             <h3 className="plan-card__name">Business</h3>
             <div className="plan-card__price">
-              44.99<span className="plan-card__month">/ mo</span>
+              59.99<span className="plan-card__month">/ mo</span>
             </div>
             <ul className="plan-card__feature-list">
               {features.business.map((f, i) => (
