@@ -62,7 +62,7 @@ export default function HistoryClient() {
         const res = await fetch(getApiUrl("/api/user/history"), {
           method: "GET",
           headers: {
-            Authorization: `Bearer ${token}`, 
+            Authorization: `Bearer ${token}`,
           },
         });
 
@@ -200,7 +200,12 @@ export default function HistoryClient() {
   return (
     <main className="history-page">
       <nav className="history-page__nav">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="history-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1 className="history-page__nav-title">Scan History</h1>
@@ -218,7 +223,12 @@ export default function HistoryClient() {
             <Search size={48} className="history-page__empty-icon" />
             <h3>No Scans Yet</h3>
             <p>Items you appraise will appear here.</p>
-            <Link href="/dashboard" className="generate-btn">
+            <Link
+              href="/dashboard"
+              className="generate-btn"
+              data-ph-capture-attribute-button-name="history-start-scanning-btn"
+              data-ph-capture-attribute-feature="history"
+            >
               Start Scanning
             </Link>
           </div>
@@ -231,6 +241,8 @@ export default function HistoryClient() {
                   <div
                     className="history-section__header"
                     onClick={() => toggleSection(label)}
+                    data-ph-capture-attribute-button-name="history-expand-section-btn"
+                    data-ph-capture-attribute-feature="history"
                   >
                     <h3 className="history-section__label">
                       {label}
@@ -254,6 +266,8 @@ export default function HistoryClient() {
                               isExpanded ? "history-card--expanded" : ""
                             }`}
                             onClick={() => toggleExpand(item.id)}
+                            data-ph-capture-attribute-button-name="history-expand-btn"
+                            data-ph-capture-attribute-feature="history"
                           >
                             <div className="history-card__main">
                               <div className="history-card__icon-box">
@@ -283,6 +297,8 @@ export default function HistoryClient() {
                                         handleDeleteClick(e, item.id)
                                       }
                                       className="history-card__delete-btn"
+                                      data-ph-capture-attribute-button-name="history-delete-item-btn"
+                                      data-ph-capture-attribute-feature="history"
                                     >
                                       <Trash2 size={18} />
                                     </button>
@@ -293,6 +309,8 @@ export default function HistoryClient() {
                                             e.stopPropagation();
                                             handleAddToInventory(item.id);
                                           }}
+                                          data-ph-capture-attribute-button-name="history-add-inventory-btn"
+                                          data-ph-capture-attribute-feature="history"
                                           className="history-card__inventory-btn"
                                           title="Add to Inventory"
                                         >
@@ -362,10 +380,17 @@ export default function HistoryClient() {
               <button
                 className="btn-secondary"
                 onClick={() => setDeleteTarget(null)}
+                data-ph-capture-attribute-button-name="history-delete-modal-btn-cancel"
+                data-ph-capture-attribute-feature="history"
               >
                 Cancel
               </button>
-              <button className="btn-danger" onClick={confirmDelete}>
+              <button
+                className="btn-danger"
+                onClick={confirmDelete}
+                data-ph-capture-attribute-button-name="history-delete-modal-btn-confirm"
+                data-ph-capture-attribute-feature="history"
+              >
                 Delete
               </button>
             </div>
@@ -387,8 +412,10 @@ export default function HistoryClient() {
             <button
               className="generate-btn"
               onClick={() => setErrorMessage(null)}
+              data-ph-capture-attribute-button-name="history-error-modal-btn-close"
+              data-ph-capture-attribute-feature="history"
             >
-              Got it
+              Close
             </button>
           </div>
         </InfoModal>

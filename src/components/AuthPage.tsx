@@ -221,7 +221,7 @@ export default function UnifiedAuthPage() {
 
   const handleFinalReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword){
+    if (newPassword !== confirmPassword) {
       setShowResetModal(false);
       return setError("Passwords do not match");
     }
@@ -331,6 +331,8 @@ export default function UnifiedAuthPage() {
                   setView("forgot");
                   setError("");
                 }}
+                data-ph-capture-attribute-button-name="auth-forgot-password-btn"
+                data-ph-capture-attribute-feature="auth"
               >
                 <div className="underline-container">
                   Forgot password?
@@ -379,6 +381,8 @@ export default function UnifiedAuthPage() {
                   href="/terms"
                   target="_blank"
                   className="terms-link letter-spacing-textlink"
+                  data-ph-capture-attribute-button-name="auth-terms-btn"
+                  data-ph-capture-attribute-feature="auth"
                 >
                   Terms of Service
                 </Link>{" "}
@@ -387,6 +391,8 @@ export default function UnifiedAuthPage() {
                   href="/privacy"
                   target="_blank"
                   className="terms-link letter-spacing-textlink"
+                  data-ph-capture-attribute-button-name="auth-privacy-btn"
+                  data-ph-capture-attribute-feature="auth"
                 >
                   Privacy Policy
                 </Link>
@@ -413,6 +419,8 @@ export default function UnifiedAuthPage() {
                 className="google-auth-btn"
                 onClick={() => handleGoogleAuth()}
                 disabled={loading}
+                data-ph-capture-attribute-button-name="auth-google-signin-btn"
+                data-ph-capture-attribute-feature="auth"
               >
                 <Chrome size={18} />
                 Continue with Google
@@ -429,6 +437,8 @@ export default function UnifiedAuthPage() {
               setError("");
               setSourceView(null);
             }}
+            data-ph-capture-attribute-button-name="auth-create-account--back-to-login-btn"
+            data-ph-capture-attribute-feature="auth"
           >
             <div className="underline-container">
               {view === "login" ? "Create an account" : "Back to login"}
@@ -483,6 +493,8 @@ export default function UnifiedAuthPage() {
                 className="google-auth-btn"
                 onClick={() => handleGoogleAuth()}
                 disabled={loading}
+                data-ph-capture-attribute-button-name="auth-google-signin-btn"
+                data-ph-capture-attribute-feature="auth"
               >
                 <Chrome size={18} />
                 Continue with Google

@@ -39,7 +39,7 @@ export default function CalculatorClient() {
   const [sellPrice, setSellPrice] = useState<number | "">("");
   const [shippingCost, setShippingCost] = useState<number | "">("");
   const [platformFeePercent, setPlatformFeePercent] = useState<string | number>(
-    ""
+    "",
   );
   const [otherCosts, setOtherCosts] = useState<number | "">("");
 
@@ -124,7 +124,12 @@ export default function CalculatorClient() {
   return (
     <>
       <header className="help-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="calculator-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Profit Calculator</h1>
@@ -143,7 +148,7 @@ export default function CalculatorClient() {
                 onChange={handleSelectItem}
                 value={selectedItem?.id || ""}
               >
-                <option value="">Manual Entry (No item selected)</option>
+                <option value="">Select an item</option>
                 {history.map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.title}
@@ -167,6 +172,8 @@ export default function CalculatorClient() {
                 <button
                   className="btn-clear"
                   onClick={() => setSelectedItem(null)}
+                  data-ph-capture-attribute-button-name="calculator-clear-item-btn"
+                  data-ph-capture-attribute-feature="calculator"
                 >
                   <Trash2 size={26} />
                 </button>
@@ -202,7 +209,10 @@ export default function CalculatorClient() {
               </div>
 
               <div className="calc-card__group">
-                <label>Shipping & Materials ($) <span className="hidden-hint">(optional)</span></label>
+                <label>
+                  Shipping & Materials ($){" "}
+                  <span className="hidden-hint">(optional)</span>
+                </label>
                 <input
                   type="number"
                   value={shippingCost}
@@ -264,7 +274,12 @@ export default function CalculatorClient() {
               </div>
 
               <div className="calc-card__group">
-                <label>Other Costs <span className="hidden-hint">(promoted listings, ads, etc.)</span></label>
+                <label>
+                  Other Costs{" "}
+                  <span className="hidden-hint">
+                    (promoted listings, ads, etc.)
+                  </span>
+                </label>
                 <input
                   type="number"
                   value={otherCosts}

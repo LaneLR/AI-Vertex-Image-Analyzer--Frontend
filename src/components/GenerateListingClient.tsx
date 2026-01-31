@@ -346,7 +346,12 @@ export default function GenerateListingClient() {
   return (
     <main className="listing-page">
       <header className="listing-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="listing-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <div className="listing-page__header-content">
@@ -361,6 +366,8 @@ export default function GenerateListingClient() {
                   activeTab === "seo" ? "active" : ""
                 }`}
                 onClick={() => setActiveTab("seo")}
+                data-ph-capture-attribute-button-name="listing-tab-seo-btn"
+                data-ph-capture-attribute-feature="listing"
               >
                 SEO Generator
               </button>
@@ -370,6 +377,8 @@ export default function GenerateListingClient() {
                   activeTab === "studio" ? "active" : ""
                 }`}
                 onClick={() => setActiveTab("studio")}
+                data-ph-capture-attribute-button-name="listing-tab-photo-btn"
+                data-ph-capture-attribute-feature="listing"
               >
                 Photo Studio
               </button>
@@ -419,6 +428,8 @@ export default function GenerateListingClient() {
                             <button
                               className="remove-btn"
                               onClick={() => removeImage(idx)}
+                              data-ph-capture-attribute-button-name="listing-remove-image-btn"
+                              data-ph-capture-attribute-feature="listing"
                             >
                               <X size={18} />
                             </button>
@@ -445,6 +456,8 @@ export default function GenerateListingClient() {
                           setPreviews([]);
                           setResult(null);
                         }}
+                        data-ph-capture-attribute-button-name="listing-clear-images-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         <RefreshCcw size={16} /> Clear All
                       </button>
@@ -475,6 +488,8 @@ export default function GenerateListingClient() {
                   disabled={images.length === 0 || loading}
                   onClick={generateListing}
                   className={`generate-btn ${loading ? "loading" : ""}`}
+                  data-ph-capture-attribute-button-name="listing-generate-seo-btn"
+                  data-ph-capture-attribute-feature="listing"
                 >
                   {loading
                     ? "AI is writing..."
@@ -486,12 +501,22 @@ export default function GenerateListingClient() {
                 {isBusiness && listingHistory.length > 0 && (
                   <div className="share-grid-container">
                     <div className="share-grid">
-                      <button onClick={handleShareCSV} className="generate-btn">
+                      <button
+                        onClick={handleShareCSV}
+                        className="generate-btn"
+                        data-ph-capture-attribute-button-name="listing-share-csv-btn"
+                        data-ph-capture-attribute-feature="listing"
+                      >
                         <Upload size={13} />
                         Share
                       </button>
 
-                      <button onClick={downloadCSV} className="secondary-btn">
+                      <button
+                        onClick={downloadCSV}
+                        className="secondary-btn"
+                        data-ph-capture-attribute-button-name="listing-download-csv-btn"
+                        data-ph-capture-attribute-feature="listing"
+                      >
                         <Download size={13} />
                         Save to File
                       </button>
@@ -528,6 +553,8 @@ export default function GenerateListingClient() {
                       </label>
                       <button
                         onClick={() => copyToClipboard(result.title, "title")}
+                        data-ph-capture-attribute-button-name="listing-copy-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         {copiedField === "title" ? (
                           <Check size={16} color="#22c55e" />
@@ -548,6 +575,8 @@ export default function GenerateListingClient() {
                         onClick={() =>
                           copyToClipboard(result.suggestedPrice, "price")
                         }
+                        data-ph-capture-attribute-button-name="listing-copy-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         {copiedField === "price" ? (
                           <Check size={16} color="#22c55e" />
@@ -573,6 +602,8 @@ export default function GenerateListingClient() {
                             "platform",
                           )
                         }
+                        data-ph-capture-attribute-button-name="listing-copy-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         {copiedField === "platform" ? (
                           <Check size={16} color="#22c55e" />
@@ -594,6 +625,8 @@ export default function GenerateListingClient() {
                         onClick={() =>
                           copyToClipboard(result.description, "desc")
                         }
+                        data-ph-capture-attribute-button-name="listing-copy-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         {copiedField === "desc" ? (
                           <Check size={16} color="#22c55e" />
@@ -626,6 +659,8 @@ export default function GenerateListingClient() {
                             copiedField === tagKey ? "copied" : ""
                           }`}
                           onClick={() => copyToClipboard(tag, tagKey)}
+                          data-ph-capture-attribute-button-name="listing-copy-btn"
+                          data-ph-capture-attribute-feature="listing"
                         >
                           {tag}
                           {copiedField === tagKey ? (
@@ -672,6 +707,8 @@ export default function GenerateListingClient() {
                               setStudioPreviews([]);
                               setResultImage(null);
                             }}
+                            data-ph-capture-attribute-button-name="listing-remove-image-btn"
+                            data-ph-capture-attribute-feature="listing"
                           >
                             <X size={18} />
                           </button>
@@ -684,6 +721,8 @@ export default function GenerateListingClient() {
                           setStudioPreviews([]);
                           setResultImage(null);
                         }}
+                        data-ph-capture-attribute-button-name="listing-clear-images-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         <RefreshCcw size={16} /> Replace Photo
                       </button>
@@ -732,6 +771,8 @@ export default function GenerateListingClient() {
                   disabled={studioImages.length === 0 || isProcessing}
                   onClick={processBackgroundRemoval}
                   className={`generate-btn ${isProcessing ? "loading" : ""}`}
+                  data-ph-capture-attribute-button-name="listing-remove-background-btn"
+                  data-ph-capture-attribute-feature="listing"
                 >
                   {isProcessing ? (
                     <>
@@ -820,8 +861,10 @@ export default function GenerateListingClient() {
             <button
               className="modal-btn modal-btn--secondary"
               onClick={() => setAlertModal(null)}
+              data-ph-capture-attribute-button-name="listing-error-modal-btn-close"
+              data-ph-capture-attribute-feature="listing"
             >
-              Dismiss
+              Close
             </button>
           </div>
         </div>

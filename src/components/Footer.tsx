@@ -25,7 +25,12 @@ export default function Footer() {
           <div className="footer__section footer__section--brand">
             <div className="footer__brand-container">
               <div className="footer__logo">
-                <Link href="/dashboard" className="brand-link">
+                <Link
+                  href="/dashboard"
+                  className="brand-link"
+                  data-ph-capture-attribute-button-name="footer-title-btn"
+                  data-ph-capture-attribute-feature="footer"
+                >
                   <h1 className="brand-text">
                     Resale<span>IQ</span>
                   </h1>
@@ -45,15 +50,27 @@ export default function Footer() {
             <button
               className="footer__link"
               onClick={() => setIsAboutModalOpen(true)}
+              data-ph-capture-attribute-button-name="footer-about-btn"
+              data-ph-capture-attribute-feature="footer"
             >
               <Info size={16} />
               About Us
             </button>
-            <Link href="/terms" className="footer__link">
+            <Link
+              href="/terms"
+              className="footer__link"
+              data-ph-capture-attribute-button-name="footer-terms-btn"
+              data-ph-capture-attribute-feature="footer"
+            >
               <ShieldCheck size={16} />
               Terms
             </Link>
-            <Link href="/privacy" className="footer__link">
+            <Link
+              href="/privacy"
+              className="footer__link"
+              data-ph-capture-attribute-button-name="footer-privacy-btn"
+              data-ph-capture-attribute-feature="footer"
+            >
               <ShieldCheck size={16} />
               Privacy
             </Link>
@@ -166,6 +183,8 @@ export default function Footer() {
             <button
               className="modal-btn modal-btn--secondary"
               onClick={() => setIsAboutModalOpen(false)}
+              data-ph-capture-attribute-button-name="footer-about-modal-btn-close"
+              data-ph-capture-attribute-feature="footer"
             >
               Close
             </button>

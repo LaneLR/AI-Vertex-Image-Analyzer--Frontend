@@ -29,7 +29,12 @@ export default function AboutClient() {
     <main className="about-page">
       {/* Navigation */}
       <header className="about-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="about-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>About Us</h1>
@@ -103,9 +108,9 @@ export default function AboutClient() {
               <span>Legal Disclaimers</span>
             </div>
             <p>
-              *ResaleIQ is an AI tool that provides price estimates and does
-              not guarantee accuracy. AI-generated appraisals can be incorrect
-              or unreliable. Please perform your own research.
+              *ResaleIQ is an AI tool that provides price estimates and does not
+              guarantee accuracy. AI-generated appraisals can be incorrect or
+              unreliable. Please perform your own research.
             </p>
             <p>
               **ResaleIQ does not guarantee profit or success in resale

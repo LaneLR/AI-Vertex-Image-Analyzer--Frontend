@@ -256,6 +256,8 @@ export default function HomeClient() {
                       <button
                         className="remove-single"
                         onClick={() => handleRemoveImage(idx)}
+                        data-ph-capture-attribute-button-name="dashboard-remove-image-btn"
+                        data-ph-capture-attribute-feature="dashboard"
                       >
                         <X size={12} />
                       </button>
@@ -284,6 +286,8 @@ export default function HomeClient() {
                     setImages([]);
                     setResult(null);
                   }}
+                  data-ph-capture-attribute-button-name="dashboard-remove-all-image-btn"
+                  data-ph-capture-attribute-feature="dashboard"
                 >
                   Clear All
                 </button>
@@ -340,6 +344,8 @@ export default function HomeClient() {
               className={`generate-btn ${loading ? "loading" : ""}`}
               disabled={images.length === 0 || loading}
               onClick={analyzeItem}
+              data-ph-capture-attribute-button-name="dashboard-analyze-btn"
+              data-ph-capture-attribute-feature="dashboard"
             >
               {loading ? (
                 <Sparkles className="animate-spin" />
@@ -359,7 +365,10 @@ export default function HomeClient() {
           <div className="empty-state">
             <Gem size={48} />
             <h3>Your item's appraisal details will appear here</h3>
-            <p>For more accurate results, show as many defining details of your item as possible</p>
+            <p>
+              For more accurate results, show as many defining details of your
+              item as possible
+            </p>
           </div>
         ) : loading ? (
           <div className="loading-state">
@@ -419,7 +428,12 @@ export default function HomeClient() {
             You've reached your max scans for today. Upgrade your account for
             more!
           </p>
-          <Link href="/payments" className="secondary-btn">
+          <Link
+            href="/payments"
+            className="generate-btn"
+            data-ph-capture-attribute-button-name="dashboard-view-plans-btn"
+            data-ph-capture-attribute-feature="dashboard"
+          >
             View Plans
           </Link>
         </div>

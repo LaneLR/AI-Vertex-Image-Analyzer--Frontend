@@ -15,7 +15,6 @@ import {
   Flame,
   ZapOff,
   Boxes,
-  Loader2,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -147,7 +146,12 @@ export default function AccountClient() {
   return (
     <main className="account-page">
       <header className="account-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="account-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Account Settings</h1>
@@ -165,6 +169,8 @@ export default function AccountClient() {
               className="cancel-btn"
               onClick={handleKeepAccount}
               disabled={isProcessing}
+              data-ph-capture-attribute-button-name="account-keep-account-btn"
+              data-ph-capture-attribute-feature="account"
             >
               Keep My Account
             </button>
@@ -252,6 +258,8 @@ export default function AccountClient() {
                   className="secondary-btn"
                   onClick={handleManageSubscription}
                   disabled={loadingPortal}
+                  data-ph-capture-attribute-button-name="account-handle-subscription-btn"
+                  data-ph-capture-attribute-feature="account"
                 >
                   <Settings size={14} />{" "}
                   {loadingPortal ? "Loading..." : "Manage Subscription"}
@@ -264,14 +272,25 @@ export default function AccountClient() {
                 </p>
                 {/* <PaymentsClient user={user} /> */}
                 <Link href={"/payments"}>
-                  <button className="generate-btn">Upgrade account</button>
+                  <button
+                    className="generate-btn"
+                    data-ph-capture-attribute-button-name="account-upgrade-account-btn"
+                    data-ph-capture-attribute-feature="account"
+                  >
+                    Upgrade account
+                  </button>
                 </Link>
               </div>
             )}
           </div>
         </section>
 
-        <Link href="/history" className="account-card listing-shortcut">
+        <Link
+          href="/history"
+          className="account-card listing-shortcut"
+          data-ph-capture-attribute-button-name="account-scan-history-btn"
+          data-ph-capture-attribute-feature="account"
+        >
           <div className="shortcut-info">
             <HistoryIcon size={20} />
             <div>
@@ -283,7 +302,12 @@ export default function AccountClient() {
         </Link>
 
         {(isPro || isHobby || isBusiness) && (
-          <Link href="/calculator" className="account-card listing-shortcut">
+          <Link
+            href="/calculator"
+            className="account-card listing-shortcut"
+            data-ph-capture-attribute-button-name="account-calculator-btn"
+            data-ph-capture-attribute-feature="account"
+          >
             <div className="shortcut-info">
               <CircleDollarSign size={20} />
               <div>
@@ -297,7 +321,12 @@ export default function AccountClient() {
 
         {/* TOOLS SHORTCUTS */}
         {(isPro || isBusiness) && (
-          <Link href="/listing" className="account-card listing-shortcut">
+          <Link
+            href="/listing"
+            className="account-card listing-shortcut"
+            data-ph-capture-attribute-button-name="account-listing-studio-btn"
+            data-ph-capture-attribute-feature="account"
+          >
             <div className="shortcut-info">
               <Wand2 size={20} />
               <div>
@@ -310,7 +339,12 @@ export default function AccountClient() {
         )}
 
         {isBusiness && (
-          <Link href="/inventory" className="account-card listing-shortcut">
+          <Link
+            href="/inventory"
+            className="account-card listing-shortcut"
+            data-ph-capture-attribute-button-name="account-inventory-btn"
+            data-ph-capture-attribute-feature="account"
+          >
             <div className="shortcut-info">
               <Boxes size={20} />
               <div>
@@ -333,6 +367,16 @@ export default function AccountClient() {
           again later.
         </div>
         <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setErrorModal(false)}
+            data-ph-capture-attribute-button-name="account-modal-btn-close"
+            data-ph-capture-attribute-feature="account"
+          >
+            Close
+          </button>
+        </div>
       </InfoModal>
 
       <InfoModal
@@ -344,6 +388,16 @@ export default function AccountClient() {
           The scheduled deactivation for your account has been cancelled.
         </div>
         <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setReactivateModal(false)}
+            data-ph-capture-attribute-button-name="account-modal-btn-close"
+            data-ph-capture-attribute-feature="account"
+          >
+            Close
+          </button>
+        </div>
       </InfoModal>
     </main>
   );

@@ -10,9 +10,9 @@ interface SubscribeButtonProps {
   isCurrentPlan?: boolean; // Simplified prop
 }
 
-export default function SubscribeButton({ 
-  priceId, 
-  isCurrentPlan = false 
+export default function SubscribeButton({
+  priceId,
+  isCurrentPlan = false,
 }: SubscribeButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -37,9 +37,9 @@ export default function SubscribeButton({
       // 2. Call your Express backend with the Authorization header
       const response = await fetch(getApiUrl("/api/stripe/checkout"), {
         method: "POST",
-        headers: { 
+        headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // Critical for Express middleware
+          Authorization: `Bearer ${token}`, // Critical for Express middleware
         },
         body: JSON.stringify({ priceId }),
       });
@@ -53,7 +53,8 @@ export default function SubscribeButton({
         return;
       }
 
-      if (!response.ok) throw new Error(data.error || "Failed to start checkout.");
+      if (!response.ok)
+        throw new Error(data.error || "Failed to start checkout.");
 
       // 3. Redirect to Stripe Hosted Checkout
       if (data.url) {
@@ -67,7 +68,7 @@ export default function SubscribeButton({
 
   const getButtonText = () => {
     if (isCurrentPlan) return "Current Plan";
-    
+
     const PRO_ID = process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID;
     const BUSINESS_ID = process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID;
     const HOBBY_ID = process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID;
@@ -88,11 +89,20 @@ export default function SubscribeButton({
             className="generate-btn"
             onClick={handleSubscribe}
             disabled={isCurrentPlan || loading}
+            data-ph-capture-attribute-button-name="subscribe-button"
+            data-ph-capture-attribute-feature="subscribe"
           >
             {getButtonText()}
           </button>
           {error && (
-            <p style={{ color: "var(--error-text)", fontSize: "0.8rem", marginTop: "5px", textAlign: "center" }}>
+            <p
+              style={{
+                color: "var(--error-text)",
+                fontSize: "0.8rem",
+                marginTop: "5px",
+                textAlign: "center",
+              }}
+            >
               {error}
             </p>
           )}

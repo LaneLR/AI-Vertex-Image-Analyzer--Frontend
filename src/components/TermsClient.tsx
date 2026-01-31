@@ -25,7 +25,12 @@ export default function TermsClient() {
   return (
     <main className="terms-page">
       <header className="terms-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="terms-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Legal Agreement</h1>
@@ -96,8 +101,23 @@ export default function TermsClient() {
             <div>
               <h4>Need clarification?</h4>
               <p>
-                Visit our <Link href="/help">Help Center</Link> or review our{" "}
-                <Link href="/privacy">Privacy Policy</Link>.
+                Visit our{" "}
+                <Link
+                  href="/help"
+                  data-ph-capture-attribute-button-name="terms-help-center-btn"
+                  data-ph-capture-attribute-feature="terms"
+                >
+                  Help Center
+                </Link>{" "}
+                or review our{" "}
+                <Link
+                  href="/privacy"
+                  data-ph-capture-attribute-button-name="terms-privacy-btn"
+                  data-ph-capture-attribute-feature="terms"
+                >
+                  Privacy Policy
+                </Link>
+                .
               </p>
             </div>
           </div>

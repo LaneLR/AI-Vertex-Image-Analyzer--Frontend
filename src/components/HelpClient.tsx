@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   ArrowLeft,
   ChevronRight,
@@ -139,7 +138,12 @@ export default function HelpClient() {
   return (
     <main className="help-page">
       <header className="help-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="help-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Help Center</h1>
@@ -174,6 +178,8 @@ export default function HelpClient() {
                         content: item.content,
                       })
                     }
+                    data-ph-capture-attribute-button-name="help-modal-btn"
+                    data-ph-capture-attribute-feature="help"
                   >
                     <span className="item-label-help">{item.title}</span>
                     <ChevronRight size={18} className="chevron" />
@@ -222,6 +228,8 @@ export default function HelpClient() {
             <button
               className="modal-btn modal-btn--secondary"
               onClick={() => setActiveModal(null)}
+              data-ph-capture-attribute-button-name="help-modal-btn-close"
+              data-ph-capture-attribute-feature="help"
             >
               Close
             </button>

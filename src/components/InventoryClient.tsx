@@ -239,7 +239,12 @@ export default function InventoryClient() {
   return (
     <>
       <header className="help-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="inventory-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Inventory Manager</h1>
@@ -291,6 +296,8 @@ export default function InventoryClient() {
                 onClick={() => setIsClearModalOpen(true)}
                 className="inventory__clear-btn"
                 disabled={items.length === 0}
+                data-ph-capture-attribute-button-name="inventory-clear-items-btn"
+                data-ph-capture-attribute-feature="inventory"
               >
                 <Eraser size={16} /> Clear All
               </button>
@@ -298,6 +305,8 @@ export default function InventoryClient() {
                 onClick={downloadCSV}
                 className="inventory__download-btn"
                 disabled={items.length === 0}
+                data-ph-capture-attribute-button-name="inventory-download-csv-btn"
+                data-ph-capture-attribute-feature="inventory"
               >
                 <Download size={16} /> Export CSV
               </button>
@@ -328,6 +337,8 @@ export default function InventoryClient() {
                               quantity: Math.max(1, (item.quantity || 1) - 1),
                             })
                           }
+                          data-ph-capture-attribute-button-name="inventory-quantity-minus-btn"
+                          data-ph-capture-attribute-feature="inventory"
                         >
                           <Minus size={14} />
                         </button>
@@ -341,6 +352,8 @@ export default function InventoryClient() {
                               quantity: (item.quantity || 1) + 1,
                             })
                           }
+                          data-ph-capture-attribute-button-name="inventory-quantity-add-btn"
+                          data-ph-capture-attribute-feature="inventory"
                         >
                           <Plus size={14} />
                         </button>
@@ -368,6 +381,8 @@ export default function InventoryClient() {
                 <button
                   onClick={() => removeItem(item.id)}
                   className="inventory-card__remove"
+                  data-ph-capture-attribute-button-name="inventory-remove-item-btn"
+                  data-ph-capture-attribute-feature="inventory"
                 >
                   <Trash2 size={20} />
                 </button>
@@ -407,6 +422,8 @@ export default function InventoryClient() {
               className="modal-btn modal-btn--secondary"
               onClick={() => setIsClearModalOpen(false)}
               disabled={isClearing}
+              data-ph-capture-attribute-button-name="inventory-clear-modal-btn-cancel"
+              data-ph-capture-attribute-feature="inventory"
             >
               Cancel
             </button>
@@ -414,6 +431,8 @@ export default function InventoryClient() {
               className="modal-btn modal-btn--primary"
               onClick={handleClearAll}
               disabled={isClearing}
+              data-ph-capture-attribute-button-name="inventory-clear-modal-btn-confirm"
+              data-ph-capture-attribute-feature="inventory"
             >
               {isClearing ? "Clearing..." : "Yes, Clear All"}
             </button>

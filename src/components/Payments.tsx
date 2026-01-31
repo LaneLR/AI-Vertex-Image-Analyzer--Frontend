@@ -86,7 +86,12 @@ export default function PaymentsClient() {
   return (
     <>
       <header className="help-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="payments-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Payment Center</h1>
@@ -120,6 +125,8 @@ export default function PaymentsClient() {
             <SubscribeButton
               priceId={process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID!}
               isCurrentPlan={isBusiness}
+              data-ph-capture-attribute-button-name="payments-subscribe-elite-btn"
+              data-ph-capture-attribute-feature="subscribe"
             />
           </div>
 
@@ -140,7 +147,9 @@ export default function PaymentsClient() {
             </ul>
             <SubscribeButton
               priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
-              isCurrentPlan={isPro} 
+              isCurrentPlan={isPro}
+              data-ph-capture-attribute-button-name="payments-subscribe-pro-btn"
+              data-ph-capture-attribute-feature="subscribe"
             />
           </div>
 
@@ -160,7 +169,9 @@ export default function PaymentsClient() {
             </ul>
             <SubscribeButton
               priceId={process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID!}
-              isCurrentPlan={isHobby} 
+              isCurrentPlan={isHobby}
+              data-ph-capture-attribute-button-name="payments-subscribe-hobby-btn"
+              data-ph-capture-attribute-feature="subscribe"
             />
           </div>
 
@@ -178,7 +189,12 @@ export default function PaymentsClient() {
                 </li>
               ))}
             </ul>
-            <button className="generate-btn" disabled={isBasic}>
+            <button
+              className="generate-btn"
+              disabled={isBasic}
+              data-ph-capture-attribute-button-name="payments-subscribe-free-btn"
+              data-ph-capture-attribute-feature="subscribe"
+            >
               {isBasic ? "Current Plan" : "Free"}
             </button>
           </div>

@@ -5,17 +5,13 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
   User,
-  Settings,
   LogOut,
   LayoutDashboard,
   MoreHorizontal,
-  ToolCase,
   Settings2,
-  Calculator,
   Wand2,
   Boxes,
   History,
-  BadgeDollarSign,
   CircleDollarSign,
 } from "lucide-react";
 import { useApp } from "@/context/AppContext";

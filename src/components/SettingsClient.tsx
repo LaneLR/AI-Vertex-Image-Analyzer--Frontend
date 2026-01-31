@@ -191,7 +191,12 @@ export default function SettingsClient() {
   return (
     <main className="settings-page">
       <header className="help-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="settings-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Settings</h1>
@@ -218,6 +223,8 @@ export default function SettingsClient() {
                 disabled={isUpdating}
                 className={`ios-toggle ${localDarkMode ? "active" : ""}`}
                 aria-pressed={localDarkMode}
+                data-ph-capture-attribute-button-name="toggle-dark-mode"
+                data-ph-capture-attribute-feature="darkmode"
               >
                 <div className="ios-toggle__knob" />
               </button>
@@ -232,6 +239,8 @@ export default function SettingsClient() {
             <div
               onClick={() => setIsScanHistoryModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-history-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
                 <div className="icon-box">
@@ -245,6 +254,8 @@ export default function SettingsClient() {
             <div
               onClick={() => setIsGradesModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-grades-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
                 <div className="icon-box">
@@ -258,6 +269,8 @@ export default function SettingsClient() {
             <div
               onClick={() => setIsProfitCalcModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-calculator-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
                 <div className="icon-box">
@@ -271,6 +284,8 @@ export default function SettingsClient() {
             <div
               onClick={() => setIsListingStudioModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-seo-generator-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
                 <div className="icon-box">
@@ -284,6 +299,8 @@ export default function SettingsClient() {
             <div
               onClick={() => setIsPhotoStudioModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-photo-studio-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
                 <div className="icon-box">
@@ -297,6 +314,8 @@ export default function SettingsClient() {
             <div
               onClick={() => setIsInventoryModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-inventory-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
                 <div className="icon-box">
@@ -340,6 +359,8 @@ export default function SettingsClient() {
               <div
                 className="modal-btn-container"
                 onClick={() => setIsListingStudioModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
                 {(user?.subscriptionStatus === "business" ||
@@ -347,6 +368,8 @@ export default function SettingsClient() {
                   <Link
                     href="/listing"
                     className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-seo-generator-redirect"
+                    data-ph-capture-attribute-feature="settings"
                   >
                     Go to Listing Studio
                   </Link>
@@ -387,9 +410,16 @@ export default function SettingsClient() {
               <div
                 className="modal-btn-container"
                 onClick={() => setIsScanHistoryModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
-                <Link href="/history" className="modal-btn modal-btn--primary">
+                <Link
+                  href="/history"
+                  className="modal-btn modal-btn--primary"
+                  data-ph-capture-attribute-button-name="settings-modal-btn-history-redirect"
+                  data-ph-capture-attribute-feature="settings"
+                >
                   Go to Scan History
                 </Link>
               </div>
@@ -429,6 +459,8 @@ export default function SettingsClient() {
               <div
                 className="modal-btn-container"
                 onClick={() => setIsGradesModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
               </div>
@@ -467,12 +499,16 @@ export default function SettingsClient() {
               <div
                 className="modal-btn-container"
                 onClick={() => setIsProfitCalcModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
                 {user?.subscriptionStatus !== "basic" && (
                   <Link
                     href="/calculator"
                     className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-calculator-redirect"
+                    data-ph-capture-attribute-feature="settings"
                   >
                     Go to Profit Calculator
                   </Link>
@@ -513,6 +549,8 @@ export default function SettingsClient() {
               <div
                 className="modal-btn-container"
                 onClick={() => setIsPhotoStudioModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
                 {(user?.subscriptionStatus === "business" ||
@@ -520,6 +558,8 @@ export default function SettingsClient() {
                   <Link
                     href="/listing"
                     className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-photo-redirect"
+                    data-ph-capture-attribute-feature="settings"
                   >
                     Go to Listing Generator
                   </Link>
@@ -561,12 +601,16 @@ export default function SettingsClient() {
               <div
                 className="modal-btn-container"
                 onClick={() => setIsInventoryModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
                 {user?.subscriptionStatus === "business" && (
                   <Link
                     href="/inventory"
                     className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-inventory-redirect"
+                    data-ph-capture-attribute-feature="settings"
                   >
                     Go to Inventory Manager
                   </Link>
@@ -583,6 +627,8 @@ export default function SettingsClient() {
             <div
               onClick={() => setIsHelpModalOpen(true)}
               className="settings-item settings-item--clickable"
+              data-ph-capture-attribute-button-name="settings-help-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
                 <div className="icon-box">
@@ -596,6 +642,8 @@ export default function SettingsClient() {
             <div
               onClick={() => setIsPrivacyModalOpen(true)}
               className="settings-item settings-item--clickable"
+              data-ph-capture-attribute-button-name="settings-privacy-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
                 <div className="icon-box">
@@ -631,6 +679,8 @@ export default function SettingsClient() {
                 <div
                   className="modal-btn-container"
                   onClick={() => setIsHelpModalOpen(false)}
+                  data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                  data-ph-capture-attribute-feature="settings"
                 >
                   <div className="modal-btn modal-btn--secondary">Close</div>
                 </div>
@@ -653,6 +703,8 @@ export default function SettingsClient() {
                 <div
                   className="modal-btn-container"
                   onClick={() => setIsPrivacyModalOpen(false)}
+                  data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                  data-ph-capture-attribute-feature="settings"
                 >
                   <div className="modal-btn modal-btn--secondary">Close</div>
                 </div>
@@ -676,6 +728,8 @@ export default function SettingsClient() {
                 className="cancel-btn"
                 onClick={handleKeepAccount}
                 disabled={isProcessing}
+                data-ph-capture-attribute-button-name="settings-keep-account-btn"
+                data-ph-capture-attribute-feature="settings-keep-account"
               >
                 Keep My Account
               </button>
@@ -685,6 +739,8 @@ export default function SettingsClient() {
             <button
               className="settings-item settings-item--btn"
               onClick={() => setIsModalOpen(true)}
+              data-ph-capture-attribute-button-name="settings-clear-history-btn"
+              data-ph-capture-attribute-feature="settings-clear-history"
             >
               <div className="settings-item__info">
                 <div className="icon-box icon-box--alert">
@@ -700,6 +756,8 @@ export default function SettingsClient() {
               className="settings-item settings-item--btn"
               onClick={() => setShowConfirmDelete(true)}
               disabled={user.scheduledDeletionDate !== null}
+              data-ph-capture-attribute-button-name="settings-delete-account-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
                 <div className="icon-box icon-box--alert">
@@ -743,6 +801,8 @@ export default function SettingsClient() {
                 className="modal-btn modal-btn--secondary"
                 onClick={() => setIsModalOpen(false)}
                 disabled={isDeleting}
+                data-ph-capture-attribute-button-name="settings-modal-btn-cancel"
+                data-ph-capture-attribute-feature="settings"
               >
                 Cancel
               </button>
@@ -750,6 +810,8 @@ export default function SettingsClient() {
                 className="modal-btn modal-btn--danger"
                 onClick={handleDeleteAll}
                 disabled={isDeleting}
+                data-ph-capture-attribute-button-name="settings-delete-history-btn-confirm"
+                data-ph-capture-attribute-feature="settings"
               >
                 Delete All Scan History
               </button>
@@ -780,6 +842,8 @@ export default function SettingsClient() {
                 className="modal-btn modal-btn--secondary"
                 onClick={() => setShowConfirmDelete(false)}
                 disabled={isDeleting}
+                data-ph-capture-attribute-button-name="settings-delete-account-btn-cancel"
+                data-ph-capture-attribute-feature="settings"
               >
                 Cancel
               </button>
@@ -787,6 +851,8 @@ export default function SettingsClient() {
                 className="modal-btn modal-btn--danger"
                 onClick={handleDeleteAccount}
                 disabled={isDeleting}
+                data-ph-capture-attribute-button-name="settings-delete-account-btn-confirm"
+                data-ph-capture-attribute-feature="settings"
               >
                 {isDeleting
                   ? "Preparing to deactivate account..."
@@ -819,8 +885,10 @@ export default function SettingsClient() {
                 className="modal-btn modal-btn--secondary"
                 onClick={() => setShowSubWarning(false)}
                 disabled={isDeleting}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
-                Cancel
+                Close
               </button>
             </div>
           </div>
@@ -836,6 +904,16 @@ export default function SettingsClient() {
           The scheduled deactivation for your account has been cancelled.
         </div>
         <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setReactivateModal(false)}
+            data-ph-capture-attribute-button-name="settings-modal-btn-close"
+            data-ph-capture-attribute-feature="settings"
+          >
+            Close
+          </button>
+        </div>
       </InfoModal>
     </main>
   );
