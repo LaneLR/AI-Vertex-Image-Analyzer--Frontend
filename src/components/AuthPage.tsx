@@ -11,6 +11,7 @@ import { getApiUrl } from "@/lib/api-config";
 import Link from "next/link";
 import { useApp } from "@/context/AppContext";
 import { useGoogleLogin } from "@react-oauth/google";
+import posthog from "posthog-js";
 
 export default function UnifiedAuthPage() {
   // Replace useSession with your custom context logic
@@ -64,6 +65,9 @@ export default function UnifiedAuthPage() {
 
       const data = await res.json();
       if (res.ok) {
+        posthog.capture("user_logged_in", {
+          method: "email",
+        });
         localStorage.setItem("token", data.token);
         setUser(data.user);
         router.push("/dashboard");
@@ -118,6 +122,7 @@ export default function UnifiedAuthPage() {
         const data = await res.json();
 
         if (res.ok) {
+          posthog.capture("user_logged_in", { method: "google" });
           localStorage.setItem("token", data.token);
           if (setUser) setUser(data.user);
           router.push("/dashboard");
@@ -144,6 +149,10 @@ export default function UnifiedAuthPage() {
         body: JSON.stringify({ email, password }),
       });
       if (res.ok) {
+        posthog.capture("user_signed_up", {
+          method: "email",
+          view: "register",
+        });
         setSourceView("register");
         setView("verify");
       } else {
@@ -204,7 +213,6 @@ export default function UnifiedAuthPage() {
         if (isResetPath) {
           setShowResetModal(true);
         } else {
-          // Auto-login after verification
           localStorage.setItem("token", data.token);
           if (setUser) setUser(data.user);
           router.push("/dashboard");
@@ -404,6 +412,8 @@ export default function UnifiedAuthPage() {
             type="submit"
             className="auth-submit-btn"
             disabled={loading || (view === "register" && !agreedToTerms)}
+            data-ph-capture-attribute-button-name={`auth-submit-${view}-btn`}
+            data-ph-capture-attribute-feature="auth"
           >
             {loading ? "Processing..." : "Continue"}
             {!loading && <ArrowRight size={18} />}
