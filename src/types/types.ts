@@ -1,5 +1,5 @@
 /**
- * SHARED TYPES FOR THRIFTSAVVY
+ * SHARED TYPES FOR ResaleIQ
  * Used by both Frontend (Next.js/Capacitor) and Backend (Express)
  */
 

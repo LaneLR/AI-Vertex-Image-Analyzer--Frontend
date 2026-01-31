@@ -8,7 +8,7 @@ import { AppProvider } from "@/context/AppContext";
 import { PHProvider } from "@/providers/PosthogProvider";
 
 export const metadata: Metadata = {
-  title: "ThriftSavvy | AI Thrift Appraisal",
+  title: "ResaleIQ | Item Appraisal",
   description: "Identify and value thrift finds instantly with AI",
 };
 

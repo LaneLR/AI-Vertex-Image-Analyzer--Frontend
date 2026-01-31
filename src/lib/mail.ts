@@ -14,9 +14,9 @@
 //   html: string;
 // }
 
-// const APP_NAME = "ThriftSavvy";
-// const APP_FIRST_WORD = "THRIFT";
-// const APP_SECOND_WORD = "SAVVY";
+// const APP_NAME = "ResaleIQ";
+// const APP_FIRST_WORD = "RESALE";
+// const APP_SECOND_WORD = "IQ";
 // const BRAND_COLOR1 = "#ff6000";
 // const BRAND_COLOR2 = "#3b82f6";
 

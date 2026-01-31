@@ -3,7 +3,7 @@ import Loading from "@/components/Loading";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Listing Studio | ThriftSavvy",
+  title: "Listing Studio | ResaleIQ",
   description: "Generate SEO-optimized content and listing photos.",
 };
 

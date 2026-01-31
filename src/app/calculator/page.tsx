@@ -3,7 +3,7 @@ import Loading from "@/components/Loading";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Profit Calculator | ThriftSavvy",
+  title: "Profit Calculator | ResaleIQ",
   description: "Calculate your earnings and profit margins.",
 };
 

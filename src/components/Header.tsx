@@ -45,16 +45,33 @@ export default function Header() {
   if (!user) return null;
 
   const handleLogout = () => {
-    // 1. Clear the token (adjust based on where you store it: localStorage or Cookie)
     localStorage.removeItem("token");
     setUser(null);
     router.push("/login");
   };
 
   const navItems = [
-    { label: "Home", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Account", href: "/account", icon: User },
-    { label: "Settings", href: "/settings", icon: Settings2 },
+    {
+      label: "Home",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+      "data-ph-capture-attribute-button-name": "nav-dashboard-button",
+      "data-ph-capture-attribute-feature": "navigation",
+    },
+    {
+      label: "Account",
+      href: "/account",
+      icon: User,
+      "data-ph-capture-attribute-button-name": "nav-account-button",
+      "data-ph-capture-attribute-feature": "navigation",
+    },
+    {
+      label: "Settings",
+      href: "/settings",
+      icon: Settings2,
+      "data-ph-capture-attribute-button-name": "nav-settings-button",
+      "data-ph-capture-attribute-feature": "navigation",
+    },
   ];
 
   return (
@@ -70,6 +87,12 @@ export default function Header() {
                   key={item.href}
                   href={item.href}
                   className={`mobile-nav__link ${isActive ? "is-active" : ""}`}
+                  data-ph-capture-attribute-button-name={
+                    item["data-ph-capture-attribute-button-name"]
+                  }
+                  data-ph-capture-attribute-feature={
+                    item["data-ph-capture-attribute-feature"]
+                  }
                 >
                   <Icon size={24} />
                   <span>{item.label}</span>
@@ -81,6 +104,8 @@ export default function Header() {
             <button
               className={`mobile-nav__link ${isMoreOpen ? "is-active" : ""}`}
               onClick={() => setIsMoreOpen(!isMoreOpen)}
+              data-ph-capture-attribute-button-name="nav-burger-menu-button"
+              data-ph-capture-attribute-feature="navigation"
             >
               <MoreHorizontal size={24} />
               <span>More</span>
@@ -95,6 +120,8 @@ export default function Header() {
                   href="/inventory"
                   className="popover-item"
                   onClick={() => setIsMoreOpen(false)}
+                  data-ph-capture-attribute-button-name="nav-inventory-button"
+                  data-ph-capture-attribute-feature="navigation"
                 >
                   <Boxes size={20} />
                   <span>Inventory</span>
@@ -105,6 +132,8 @@ export default function Header() {
                   href="/listing"
                   className="popover-item"
                   onClick={() => setIsMoreOpen(false)}
+                  data-ph-capture-attribute-button-name="nav-listing-studio-button"
+                  data-ph-capture-attribute-feature="navigation"
                 >
                   <Wand2 size={20} />
                   <span>Listing Studio</span>
@@ -116,6 +145,8 @@ export default function Header() {
                   href="/calculator"
                   className="popover-item"
                   onClick={() => setIsMoreOpen(false)}
+                  data-ph-capture-attribute-button-name="nav-calculator-button"
+                  data-ph-capture-attribute-feature="navigation"
                 >
                   <CircleDollarSign size={20} />
                   <span>Calculator</span>
@@ -126,11 +157,18 @@ export default function Header() {
                 href="/history"
                 className="popover-item"
                 onClick={() => setIsMoreOpen(false)}
+                data-ph-capture-attribute-button-name="nav-history-button"
+                data-ph-capture-attribute-feature="navigation"
               >
                 <History size={20} />
                 <span>Scan History</span>
               </Link>
-              <button className="popover-item logout" onClick={handleLogout}>
+              <button
+                className="popover-item logout"
+                onClick={handleLogout}
+                data-ph-capture-attribute-button-name="nav-logout-button"
+                data-ph-capture-attribute-feature="navigation"
+              >
                 <LogOut size={20} />
                 <span>Sign Out</span>
               </button>

@@ -27,7 +27,7 @@ export default function Footer() {
               <div className="footer__logo">
                 <Link href="/dashboard" className="brand-link">
                   <h1 className="brand-text">
-                    Thrift<span>Savvy</span>
+                    Resale<span>IQ</span>
                   </h1>
                 </Link>
               </div>
@@ -62,7 +62,7 @@ export default function Footer() {
 
         <div className="footer__bottom">
           <div className="footer__copyright">
-            {currentYear} ThriftSavvy • v{process.env.NEXT_PUBLIC_APP_VERSION}
+            {currentYear} ResaleIQ • v{process.env.NEXT_PUBLIC_APP_VERSION}
           </div>
         </div>
       </div>
@@ -71,7 +71,7 @@ export default function Footer() {
       <InfoModal
         isOpen={isAboutModalOpen}
         onClose={() => setIsAboutModalOpen(false)}
-        title="About ThriftSavvy"
+        title="About ResaleIQ"
       >
         <div className="feature-info-modal">
           <div
@@ -84,7 +84,7 @@ export default function Footer() {
               style={{ marginBottom: "0.5rem" }}
             />
             <p style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
-              Empowering thrifters with AI-driven market insights.
+              Empowering resellers with AI-driven market insights.
             </p>
           </div>
 
@@ -104,7 +104,7 @@ export default function Footer() {
               <Target size={14} /> Our Mission
             </div>
             <p style={{ fontSize: "0.95rem", lineHeight: "1.5" }}>
-              ThriftSavvy was built for the modern treasure hunter. We combine AI
+              ResaleIQ was built for the modern treasure hunter. We combine AI
               vision technology with market data to help you flip finds with
               confidence.
             </p>

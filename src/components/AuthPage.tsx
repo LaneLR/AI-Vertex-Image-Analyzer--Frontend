@@ -278,7 +278,7 @@ export default function UnifiedAuthPage() {
           <Image width={125} height={125} alt="Logo" src={logo} priority />
           <h1 className="auth-title">
             {view === "login" && "Welcome Back"}
-            {view === "register" && "Join & Start Thrifting"}
+            {view === "register" && "Join & Start Appraising"}
             {view === "verify" && "Enter Code"}
             {view === "forgot" && "Find Account"}
           </h1>

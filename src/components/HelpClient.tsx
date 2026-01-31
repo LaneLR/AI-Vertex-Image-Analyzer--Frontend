@@ -82,7 +82,7 @@ export default function HelpClient() {
         {
           title: "Understanding AI appraisals",
           content:
-            "ThriftSavvy uses deep learning models trained on millions of marketplace data points. The price shown is an 'Estimated Market Value,' representing realistic resale expectations. Highly unique or vintage items may require manual verification.",
+            "ResaleIQ uses deep learning models trained on millions of marketplace data points. The price shown is an 'Estimated Market Value,' representing realistic resale expectations. Highly unique or vintage items may require manual verification.",
         },
       ],
     },
@@ -124,7 +124,7 @@ export default function HelpClient() {
   ];
 
   const handleSupportClick = () => {
-    window.location.href = "mailto:support@thriftsavvy.com";
+    window.location.href = "mailto:support@resaleiq.com";
   };
 
   if (loading) {

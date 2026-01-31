@@ -53,7 +53,7 @@ export default function WebHome() {
           <div className="web__heroContent">
             <span className="web__tag">
               <Sparkles size={14} style={{ marginRight: "8px" }} />
-              Item Flipping AI Companion
+              Item Reselling AI Companion
             </span>
             <h1 className="web__title">
               <p>Turn</p>
@@ -62,8 +62,8 @@ export default function WebHome() {
               <span className="web__titleHighlight"> Sold for $200.</span>
             </h1>
             <p className="web__subtitle">
-              Scan items instantly. Analyze market value. Thrift and flip with confidence.
-              The most powerful tool for thrift hunters and resellers.
+              Scan items instantly. Analyze market value. Resell and flip with confidence.
+              The most powerful tool for resellers and thrifters.
             </p>
             <div className="web__actions">
               <Link href={"/login"}>
@@ -85,7 +85,7 @@ export default function WebHome() {
                 <div className="web__placeholderImg">
                   <img
                     src="/images/AppDisplay.png"
-                    alt="ThriftSavvy App Interface"
+                    alt="ResaleIQ App Interface"
                   />
                 </div>
                 <div className="web__phoneButton volume"></div>
@@ -102,7 +102,7 @@ export default function WebHome() {
           <div className="web__sectionHeader">
             <h2 className="web__sectionTitleWhite">The 3-Second Workflow</h2>
             <p className="web__sectionParagraphWhite">
-              From the thrift shelf to your bank account in three steps.
+              From the shelf to your bank account in three steps.
             </p>
           </div>
 
@@ -147,7 +147,7 @@ export default function WebHome() {
           <div className="web__sectionHeader">
             <h2 className="web__sectionTitleBlack">Affordable Pricing</h2>
             <p className="web__sectionParagraphBlack">
-              From the thrift shelf to your bank account in three steps.
+              From the shelf to your bank account in three steps.
             </p>
           </div>
           <div className="web__pricingWrapper">

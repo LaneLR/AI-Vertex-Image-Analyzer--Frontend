@@ -3,7 +3,7 @@ import Loading from "@/components/Loading";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Inventory | ThriftSavvy",
+  title: "Inventory | ResaleIQ",
   description: "Manage your business inventory and track potential profits.",
 };
 

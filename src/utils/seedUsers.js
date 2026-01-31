@@ -14,7 +14,7 @@ async function createTestUser() {
     await sequelize.authenticate();
     await sequelize.sync({ alter: false }); 
 
-    const testEmail = 'test@thriftsavvy.com';
+    const testEmail = 'test@resaleiq.com';
 
     // 3. Find or Create User
     // We use findOne with Sequelize syntax

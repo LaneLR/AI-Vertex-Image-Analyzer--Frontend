@@ -3,7 +3,7 @@ import Loading from "@/components/Loading";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Scan History | ThriftSavvy",
+  title: "Scan History | ResaleIQ",
   description: "Review your scanned items.",
 };
 

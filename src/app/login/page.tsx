@@ -3,7 +3,7 @@ import Loading from "@/components/Loading";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Login or Register | ThriftSavvy",
+  title: "Login or Register | ResaleIQ",
   description: "Login or register an account.",
 };
 

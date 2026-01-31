@@ -42,7 +42,7 @@ export default function AboutClient() {
           <div className="brand-logo">
             <ScanEye size={40} />
           </div>
-          <h2 className="about-hero__title">ThriftSavvy</h2>
+          <h2 className="about-hero__title">ResaleIQ</h2>
           <p className="about-hero__subtitle">
             Empowering thrifters with AI-driven market insights.
           </p>
@@ -54,7 +54,7 @@ export default function AboutClient() {
             <Target size={14} /> Our Mission
           </div>
           <p className="about-text">
-            ThriftSavvy was built for the modern treasure hunter. We combine
+            ResaleIQ was built for the modern treasure hunter. We combine
             cutting-edge AI vision technology with real-time market data to help
             you identify, value, and flip thrift store finds with confidence.
           </p>
@@ -103,12 +103,12 @@ export default function AboutClient() {
               <span>Legal Disclaimers</span>
             </div>
             <p>
-              *ThriftSavvy is an AI tool that provides price estimates and does
+              *ResaleIQ is an AI tool that provides price estimates and does
               not guarantee accuracy. AI-generated appraisals can be incorrect
               or unreliable. Please perform your own research.
             </p>
             <p>
-              **ThriftSavvy does not guarantee profit or success in resale
+              **ResaleIQ does not guarantee profit or success in resale
               activities.
             </p>
           </div>

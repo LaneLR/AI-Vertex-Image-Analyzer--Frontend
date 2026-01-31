@@ -3,7 +3,7 @@ import SettingsClient from "@/components/SettingsClient";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Settings | ThriftSavvy",
+  title: "Settings | ResaleIQ",
   description: "Adjust your account settings.",
 };
 

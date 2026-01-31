@@ -3,7 +3,7 @@ import Loading from "@/components/Loading";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Dashboard | ThriftSavvy",
+  title: "Dashboard | ResaleIQ",
   description: "Identify and appraise items instantly.",
 };
 

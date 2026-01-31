@@ -250,7 +250,7 @@ export default function SettingsClient() {
                 <div className="icon-box">
                   <ALargeSmall size={20} />
                 </div>
-                <p className="item-label">Thrift Grades</p>
+                <p className="item-label">Resale Grades</p>
               </div>
               <ChevronRight size={18} className="chevron" />
             </div>
@@ -401,11 +401,11 @@ export default function SettingsClient() {
         <InfoModal
           isOpen={isGradesModalOpen}
           onClose={() => setIsGradesModalOpen(false)}
-          title="Thrift Grades"
+          title="Resale Grades"
         >
           <div className="feature-info-modal">
             <p>
-              Thrift Grades provide an instant visual indicator of an item's
+              Resale Grades provide an instant visual indicator of an item's
               resale potential based on demand, margin, and sell-through rate.
               The higher the grade, the faster it will likely sell.
             </p>
