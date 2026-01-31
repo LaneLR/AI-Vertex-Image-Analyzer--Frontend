@@ -41,6 +41,7 @@ export default function Header() {
   if (!user) return null;
 
   const handleLogout = () => {
+    setIsMoreOpen(false);
     localStorage.removeItem("token");
     setUser(null);
     router.push("/login");
