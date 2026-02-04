@@ -25,7 +25,12 @@ export default function TermsClient() {
   return (
     <main className="terms-page">
       <header className="terms-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="terms-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Legal Agreement</h1>
@@ -40,7 +45,7 @@ export default function TermsClient() {
           </div>
           <h2 className="terms-hero__title">Terms of Service</h2>
           <p className="terms-hero__subtitle">
-            Please read these terms carefully before using the FlipSavvy studio
+            Please read these terms carefully before using the ResaleIQ studio
             and AI tools.
           </p>
           <div className="version-pill">Last Updated: Dec 30, 2025</div>
@@ -54,7 +59,7 @@ export default function TermsClient() {
               <h3>1. Acceptance of Terms</h3>
             </div>
             <p>
-              By accessing or using FlipSavvy, you agree to be bound by these
+              By accessing or using ResaleIQ, you agree to be bound by these
               Terms of Service. If you do not agree, you may not use our AI
               appraisal tools or platform.
             </p>
@@ -81,7 +86,7 @@ export default function TermsClient() {
               <h3>3. AI Accuracy Disclaimer</h3>
             </div>
             <p>
-              FlipSavvy provides AI-generated estimates based on market data.
+              ResaleIQ provides AI-generated estimates based on market data.
               These are <strong>suggestions</strong>, not professional
               appraisals. We are not liable for financial losses resulting from
               buying or selling decisions made using our data.
@@ -96,8 +101,23 @@ export default function TermsClient() {
             <div>
               <h4>Need clarification?</h4>
               <p>
-                Visit our <Link href="/help">Help Center</Link> or review our{" "}
-                <Link href="/privacy">Privacy Policy</Link>.
+                Visit our{" "}
+                <Link
+                  href="/help"
+                  data-ph-capture-attribute-button-name="terms-help-center-btn"
+                  data-ph-capture-attribute-feature="terms"
+                >
+                  Help Center
+                </Link>{" "}
+                or review our{" "}
+                <Link
+                  href="/privacy"
+                  data-ph-capture-attribute-button-name="terms-privacy-btn"
+                  data-ph-capture-attribute-feature="terms"
+                >
+                  Privacy Policy
+                </Link>
+                .
               </p>
             </div>
           </div>

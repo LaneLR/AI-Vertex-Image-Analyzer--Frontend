@@ -1,18 +1,15 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
-import SubscribeButton from "@/components/Payments";
+import Loading from "@/components/Loading";
+import PaymentsClient from "@/components/Payments";
+import { Suspense } from "react";
 
-export default async function PaymentsPage() {
-  const session = await getServerSession(authOptions);
+export const metadata = {
+  title: "Subscription | ResaleIQ",
+  description: "Select or switch between subscriptions.",
+};
 
-  if (!session || !session.user) {
-    redirect("/login");
-  }
-
-  // if (session?.user?.subscriptionStatus === "basic" || session?.user?.paymentProvider !== "stripe") {
-  //   redirect("/account");
-  // }
-
-  return <SubscribeButton user={session.user} />;
-}
+export default function PaymentsPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <PaymentsClient />;
+    </Suspense>
+  );}

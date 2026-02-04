@@ -1,47 +1,64 @@
 "use client";
 
 import { useState } from "react";
-import { loadStripe } from "@stripe/stripe-js";
 import Loading from "./Loading";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
 
-// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
-
 interface SubscribeButtonProps {
   priceId: string;
-  isPro?: boolean;
-  isHobby?: boolean;
-  isBusiness?: boolean;
+  isCurrentPlan?: boolean; 
+  isPendingDeletion?: boolean;
 }
 
-export default function SubscribeButton({ priceId, isPro = false, isHobby = false, isBusiness = false }: SubscribeButtonProps) {
+export default function SubscribeButton({
+  priceId,
+  isCurrentPlan = false,
+  isPendingDeletion = false,
+}: SubscribeButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubscribe = async () => {
-    if (isPro || isHobby || isBusiness) return;
+    // Prevent checkout if they are already on this plan
+    if (isCurrentPlan) return;
 
     setLoading(true);
     setError(null);
 
     try {
+      // 1. Get the token from localStorage
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        router.push("/login");
+        return;
+      }
+
+      // 2. Call your Express backend with the Authorization header
       const response = await fetch(getApiUrl("/api/stripe/checkout"), {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Critical for Express middleware
+        },
         body: JSON.stringify({ priceId }),
       });
 
       const data = await response.json();
 
+      // Handle expired or invalid tokens
       if (response.status === 401) {
+        localStorage.removeItem("token"); // Clean up local storage
         router.push("/login");
         return;
       }
 
-      if (!response.ok) throw new Error(data.error || "Failed to start checkout.");
+      if (!response.ok)
+        throw new Error(data.error || "Failed to start checkout.");
 
+      // 3. Redirect to Stripe Hosted Checkout
       if (data.url) {
         window.location.href = data.url;
       }
@@ -51,36 +68,46 @@ export default function SubscribeButton({ priceId, isPro = false, isHobby = fals
     }
   };
 
-  // Determine button text based on props
   const getButtonText = () => {
-    if (isPro) return "Current Plan";
-    if (isHobby) return "Current Plan";
-    if (isBusiness) return "Current Plan";
-    
-    // Check which ID this button represents to show correct upgrade text
-    return priceId === process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID 
-      ? "Switch to Pro" 
-      : priceId === process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID 
-      ? "Switch to Business"
-      : priceId === process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID
-      ? "Switch to Hobbyist" 
-      : "";
+    if (isCurrentPlan) return "Current Plan";
+
+    const PRO_ID = process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID;
+    const BUSINESS_ID = process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID;
+    const HOBBY_ID = process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID;
+
+    if (priceId === PRO_ID) return "Switch to Pro";
+    if (priceId === BUSINESS_ID) return "Switch to Elite";
+    if (priceId === HOBBY_ID) return "Switch to Hobby";
+    return "";
   };
 
   return (
     <div className="subscribe-container">
       {loading ? (
-        <Loading message="Connecting..." />
+        <Loading message="Preparing checkout..." />
       ) : (
         <>
           <button
             className="generate-btn"
             onClick={handleSubscribe}
-            disabled={isPro || isHobby || isBusiness || loading}
+            disabled={isCurrentPlan || isPendingDeletion || loading}
+            data-ph-capture-attribute-button-name="subscribe-button"
+            data-ph-capture-attribute-feature="subscribe"
           >
             {getButtonText()}
           </button>
-          {error && <p style={{ color: "#ef4444", fontSize: "0.8rem", marginTop: "5px" }}>{error}</p>}
+          {error && (
+            <p
+              style={{
+                color: "var(--error-text)",
+                fontSize: "0.8rem",
+                marginTop: "5px",
+                textAlign: "center",
+              }}
+            >
+              {error}
+            </p>
+          )}
         </>
       )}
     </div>

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import Link from "next/link";
 import {
   ArrowLeft,
   ChevronRight,
@@ -12,22 +11,54 @@ import {
 } from "lucide-react";
 import InfoModal from "./InfoModal";
 import { Capacitor } from "@capacitor/core";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Loading from "./Loading";
 
-export default function HelpClient({ user: initialUser }: { user: any }) {
+export default function HelpClient() {
   const [activeModal, setActiveModal] = useState<{
     title: string;
     content: string;
   } | null>(null);
   const [platform, setPlatform] = useState<string>("web");
-  const { data: session } = useSession();
-  const user = session?.user || initialUser;
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     setPlatform(Capacitor.getPlatform());
-  }, []);
+
+    const checkAuth = async () => {
+      try {
+        // We call our new Express endpoint
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/user/profile`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              // Assuming you store your JWT in a cookie or localStorage
+              // If using cookies with 'credentials: true', headers might not be needed
+            },
+          },
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        } else {
+          // If not logged in, redirect to login
+          router.push("/login");
+        }
+      } catch (error) {
+        console.error("Auth check failed", error);
+        router.push("/login");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -36,7 +67,6 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
       router.push("/");
     }
   };
-
   const categories = [
     {
       id: "getting-started",
@@ -51,7 +81,7 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
         {
           title: "Understanding AI appraisals",
           content:
-            "FlipSavvy uses deep learning models trained on millions of marketplace data points. The price shown is an 'Estimated Market Value,' representing realistic resale expectations. Highly unique or vintage items may require manual verification.",
+            "ResaleIQ uses deep learning models trained on millions of marketplace data points. The price shown is an 'Estimated Market Value,' representing realistic resale expectations. Highly unique or vintage items may require manual verification.",
         },
       ],
     },
@@ -93,13 +123,27 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
   ];
 
   const handleSupportClick = () => {
-    window.location.href = "mailto:support@flipsavvy.com";
+    window.location.href = "mailto:support@resaleiq.com";
   };
+
+  if (loading) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
+  if (!user) return null;
 
   return (
     <main className="help-page">
       <header className="help-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="help-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Help Center</h1>
@@ -134,6 +178,8 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
                         content: item.content,
                       })
                     }
+                    data-ph-capture-attribute-button-name="help-modal-btn"
+                    data-ph-capture-attribute-feature="help"
                   >
                     <span className="item-label-help">{item.title}</span>
                     <ChevronRight size={18} className="chevron" />
@@ -182,6 +228,8 @@ export default function HelpClient({ user: initialUser }: { user: any }) {
             <button
               className="modal-btn modal-btn--secondary"
               onClick={() => setActiveModal(null)}
+              data-ph-capture-attribute-button-name="help-modal-btn-close"
+              data-ph-capture-attribute-feature="help"
             >
               Close
             </button>

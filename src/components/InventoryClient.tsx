@@ -1,26 +1,21 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Package,
   Trash2,
   Download,
-  TrendingUp,
-  Tag,
-  ExternalLink,
-  Link,
   ArrowLeft,
-  ArrowRight,
-  DollarSign,
   Plus,
   Minus,
   Eraser,
-  AlertTriangle,
-  TrendingDown,
+  DollarSign,
 } from "lucide-react";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
 import InfoModal from "./InfoModal";
+import Loading from "./Loading";
+import { useApp } from "@/context/AppContext";
 
 interface InventoryItem {
   id: string;
@@ -39,23 +34,17 @@ interface InventoryItem {
   };
 }
 
-export default function InventoryClient({
-  initialItems,
-}: {
-  initialItems: InventoryItem[];
-}) {
-  const [items, setItems] = useState(
-    initialItems.map((item) => ({
-      ...item,
-      quantity: item?.quantity || 1,
-      purchasePrice: item?.purchasePrice || 0,
-    })),
-  );
-
+export default function InventoryClient() {
+  const { user, isLoading, setIsLoading } = useApp();
+  const [items, setItems] = useState<InventoryItem[]>([]);
   const [isClearModalOpen, setIsClearModalOpen] = useState(false);
   const [isClearing, setIsClearing] = useState(false);
-
   const router = useRouter();
+
+  const getHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  });
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -65,23 +54,59 @@ export default function InventoryClient({
     }
   };
 
+  const fetchInventory = async () => {
+    try {
+      const res = await fetch(getApiUrl("/api/user/history?inInventory=true"), {
+        headers: getHeaders(),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setItems(
+          data.map((item: any) => ({
+            ...item,
+            quantity: item.quantity || 1,
+            purchasePrice: item.purchasePrice || 0,
+          })),
+        );
+      }
+    } catch (err) {
+      console.error("Failed to fetch inventory", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (!user) {
+      router.push("/login");
+      //change back to business, set to pro for testing
+    } else if (user.subscriptionStatus !== "pro") {
+      router.push("/account");
+    } else {
+      fetchInventory();
+    }
+  }, [user, isLoading, router]);
+
   const handleClearAll = async () => {
     setIsClearing(true);
     try {
-      // Map all current items to a removal promise
-      const deletePromises = items.map((item) =>
-        fetch(getApiUrl(`/api/user/history/${item.id}`), {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ inInventory: false }),
-        }),
+      // It is more efficient to have a bulk endpoint,
+      // but sticking to your current logic:
+      await Promise.all(
+        items.map((item) =>
+          fetch(getApiUrl(`/api/user/history/${item.id}`), {
+            method: "PATCH",
+            headers: getHeaders(),
+            body: JSON.stringify({ inInventory: false }),
+          }),
+        ),
       );
-
-      await Promise.all(deletePromises);
-      setItems([]); // Clear local state
+      setItems([]);
       setIsClearModalOpen(false);
     } catch (err) {
-      console.error("Failed to clear inventory:", err);
+      console.error("Clear error:", err);
     } finally {
       setIsClearing(false);
     }
@@ -112,13 +137,14 @@ export default function InventoryClient({
     id: string,
     updates: Partial<InventoryItem>,
   ) => {
+    // Optimistic Update
     setItems((prev) =>
       prev.map((item) => (item.id === id ? { ...item, ...updates } : item)),
     );
 
     await fetch(getApiUrl(`/api/user/history/${id}`), {
       method: "PATCH",
-      headers: { "Content-Type": "application/json" },
+      headers: getHeaders(),
       body: JSON.stringify(updates),
     });
   };
@@ -127,20 +153,15 @@ export default function InventoryClient({
     try {
       const res = await fetch(getApiUrl(`/api/user/history/${id}`), {
         method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ inInventory: false }), // This triggers the 'Removed from inventory' logic
+        headers: getHeaders(),
+        body: JSON.stringify({ inInventory: false }),
       });
 
       if (res.ok) {
         setItems((prev) => prev.filter((i) => i.id !== id));
-      } else {
-        const errorData = await res.json();
-        console.error("Failed to remove item:", errorData.error);
       }
     } catch (err) {
-      console.error("Connection error during removal:", err);
+      console.error("Removal error:", err);
     }
   };
 
@@ -207,10 +228,23 @@ export default function InventoryClient({
     URL.revokeObjectURL(url);
   };
 
+  if (isLoading) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <>
       <header className="help-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="inventory-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Inventory Manager</h1>
@@ -251,7 +285,9 @@ export default function InventoryClient({
             <div>
               <p className="inventory__count-hint">Inventory count</p>
               <p>
-                <b>{items.length} item{items.length !== 1 ? "s" : ""}</b>
+                <b>
+                  {items.length} item{items.length !== 1 ? "s" : ""}
+                </b>
               </p>
             </div>
 
@@ -260,10 +296,18 @@ export default function InventoryClient({
                 onClick={() => setIsClearModalOpen(true)}
                 className="inventory__clear-btn"
                 disabled={items.length === 0}
+                data-ph-capture-attribute-button-name="inventory-clear-items-btn"
+                data-ph-capture-attribute-feature="inventory"
               >
                 <Eraser size={16} /> Clear All
               </button>
-              <button onClick={downloadCSV} className="inventory__download-btn" disabled={items.length === 0}>
+              <button
+                onClick={downloadCSV}
+                className="inventory__download-btn"
+                disabled={items.length === 0}
+                data-ph-capture-attribute-button-name="inventory-download-csv-btn"
+                data-ph-capture-attribute-feature="inventory"
+              >
                 <Download size={16} /> Export CSV
               </button>
             </div>
@@ -293,6 +337,8 @@ export default function InventoryClient({
                               quantity: Math.max(1, (item.quantity || 1) - 1),
                             })
                           }
+                          data-ph-capture-attribute-button-name="inventory-quantity-minus-btn"
+                          data-ph-capture-attribute-feature="inventory"
                         >
                           <Minus size={14} />
                         </button>
@@ -306,6 +352,8 @@ export default function InventoryClient({
                               quantity: (item.quantity || 1) + 1,
                             })
                           }
+                          data-ph-capture-attribute-button-name="inventory-quantity-add-btn"
+                          data-ph-capture-attribute-feature="inventory"
                         >
                           <Plus size={14} />
                         </button>
@@ -333,6 +381,8 @@ export default function InventoryClient({
                 <button
                   onClick={() => removeItem(item.id)}
                   className="inventory-card__remove"
+                  data-ph-capture-attribute-button-name="inventory-remove-item-btn"
+                  data-ph-capture-attribute-feature="inventory"
                 >
                   <Trash2 size={20} />
                 </button>
@@ -372,6 +422,8 @@ export default function InventoryClient({
               className="modal-btn modal-btn--secondary"
               onClick={() => setIsClearModalOpen(false)}
               disabled={isClearing}
+              data-ph-capture-attribute-button-name="inventory-clear-modal-btn-cancel"
+              data-ph-capture-attribute-feature="inventory"
             >
               Cancel
             </button>
@@ -379,6 +431,8 @@ export default function InventoryClient({
               className="modal-btn modal-btn--primary"
               onClick={handleClearAll}
               disabled={isClearing}
+              data-ph-capture-attribute-button-name="inventory-clear-modal-btn-confirm"
+              data-ph-capture-attribute-feature="inventory"
             >
               {isClearing ? "Clearing..." : "Yes, Clear All"}
             </button>

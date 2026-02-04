@@ -1,14 +1,16 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route"; // Adjust path to where your authOptions are
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import AccountClient from "@/components/AccountClient";
+import Loading from "@/components/Loading"; 
 
-export default async function AccountPage() {
-  const session = await getServerSession(authOptions);
+export const metadata = {
+  title: "Account | ResaleIQ",
+  description: "Your account details.",
+};
 
-  if (!session) {
-    redirect("/login");
-  }
-
-  return <AccountClient user={session.user} />;
+export default function AccountPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <AccountClient />
+    </Suspense>
+  );
 }

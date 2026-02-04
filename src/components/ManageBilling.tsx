@@ -12,7 +12,9 @@ export default function ManageBilling() {
   const handleManageBilling = async () => {
     setLoading(true);
     try {
-      const response = await fetch(getApiUrl("/api/stripe/portal"), { method: "POST" });
+      const response = await fetch(getApiUrl("/api/stripe/portal"), {
+        method: "POST",
+      });
       const data = await response.json();
 
       if (data.url) {
@@ -20,7 +22,7 @@ export default function ManageBilling() {
       } else {
         setErrorMessage(
           data.error ||
-            "We encountered an issue opening the billing portal. Please try again later."
+            "We encountered an issue opening the billing portal. Please try again later.",
         );
         setIsErrorOpen(true);
       }
@@ -37,12 +39,14 @@ export default function ManageBilling() {
         className="settings__btn settings__btn--secondary"
         onClick={handleManageBilling}
         disabled={loading}
+        data-ph-capture-attribute-button-name="billing-manage-billing-btn"
+        data-ph-capture-attribute-feature="manage-billing"
       >
         {loading ? "Loading..." : "Manage Subscription & Billing"}
       </button>
-      <InfoModal 
-        isOpen={isErrorOpen} 
-        onClose={() => setIsErrorOpen(false)} 
+      <InfoModal
+        isOpen={isErrorOpen}
+        onClose={() => setIsErrorOpen(false)}
         title="Billing Notice"
       >
         <p>{errorMessage}</p>

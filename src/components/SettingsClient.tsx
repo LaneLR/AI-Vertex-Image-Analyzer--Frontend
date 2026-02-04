@@ -17,36 +17,23 @@ import {
   BookmarkX,
   DollarSign,
   Boxes,
-  ArrowUpNarrowWide,
-  AArrowUp,
   ALargeSmall,
   Camera,
   Cross,
   ShieldCheck,
 } from "lucide-react";
 import Link from "next/link";
-import { useSession } from "next-auth/react";
+// IMPORT YOUR CONTEXT
+import { useApp } from "@/context/AppContext";
 import InfoModal from "./InfoModal";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
+import Loading from "./Loading";
 
-type User = {
-  name?: string | null;
-  email?: string | null;
-  image?: string | null;
-  darkMode?: boolean;
-  subscriptionStatus?: string | null;
-};
-
-interface SettingsClientProps {
-  user?: User;
-}
-
-export default function SettingsClient({
-  user: initialUser,
-}: SettingsClientProps) {
-  const { data: session, update } = useSession();
-  const user = session?.user || initialUser;
+export default function SettingsClient() {
+  // Use custom context instead of useSession
+  const { user, isLoading, refreshUser, setUser, deletionCountdown } = useApp();
+  const router = useRouter();
 
   const [isUpdating, setIsUpdating] = useState(false);
   const [localDarkMode, setLocalDarkMode] = useState(user?.darkMode ?? false);
@@ -54,7 +41,8 @@ export default function SettingsClient({
   const [isDeleting, setIsDeleting] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [showSubWarning, setShowSubWarning] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
+
+  // Modal states
   const [isListingStudioModalOpen, setIsListingStudioModalOpen] =
     useState(false);
   const [isScanHistoryModalOpen, setIsScanHistoryModalOpen] = useState(false);
@@ -62,32 +50,16 @@ export default function SettingsClient({
   const [isGradesModalOpen, setIsGradesModalOpen] = useState(false);
   const [isPhotoStudioModalOpen, setIsPhotoStudioModalOpen] = useState(false);
   const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
-  const router = useRouter();
-
-  const handleDeleteAll = async () => {
-    setIsDeleting(true);
-    try {
-      const res = await fetch(getApiUrl("/api/user/clear-history"), {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        setIsModalOpen(false);
-      }
-    } catch (err) {
-      console.error("Failed to clear history", err);
-    } finally {
-      setIsDeleting(false);
-    }
-  };
+  const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
+  const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
+  const [reactivateModal, setReactivateModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
-    setLocalDarkMode(user?.darkMode ?? false);
-    if (user?.darkMode) {
-      document.documentElement.classList.add("dark");
-    } else {
-      document.documentElement.classList.remove("dark");
+    if (user) {
+      setLocalDarkMode(user.darkMode);
     }
-  }, [user?.darkMode]);
+  }, [user]);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -97,13 +69,60 @@ export default function SettingsClient({
     }
   };
 
+  const getAuthHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  });
+
+  const handleDeleteAll = async () => {
+    setIsDeleting(true);
+    try {
+      const res = await fetch(getApiUrl("/api/user/history"), {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+      if (res.ok) {
+        setIsModalOpen(false);
+        // Optional: Refresh data or show toast
+      }
+    } catch (err) {
+      console.error("Failed to clear history", err);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleKeepAccount = async () => {
+    try {
+      const res = await fetch(getApiUrl("/api/user/keep-active"), {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+      });
+
+      if (res.ok) {
+        // Clear deactivation fields in local state
+        setIsProcessing(true);
+        if (setUser) {
+          setUser((prev: any) => ({
+            ...prev,
+            scheduledDeletionDate: null,
+            deactivationRequestedAt: null,
+          }));
+        }
+
+        setReactivateModal(true);
+      }
+    } catch (err) {
+      console.error("KEEP_ACTIVE_ERROR:", err);
+    }
+  };
+
   const toggleDarkMode = async () => {
     if (isUpdating) return;
     setIsUpdating(true);
     const newDarkModeStatus = !localDarkMode;
 
     setLocalDarkMode(newDarkModeStatus);
-    localStorage.setItem("darkMode", newDarkModeStatus ? "true" : "false");
 
     if (newDarkModeStatus) {
       document.documentElement.classList.add("dark");
@@ -112,15 +131,15 @@ export default function SettingsClient({
     }
 
     try {
-      const res = await fetch(getApiUrl("/api/user/update-settings"), {
+      await fetch(getApiUrl("/api/user/update-settings"), {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          ...getAuthHeaders(),
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ darkMode: newDarkModeStatus }),
       });
-
-      if (res.ok) {
-        await update({ darkMode: newDarkModeStatus });
-      }
+      refreshUser();
     } catch (err) {
       console.error("Failed to sync dark mode to DB", err);
     } finally {
@@ -131,30 +150,53 @@ export default function SettingsClient({
   const handleDeleteAccount = async () => {
     setIsDeleting(true);
     try {
-      const res = await fetch(getApiUrl("/api/user/delete-account"), {
+      // Updated endpoint to /api/user/deactivate
+      const res = await fetch(getApiUrl("/api/user/deactivate"), {
         method: "POST",
+        headers: getAuthHeaders(),
       });
+
       const data = await res.json();
 
       if (!res.ok && data.error === "ACTIVE_SUBSCRIPTION") {
         setShowConfirmDelete(false);
         setShowSubWarning(true);
       } else if (res.ok) {
-        window.location.href = "/api/auth/signout";
-      } else {
-        setShowErrorModal(true);
+        // SUCCESS: Instead of logging out, we update the user object
+        // to show the deactivation banner and countdown.
+        if (setUser) {
+          setUser((prev: any) => ({
+            ...prev,
+            scheduledDeletionDate: data.scheduledDeletionDate,
+            deactivationRequestedAt: new Date(),
+          }));
+        }
+        setShowConfirmDelete(false);
       }
     } catch (err) {
-      console.error(err);
+      console.error("DEACTIVATE_ERROR:", err);
     } finally {
       setIsDeleting(false);
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
+
   return (
     <main className="settings-page">
       <header className="help-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="settings-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Settings</h1>
@@ -168,8 +210,8 @@ export default function SettingsClient({
           <div className="settings-list">
             <div className="settings-item">
               <div className="settings-item__info">
-                <div className="icon-box icon-box--moon">
-                  <Moon size={22} />
+                <div className="icon-box ">
+                  <Moon size={20} />
                 </div>
                 <div>
                   <p className="item-label">Dark Mode</p>
@@ -181,56 +223,14 @@ export default function SettingsClient({
                 disabled={isUpdating}
                 className={`ios-toggle ${localDarkMode ? "active" : ""}`}
                 aria-pressed={localDarkMode}
+                data-ph-capture-attribute-button-name="toggle-dark-mode"
+                data-ph-capture-attribute-feature="darkmode"
               >
                 <div className="ios-toggle__knob" />
               </button>
             </div>
           </div>
         </section>
-
-        {/* AI ENGINE GROUP */}
-        {/* <section className="settings-group">
-          <h2 className="settings-group__title">
-            <Sparkles size={14} /> AI Engine Configuration
-          </h2>
-          <div className="settings-list">
-            <div className="settings-item">
-              <div className="settings-item__info">
-                <div className="icon-box icon-box--eye">
-                  <Eye size={18} />
-                </div>
-                <div>
-                  <p className="item-label">High Accuracy Mode</p>
-                  <p className="item-desc">Advanced visual tiling for detail</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setHighAccuracy(!highAccuracy)}
-                className={`ios-toggle ${highAccuracy ? "active" : ""}`}
-              >
-                <div className="ios-toggle__knob" />
-              </button>
-            </div>
-
-            <div className="settings-item">
-              <div className="settings-item__info">
-                <div className="icon-box icon-box--db">
-                  <Database size={18} />
-                </div>
-                <div>
-                  <p className="item-label">Cloud Save History</p>
-                  <p className="item-desc">Sync scans across all devices</p>
-                </div>
-              </div>
-              <button
-                onClick={() => setSaveHistory(!saveHistory)}
-                className={`ios-toggle ${saveHistory ? "active" : ""}`}
-              >
-                <div className="ios-toggle__knob" />
-              </button>
-            </div>
-          </div>
-        </section> */}
 
         {/* TOOLS GROUP */}
         <section className="settings-group">
@@ -239,10 +239,12 @@ export default function SettingsClient({
             <div
               onClick={() => setIsScanHistoryModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-history-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <History size={22} />
+                <div className="icon-box">
+                  <History size={20} />
                 </div>
                 <p className="item-label">Scan History</p>
               </div>
@@ -252,12 +254,14 @@ export default function SettingsClient({
             <div
               onClick={() => setIsGradesModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-grades-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <ALargeSmall size={22} />
+                <div className="icon-box">
+                  <ALargeSmall size={20} />
                 </div>
-                <p className="item-label">Grades</p>
+                <p className="item-label">Resale Grades</p>
               </div>
               <ChevronRight size={18} className="chevron" />
             </div>
@@ -265,10 +269,12 @@ export default function SettingsClient({
             <div
               onClick={() => setIsProfitCalcModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-calculator-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <DollarSign size={22} />
+                <div className="icon-box">
+                  <DollarSign size={20} />
                 </div>
                 <p className="item-label">Profit Calculator</p>
               </div>
@@ -278,10 +284,12 @@ export default function SettingsClient({
             <div
               onClick={() => setIsListingStudioModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-seo-generator-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <Wand2 size={22} />
+                <div className="icon-box">
+                  <Wand2 size={20} />
                 </div>
                 <p className="item-label">SEO Generator</p>
               </div>
@@ -291,10 +299,12 @@ export default function SettingsClient({
             <div
               onClick={() => setIsPhotoStudioModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-photo-studio-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <Camera size={22} />
+                <div className="icon-box">
+                  <Camera size={20} />
                 </div>
                 <p className="item-label">Photo Generator</p>
               </div>
@@ -304,10 +314,12 @@ export default function SettingsClient({
             <div
               onClick={() => setIsInventoryModalOpen(true)}
               className="settings-item settings-item--clickable cursor-pointer"
+              data-ph-capture-attribute-button-name="settings-inventory-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <Boxes size={22} />
+                <div className="icon-box">
+                  <Boxes size={20} />
                 </div>
                 <p className="item-label">Inventory Manager</p>
               </div>
@@ -347,6 +359,8 @@ export default function SettingsClient({
               <div
                 className="modal-btn-container"
                 onClick={() => setIsListingStudioModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
                 {(user?.subscriptionStatus === "business" ||
@@ -354,6 +368,8 @@ export default function SettingsClient({
                   <Link
                     href="/listing"
                     className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-seo-generator-redirect"
+                    data-ph-capture-attribute-feature="settings"
                   >
                     Go to Listing Studio
                   </Link>
@@ -382,7 +398,7 @@ export default function SettingsClient({
               </div>
               <div>
                 <strong>One-Tap Inventory:</strong> Easily move successful scans
-                into your Business Inventory for long-term tracking.
+                into your Inventory for long-term tracking.
               </div>
               <div>
                 <strong>Cloud Sync:</strong> Your history is saved to your
@@ -394,9 +410,16 @@ export default function SettingsClient({
               <div
                 className="modal-btn-container"
                 onClick={() => setIsScanHistoryModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
-                <Link href="/history" className="modal-btn modal-btn--primary">
+                <Link
+                  href="/history"
+                  className="modal-btn modal-btn--primary"
+                  data-ph-capture-attribute-button-name="settings-modal-btn-history-redirect"
+                  data-ph-capture-attribute-feature="settings"
+                >
                   Go to Scan History
                 </Link>
               </div>
@@ -408,11 +431,11 @@ export default function SettingsClient({
         <InfoModal
           isOpen={isGradesModalOpen}
           onClose={() => setIsGradesModalOpen(false)}
-          title="Item Grades"
+          title="Resale Grades"
         >
           <div className="feature-info-modal">
             <p>
-              Flip Grades provide an instant visual indicator of an item's
+              Resale Grades provide an instant visual indicator of an item's
               resale potential based on demand, margin, and sell-through rate.
               The higher the grade, the faster it will likely sell.
             </p>
@@ -436,6 +459,8 @@ export default function SettingsClient({
               <div
                 className="modal-btn-container"
                 onClick={() => setIsGradesModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
               </div>
@@ -474,12 +499,16 @@ export default function SettingsClient({
               <div
                 className="modal-btn-container"
                 onClick={() => setIsProfitCalcModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
                 {user?.subscriptionStatus !== "basic" && (
                   <Link
                     href="/calculator"
                     className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-calculator-redirect"
+                    data-ph-capture-attribute-feature="settings"
                   >
                     Go to Profit Calculator
                   </Link>
@@ -520,6 +549,8 @@ export default function SettingsClient({
               <div
                 className="modal-btn-container"
                 onClick={() => setIsPhotoStudioModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
                 {(user?.subscriptionStatus === "business" ||
@@ -527,6 +558,8 @@ export default function SettingsClient({
                   <Link
                     href="/listing"
                     className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-photo-redirect"
+                    data-ph-capture-attribute-feature="settings"
                   >
                     Go to Listing Generator
                   </Link>
@@ -544,8 +577,8 @@ export default function SettingsClient({
         >
           <div className="feature-info-modal">
             <p>
-              Designed for Business Tier users to manage their active stock and
-              track the total value of their business.
+              Designed for Elite Tier users to manage their active stock and
+              track the total value of their inventory.
             </p>
             <br />
             <div className="feature-benefits">
@@ -558,8 +591,9 @@ export default function SettingsClient({
                 your entire inventory at a single glance.
               </div>
               <div>
-                <strong>Business Workflow:</strong> Toggle "Auto-Add" on the
-                home screen to skip history and send scans straight to stock.
+                <strong>Workflow:</strong> Toggle "Auto-Add" on the
+                home screen to skip history and send scans straight to
+                inventory.
               </div>
             </div>
             <br />
@@ -567,12 +601,16 @@ export default function SettingsClient({
               <div
                 className="modal-btn-container"
                 onClick={() => setIsInventoryModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
                 <div className="modal-btn modal-btn--secondary">Close</div>
                 {user?.subscriptionStatus === "business" && (
                   <Link
                     href="/inventory"
                     className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-inventory-redirect"
+                    data-ph-capture-attribute-feature="settings"
                   >
                     Go to Inventory Manager
                   </Link>
@@ -584,38 +622,42 @@ export default function SettingsClient({
 
         {/* PREFERENCES GROUP */}
         <section className="settings-group">
-          <h2 className="settings-group__title">Preferences</h2>
+          <h2 className="settings-group__title">About</h2>
           <div className="settings-list">
-            <Link
-              href="/help"
+            <div
+              onClick={() => setIsHelpModalOpen(true)}
               className="settings-item settings-item--clickable"
+              data-ph-capture-attribute-button-name="settings-help-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <Cross size={22} />
+                <div className="icon-box">
+                  <Cross size={20} />
                 </div>
                 <p className="item-label">Help</p>
               </div>
               <ChevronRight size={18} className="chevron" />
-            </Link>
+            </div>
 
-            <Link
-              href="/privacy"
+            <div
+              onClick={() => setIsPrivacyModalOpen(true)}
               className="settings-item settings-item--clickable"
+              data-ph-capture-attribute-button-name="settings-privacy-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
-                <div className="icon-box icon-box--shield">
-                  <ShieldCheck size={22} />
+                <div className="icon-box">
+                  <ShieldCheck size={20} />
                 </div>
                 <p className="item-label">Data & Privacy</p>
               </div>
               <ChevronRight size={18} className="chevron" />
-            </Link>
+            </div>
 
             <div className="settings-item">
               <div className="settings-item__info">
-                <div className="icon-box icon-box--phone">
-                  <Smartphone size={22} />
+                <div className="icon-box">
+                  <Smartphone size={20} />
                 </div>
                 <p className="item-label">App Version</p>
               </div>
@@ -624,33 +666,114 @@ export default function SettingsClient({
               </span>
             </div>
           </div>
+
+          <InfoModal
+            isOpen={isHelpModalOpen}
+            onClose={() => setIsHelpModalOpen(false)}
+            title="Help"
+          >
+            <div className="feature-info-modal">
+              <p>You can get help here.</p>
+              <br />
+              <div className="delete-modal__actions">
+                <div
+                  className="modal-btn-container"
+                  onClick={() => setIsHelpModalOpen(false)}
+                  data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                  data-ph-capture-attribute-feature="settings"
+                >
+                  <div className="modal-btn modal-btn--secondary">Close</div>
+                </div>
+              </div>
+            </div>
+          </InfoModal>
+
+          <InfoModal
+            isOpen={isPrivacyModalOpen}
+            onClose={() => setIsPrivacyModalOpen(false)}
+            title="Privacy and Terms"
+          >
+            <div className="feature-info-modal">
+              <p>
+                You can view our <a>Terms of Service</a> and{" "}
+                <a>Privacy Policy</a> here.
+              </p>
+              <br />
+              <div className="delete-modal__actions">
+                <div
+                  className="modal-btn-container"
+                  onClick={() => setIsPrivacyModalOpen(false)}
+                  data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                  data-ph-capture-attribute-feature="settings"
+                >
+                  <div className="modal-btn modal-btn--secondary">Close</div>
+                </div>
+              </div>
+            </div>
+          </InfoModal>
         </section>
 
         {/* DANGER ZONE SECTION */}
         <section className="settings-group">
           <h2 className="settings-group__title settings-group__title--danger">
             DANGER ZONE
-          </h2>
-          <div className="settings-list settings-list--danger">
+          </h2>{" "}
+          {user.scheduledDeletionDate !== null && (
+            <div className="deactivation-banner">
+              <p>
+                Your account is set to become inactive in{" "}
+                <strong>{deletionCountdown} days</strong>.
+              </p>
+              <button
+                className="cancel-btn"
+                onClick={handleKeepAccount}
+                disabled={isProcessing}
+                data-ph-capture-attribute-button-name="settings-keep-account-btn"
+                data-ph-capture-attribute-feature="settings-keep-account"
+              >
+                Keep My Account
+              </button>
+            </div>
+          )}
+          <div className="settings-list">
             <button
               className="settings-item settings-item--btn"
               onClick={() => setIsModalOpen(true)}
+              data-ph-capture-attribute-button-name="settings-clear-history-btn"
+              data-ph-capture-attribute-feature="settings-clear-history"
             >
               <div className="settings-item__info">
-                <Trash2 size={22} color="#ef4444" />
-                <span className="text-danger">Clear All Scan History</span>
+                <div className="icon-box icon-box--alert">
+                  <Trash2 size={20} />
+                </div>
+                <p className="item-label item-label--alert">
+                  Clear All Scan History
+                </p>
               </div>
+              <ChevronRight size={18} className="chevron" />
             </button>
-          </div>
-          <div className="settings-list settings-list--danger">
             <button
               className="settings-item settings-item--btn"
               onClick={() => setShowConfirmDelete(true)}
+              disabled={user.scheduledDeletionDate !== null}
+              data-ph-capture-attribute-button-name="settings-delete-account-btn"
+              data-ph-capture-attribute-feature="settings"
             >
               <div className="settings-item__info">
-                <BookmarkX size={22} color="#ef4444" />
-                <span className="text-danger">Deactivate Account</span>
+                <div className="icon-box icon-box--alert">
+                  <BookmarkX size={20} />
+                </div>
+                <div className="item-label item-label--alert">
+                  {user.scheduledDeletionDate === null ? (
+                    "Deactivate Account"
+                  ) : (
+                    <div>
+                      Deactivation scheduled in <u>{deletionCountdown} days</u>
+                    </div>
+                  )}
+                </div>
               </div>
+              <ChevronRight size={18} className="chevron" />
             </button>
           </div>
         </section>
@@ -678,6 +801,8 @@ export default function SettingsClient({
                 className="modal-btn modal-btn--secondary"
                 onClick={() => setIsModalOpen(false)}
                 disabled={isDeleting}
+                data-ph-capture-attribute-button-name="settings-modal-btn-cancel"
+                data-ph-capture-attribute-feature="settings"
               >
                 Cancel
               </button>
@@ -685,8 +810,10 @@ export default function SettingsClient({
                 className="modal-btn modal-btn--danger"
                 onClick={handleDeleteAll}
                 disabled={isDeleting}
+                data-ph-capture-attribute-button-name="settings-delete-history-btn-confirm"
+                data-ph-capture-attribute-feature="settings"
               >
-                {isDeleting ? "Clearing..." : "Delete Everything"}
+                Delete All Scan History
               </button>
             </div>
           </div>
@@ -695,7 +822,7 @@ export default function SettingsClient({
         <InfoModal
           isOpen={showConfirmDelete}
           onClose={() => setShowConfirmDelete(false)}
-          title="Delete Account"
+          title="Deactivate account"
         >
           <div className="delete-modal">
             <div className="delete-modal__warning">
@@ -704,9 +831,9 @@ export default function SettingsClient({
               </div>
               <h3>Are you sure?</h3>
               <p>
-                This will deactivate your account and you will lose access to
-                your scan history.
-                <strong> This cannot be undone.</strong>
+                This will schedule your account to be deactivated in{" "}
+                <strong>30 days</strong>. After this time, you will not be able
+                to log into your account.
               </p>
             </div>
 
@@ -715,6 +842,8 @@ export default function SettingsClient({
                 className="modal-btn modal-btn--secondary"
                 onClick={() => setShowConfirmDelete(false)}
                 disabled={isDeleting}
+                data-ph-capture-attribute-button-name="settings-delete-account-btn-cancel"
+                data-ph-capture-attribute-feature="settings"
               >
                 Cancel
               </button>
@@ -722,6 +851,8 @@ export default function SettingsClient({
                 className="modal-btn modal-btn--danger"
                 onClick={handleDeleteAccount}
                 disabled={isDeleting}
+                data-ph-capture-attribute-button-name="settings-delete-account-btn-confirm"
+                data-ph-capture-attribute-feature="settings"
               >
                 {isDeleting
                   ? "Preparing to deactivate account..."
@@ -730,72 +861,6 @@ export default function SettingsClient({
             </div>
           </div>
         </InfoModal>
-
-        {/* <InfoModal
-          isOpen={showConfirmDelete}
-          onClose={() => setShowConfirmDelete(false)}
-          title="Delete account?"
-        >
-          <div className="modal-content">
-            <p>
-              Are you sure? This will deactivate your account and you will lose
-              access to your scan history.
-            </p>
-            <div className="modal-actions">
-              <button onClick={() => setShowConfirmDelete(false)}>
-                Cancel
-              </button>
-              <button
-                className="btn-danger"
-                onClick={handleDeleteAccount}
-                disabled={isDeleting}
-              >
-                {isDeleting ? "Processing..." : "Confirm Deactivation"}
-              </button>
-            </div>
-          </div>
-        </InfoModal> */}
-
-        {/* <InfoModal
-          isOpen={showSubWarning}
-          onClose={() => setShowSubWarning(false)}
-          title="Action required"
-        >
-          <div className="modal-content">
-            <p>
-              You currently have an active Pro subscription. To prevent further
-              charges to your account, you must cancel your subscription in the
-              billing portal before deactivating your account.
-            </p>
-            <div className="modal-actions">
-              <Link href="/billing" className="btn-primary">
-                Billing
-              </Link>
-              <button onClick={() => setShowSubWarning(false)}>Close</button>
-            </div>
-          </div>
-        </InfoModal> */}
-
-        {/* <InfoModal
-          isOpen={showSubWarning}
-          onClose={() => setShowErrorModal(false)}
-          title="An error occurred"
-        >
-          <div className="modal-content">
-            <p>
-              An error occurred when trying to deactivate your account. If you
-              are a Pro user, please make sure you have canceled any
-              subscriptions to FlipSavvy before requesting to deactivate your
-              account.
-            </p>
-            <div className="modal-actions">
-              <Link href="/billing" className="btn-primary">
-                Billing
-              </Link>
-              <button onClick={() => setShowSubWarning(false)}>Close</button>
-            </div>
-          </div>
-        </InfoModal> */}
 
         <InfoModal
           isOpen={showSubWarning}
@@ -810,8 +875,8 @@ export default function SettingsClient({
               <h3>An error occurred</h3>
               <p>
                 An error occurred while trying to deactivate your account. If
-                you are a Pro user, please make sure you have canceled any
-                subscriptions to FlipSavvy before deactivating your account.
+                you are a subscribed user, please make sure you have cancelled
+                your subscription before deactivating your account.
               </p>
             </div>
 
@@ -820,31 +885,36 @@ export default function SettingsClient({
                 className="modal-btn modal-btn--secondary"
                 onClick={() => setShowSubWarning(false)}
                 disabled={isDeleting}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
               >
-                Cancel
+                Close
               </button>
-              {user?.subscriptionStatus !== "basic" ? (
-                <Link href={"/listing"}>
-                  <button
-                    className="modal-btn modal-btn--secondary"
-                    // disabled={isDeleting}
-                  >
-                    To SEO Generator
-                  </button>
-                </Link>
-              ) : (
-                ""
-              )}
-
-              <div className="modal-btn modal-btn--danger">
-                <Link href="/account" className="btn-primary">
-                  Account
-                </Link>
-              </div>
             </div>
           </div>
         </InfoModal>
       </div>
+
+      <InfoModal
+        isOpen={reactivateModal}
+        onClose={() => setReactivateModal(false)}
+        title={"Deactivation cancelled"}
+      >
+        <div>
+          The scheduled deactivation for your account has been cancelled.
+        </div>
+        <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setReactivateModal(false)}
+            data-ph-capture-attribute-button-name="settings-modal-btn-close"
+            data-ph-capture-attribute-feature="settings"
+          >
+            Close
+          </button>
+        </div>
+      </InfoModal>
     </main>
   );
 }

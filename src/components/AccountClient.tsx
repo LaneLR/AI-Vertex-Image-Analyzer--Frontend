@@ -9,50 +9,59 @@ import {
   ArrowLeft,
   Settings,
   Wand2,
-  ShieldCheck,
   HistoryIcon,
   CircleDollarSign,
   BriefcaseBusiness,
   Flame,
   ZapOff,
-  Package,
   Boxes,
 } from "lucide-react";
 import Link from "next/link";
-import { Capacitor } from "@capacitor/core";
-import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import InfoModal from "./InfoModal";
 import { getApiUrl } from "@/lib/api-config";
-import PaymentsClient from "./Payments";
+import Loading from "./Loading";
 
-export default function AccountClient({ user: initialUser }: { user: any }) {
-  const { maxFreeScans, dailyScansUsed, setDailyScansUsed } = useApp();
+export default function AccountClient() {
+  const {
+    user,
+    isLoading,
+    maxFreeScans,
+    dailyScansUsed,
+    setDailyScansUsed,
+    refreshUser,
+    setUser,
+    deletionCountdown,
+    setDeletionCountdown,
+  } = useApp();
   const [loadingPortal, setLoadingPortal] = useState(false);
-  const { data: session, update } = useSession();
-  const searchParams = useSearchParams();
   const [errorModal, setErrorModal] = useState(false);
-
-  const user = session?.user || initialUser;
+  const [reactivateModal, setReactivateModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const searchParams = useSearchParams();
   const router = useRouter();
-
   const success = searchParams.get("success");
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.replace("/login");
+    }
+  }, [user, isLoading, router]);
 
   useEffect(() => {
     if (user?.dailyScansCount !== undefined) {
       const lastUpdate = new Date(user.lastScanDate || new Date());
       const now = new Date();
       const isNewDay = lastUpdate.getUTCDate() !== now.getUTCDate();
-
       setDailyScansUsed(isNewDay ? 0 : user.dailyScansCount);
     }
-  }, [user?.dailyScansCount, user?.lastScanDate]);
+  }, [user, setDailyScansUsed]);
 
   useEffect(() => {
-    if (user && update) {
-      update();
+    if (success && refreshUser) {
+      refreshUser();
     }
-  }, [success]);
+  }, [success, refreshUser]);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -61,6 +70,14 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
       router.push("/");
     }
   };
+
+  if (isLoading || !user) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
 
   const isPro = user?.subscriptionStatus?.toLowerCase() === "pro";
   const isHobby = user?.subscriptionStatus?.toLowerCase() === "hobby";
@@ -71,13 +88,20 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
 
   const handleManageSubscription = async () => {
     setLoadingPortal(true);
+    const token = localStorage.getItem("token");
+
     if (user?.paymentProvider === "stripe") {
       try {
         const res = await fetch(getApiUrl("/api/stripe/portal"), {
           method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`, // Identify user to Express
+            "Content-Type": "application/json",
+          },
         });
         const data = await res.json();
         if (data.url) window.location.href = data.url;
+        else throw new Error("No URL returned");
       } catch (err) {
         setErrorModal(true);
       } finally {
@@ -89,10 +113,45 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
     }
   };
 
+  const getAuthHeaders = () => ({
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  });
+
+  const handleKeepAccount = async () => {
+    try {
+      const res = await fetch(getApiUrl("/api/user/keep-active"), {
+        method: "PATCH",
+        headers: getAuthHeaders(),
+      });
+
+      if (res.ok) {
+        // Clear deactivation fields in local state
+        setIsProcessing(true);
+        if (setUser) {
+          setUser((prev: any) => ({
+            ...prev,
+            scheduledDeletionDate: null,
+            deactivationRequestedAt: null,
+          }));
+        }
+
+        setReactivateModal(true);
+      }
+    } catch (err) {
+      console.error("KEEP_ACTIVE_ERROR:", err);
+    }
+  };
+
   return (
     <main className="account-page">
       <header className="account-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="account-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Account Settings</h1>
@@ -100,6 +159,23 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
       </header>
 
       <div className="account-page__content">
+        {user.scheduledDeletionDate !== null && (
+          <div className="deactivation-banner">
+            <p>
+              Your account is set to become inactive in{" "}
+              <strong>{deletionCountdown} days</strong>.
+            </p>
+            <button
+              className="cancel-btn"
+              onClick={handleKeepAccount}
+              disabled={isProcessing}
+              data-ph-capture-attribute-button-name="account-keep-account-btn"
+              data-ph-capture-attribute-feature="account"
+            >
+              Keep My Account
+            </button>
+          </div>
+        )}
         {/* PROFILE HERO */}
         <section className="profile-hero">
           <div className="profile-hero__avatar">
@@ -128,10 +204,10 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
               {isPro
                 ? "Pro"
                 : isHobby
-                  ? "Hobbyist"
+                  ? "Hobby"
                   : isBusiness
-                    ? "Business"
-                    : "Basic"}
+                    ? "Elite"
+                    : "Free"}
             </span>
           </div>
         </section>
@@ -171,17 +247,16 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
 
             {/* CONDITIONAL ACTIONS BASED ON PLAN */}
             {isPro || isHobby || isBusiness ? (
-              <div
-                className="subscription-manage-area"
-                style={{ marginTop: "1.5rem" }}
-              >
+              <div className="subscription-manage-area">
                 <p className="usage-hint">
-                  Your daily scans resets at midnight.
+                  Your daily scans resets at in [remaining time].
                 </p>
                 <button
                   className="secondary-btn"
                   onClick={handleManageSubscription}
                   disabled={loadingPortal}
+                  data-ph-capture-attribute-button-name="account-handle-subscription-btn"
+                  data-ph-capture-attribute-feature="account"
                 >
                   <Settings size={14} />{" "}
                   {loadingPortal ? "Loading..." : "Manage Subscription"}
@@ -190,19 +265,29 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
             ) : (
               <div className="upgrade-area">
                 <p className="usage-hint">
-                  Get over 100 scans and Listing Studio with our Hobbyist or Pro
-                  plans!
+                  Get more scans when you ugprade your account!
                 </p>
                 {/* <PaymentsClient user={user} /> */}
                 <Link href={"/payments"}>
-                  <button className="generate-btn">Upgrade account</button>
+                  <button
+                    className="generate-btn"
+                    data-ph-capture-attribute-button-name="account-upgrade-account-btn"
+                    data-ph-capture-attribute-feature="account"
+                  >
+                    Upgrade account
+                  </button>
                 </Link>
               </div>
             )}
           </div>
         </section>
 
-        <Link href="/history" className="account-card listing-shortcut">
+        <Link
+          href="/history"
+          className="account-card listing-shortcut"
+          data-ph-capture-attribute-button-name="account-scan-history-btn"
+          data-ph-capture-attribute-feature="account"
+        >
           <div className="shortcut-info">
             <HistoryIcon size={20} />
             <div>
@@ -214,7 +299,12 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
         </Link>
 
         {(isPro || isHobby || isBusiness) && (
-          <Link href="/calculator" className="account-card listing-shortcut">
+          <Link
+            href="/calculator"
+            className="account-card listing-shortcut"
+            data-ph-capture-attribute-button-name="account-calculator-btn"
+            data-ph-capture-attribute-feature="account"
+          >
             <div className="shortcut-info">
               <CircleDollarSign size={20} />
               <div>
@@ -228,7 +318,12 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
 
         {/* TOOLS SHORTCUTS */}
         {(isPro || isBusiness) && (
-          <Link href="/listing" className="account-card listing-shortcut">
+          <Link
+            href="/listing"
+            className="account-card listing-shortcut"
+            data-ph-capture-attribute-button-name="account-listing-studio-btn"
+            data-ph-capture-attribute-feature="account"
+          >
             <div className="shortcut-info">
               <Wand2 size={20} />
               <div>
@@ -240,8 +335,13 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
           </Link>
         )}
 
-        {(isBusiness) && (
-          <Link href="/inventory" className="account-card listing-shortcut">
+        {isBusiness && (
+          <Link
+            href="/inventory"
+            className="account-card listing-shortcut"
+            data-ph-capture-attribute-button-name="account-inventory-btn"
+            data-ph-capture-attribute-feature="account"
+          >
             <div className="shortcut-info">
               <Boxes size={20} />
               <div>
@@ -262,6 +362,38 @@ export default function AccountClient({ user: initialUser }: { user: any }) {
         <div className="errorModal-text">
           There was an error trying to open the billing settings. Please try
           again later.
+        </div>
+        <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setErrorModal(false)}
+            data-ph-capture-attribute-button-name="account-modal-btn-close"
+            data-ph-capture-attribute-feature="account"
+          >
+            Close
+          </button>
+        </div>
+      </InfoModal>
+
+      <InfoModal
+        isOpen={reactivateModal}
+        onClose={() => setReactivateModal(false)}
+        title={"Deactivation cancelled"}
+      >
+        <div>
+          The scheduled deactivation for your account has been cancelled.
+        </div>
+        <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setReactivateModal(false)}
+            data-ph-capture-attribute-button-name="account-modal-btn-close"
+            data-ph-capture-attribute-feature="account"
+          >
+            Close
+          </button>
         </div>
       </InfoModal>
     </main>

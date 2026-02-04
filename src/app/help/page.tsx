@@ -1,20 +1,15 @@
-import { getServerSession } from "next-auth";
+import Loading from "@/components/Loading";
 import HelpClient from "../../components/HelpClient";
-import { authOptions } from "../api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 export const metadata = {
-  title: "Help Center | Flip Savvy",
-  description: "Troubleshooting, and support for your AI thrift companion.",
+  title: "Help Center | ResaleIQ",
+  description: "Troubleshooting and support for your AI resell companion.",
 };
 
-export default async function HelpPage() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/login");
-  }
-  
-
-  return <HelpClient user={session.user} />;
-}
+export default function HelpPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <HelpClient />;
+    </Suspense>
+  );}

@@ -1,10 +1,16 @@
+import { Suspense } from "react";
 import TermsClient from "../../components/TermsClient";
+import Loading from "@/components/Loading";
 
 export const metadata = {
-  title: "Terms of Service | Flip Savvy",
-  description: "Read the rules, guidelines, and AI disclaimers for using Flip Savvy.",
+  title: "Terms of Service | ResaleIQ",
+  description:
+    "Read the rules, guidelines, and AI disclaimers for using ResaleIQ.",
 };
 
 export default function TermsPage() {
-  return <TermsClient />;
-}
+  return (
+    <Suspense fallback={<Loading />}>
+      <TermsClient />;
+    </Suspense>
+  );}

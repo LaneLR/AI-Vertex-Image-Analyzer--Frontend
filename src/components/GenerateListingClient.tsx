@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Copy,
   Wand2,
@@ -19,24 +19,20 @@ import {
   Loader2,
   Tags,
   BarChart3,
-  DownloadIcon,
-  DollarSignIcon,
-  BadgeDollarSign,
-  DollarSign,
   CircleDollarSign,
 } from "lucide-react";
 import Loading from "./Loading";
-import Link from "next/link";
 import { getApiUrl } from "@/lib/api-config";
 import { useApp } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import InfoModal from "./InfoModal";
 
-interface GenerateListingProps {
-  user: any;
-}
-
-export default function GenerateListingClient({ user }: GenerateListingProps) {
+export default function GenerateListingClient() {
+  const { user, dailyScansUsed, setDailyScansUsed, incrementScans, isLoading } =
+    useApp();
+  const router = useRouter();
+  const resultsRef = useRef<HTMLDivElement>(null);
+  const backgroundRef = useRef<HTMLAnchorElement>(null);
   const [activeTab, setActiveTab] = useState<"seo" | "studio">("seo");
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [images, setImages] = useState<File[]>([]);
@@ -49,7 +45,6 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
   const [isProcessing, setIsProcessing] = useState(false);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [useWhiteBackground, setUseWhiteBackground] = useState(false);
-  const { dailyScansUsed, setDailyScansUsed, incrementScans } = useApp();
   const [alertModal, setAlertModal] = useState<{
     title: string;
     message: string;
@@ -60,17 +55,26 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
   const isBusiness = user?.subscriptionStatus === "business";
   const maxPhotos = isPro || isBusiness ? 3 : isHobby ? 2 : 1;
 
-  const router = useRouter();
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+    if (
+      user &&
+      (user.subscriptionStatus === "basic" ||
+        user.subscriptionStatus === "hobby") &&
+      activeTab === "seo"
+    ) {
+      // Logic to handle restricted access if necessary
+      // router.push("/account");
+    }
+  }, [user, isLoading, router]);
 
   useEffect(() => {
     if (user?.dailyScansCount !== undefined) {
-      const lastUpdate = new Date(user.lastScanDate || new Date());
-      const now = new Date();
-      const isNewDay = lastUpdate.getUTCDate() !== now.getUTCDate();
-
-      setDailyScansUsed(isNewDay ? 0 : user.dailyScansCount);
+      setDailyScansUsed(user.dailyScansCount);
     }
-  }, [user?.dailyScansCount, user?.lastScanDate]);
+  }, [user]);
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -205,30 +209,34 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
     formData.append("mode", "listing");
 
     try {
-      const res = await fetch(getApiUrl("/api/analyze"), {
+      // Ensure this points to your Express backend via getApiUrl
+      const res = await fetch(getApiUrl("/api/listing/analyze"), {
         method: "POST",
+        headers: {
+          // Include your custom auth token if applicable
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         body: formData,
       });
+
       const data = await res.json();
       if (res.ok) {
         setResult(data);
         incrementScans();
-
-        if (isBusiness) {
-          setListingHistory((prev) => [...prev, data]);
-        }
+        if (isBusiness) setListingHistory((prev) => [...prev, data]);
+        setTimeout(() => {
+          resultsRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 100);
       } else {
-        setAlertModal({
-          title: "Generation Error",
-          message:
-            "We couldn't generate your listing. Please check your connection and try again.",
-        });
+        throw new Error(data.error || "Generation failed");
       }
     } catch (err) {
       setAlertModal({
-        title: "Connection Error",
-        message:
-          "An unexpected error occurred while connecting to Listing Studio.",
+        title: "Error",
+        message: "Failed to generate listing. Please try again.",
       });
     } finally {
       setLoading(false);
@@ -277,31 +285,26 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
 
   const processBackgroundRemoval = async () => {
     if (studioImages.length === 0) return;
-
     setIsProcessing(true);
-    // Cleanup old result if it exists to save memory
-    if (resultImage) {
-      URL.revokeObjectURL(resultImage);
-      setResultImage(null);
-    }
 
     const formData = new FormData();
     formData.append("image", studioImages[0]);
 
     try {
-      const res = await fetch("/api/listing/remove-bg", {
+      // Updated to use getApiUrl for the background removal route
+      const res = await fetch(getApiUrl("/api/listing/remove-background"), {
         method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
         body: formData,
       });
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Backend Error:", errorText);
-        throw new Error("The server returned an error. Check logs.");
-      }
+      if (!res.ok) throw new Error("Server error");
 
       const imageBlob = await res.blob();
       const imageUrl = URL.createObjectURL(imageBlob);
+
       if (useWhiteBackground) {
         const whiteBgUrl = await applyWhiteBackground(imageUrl);
         setResultImage(whiteBgUrl);
@@ -309,14 +312,18 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
       } else {
         setResultImage(imageUrl);
       }
-    } catch (err: any) {
-      console.error("Studio Error:", err);
+    } catch (err) {
       setAlertModal({
         title: "Studio Error",
-        message:
-          "There was an error while processing the image. Please wait a minute and try again.",
+        message: "Error processing image. Please try again.",
       });
     } finally {
+      setTimeout(() => {
+        backgroundRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "start",
+        });
+      }, 100);
       setIsProcessing(false);
     }
   };
@@ -327,10 +334,24 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
+  if (isLoading) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
+  if (!user) return null;
+
   return (
     <main className="listing-page">
       <header className="listing-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="listing-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <div className="listing-page__header-content">
@@ -345,6 +366,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   activeTab === "seo" ? "active" : ""
                 }`}
                 onClick={() => setActiveTab("seo")}
+                data-ph-capture-attribute-button-name="listing-tab-seo-btn"
+                data-ph-capture-attribute-feature="listing"
               >
                 SEO Generator
               </button>
@@ -354,6 +377,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   activeTab === "studio" ? "active" : ""
                 }`}
                 onClick={() => setActiveTab("studio")}
+                data-ph-capture-attribute-button-name="listing-tab-photo-btn"
+                data-ph-capture-attribute-feature="listing"
               >
                 Photo Studio
               </button>
@@ -403,6 +428,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                             <button
                               className="remove-btn"
                               onClick={() => removeImage(idx)}
+                              data-ph-capture-attribute-button-name="listing-remove-image-btn"
+                              data-ph-capture-attribute-feature="listing"
                             >
                               <X size={18} />
                             </button>
@@ -429,6 +456,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                           setPreviews([]);
                           setResult(null);
                         }}
+                        data-ph-capture-attribute-button-name="listing-clear-images-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         <RefreshCcw size={16} /> Clear All
                       </button>
@@ -459,6 +488,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   disabled={images.length === 0 || loading}
                   onClick={generateListing}
                   className={`generate-btn ${loading ? "loading" : ""}`}
+                  data-ph-capture-attribute-button-name="listing-generate-seo-btn"
+                  data-ph-capture-attribute-feature="listing"
                 >
                   {loading
                     ? "AI is writing..."
@@ -470,12 +501,22 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                 {isBusiness && listingHistory.length > 0 && (
                   <div className="share-grid-container">
                     <div className="share-grid">
-                      <button onClick={handleShareCSV} className="generate-btn">
+                      <button
+                        onClick={handleShareCSV}
+                        className="generate-btn"
+                        data-ph-capture-attribute-button-name="listing-share-csv-btn"
+                        data-ph-capture-attribute-feature="listing"
+                      >
                         <Upload size={13} />
-                        Share / Email
+                        Share
                       </button>
 
-                      <button onClick={downloadCSV} className="secondary-btn">
+                      <button
+                        onClick={downloadCSV}
+                        className="secondary-btn"
+                        data-ph-capture-attribute-button-name="listing-download-csv-btn"
+                        data-ph-capture-attribute-feature="listing"
+                      >
                         <Download size={13} />
                         Save to File
                       </button>
@@ -494,7 +535,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                 <div className="empty-state">
                   <Layout size={48} />
                   <h3>Your listing details will appear here</h3>
-                  <p>Upload angles of your item to generate SEO metadata.</p>
+                  <p>Upload angles of your item to generate SEO metadata</p>
                 </div>
               ) : loading ? (
                 <div className="loading-state">
@@ -512,6 +553,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                       </label>
                       <button
                         onClick={() => copyToClipboard(result.title, "title")}
+                        data-ph-capture-attribute-button-name="listing-copy-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         {copiedField === "title" ? (
                           <Check size={16} color="#22c55e" />
@@ -523,15 +566,17 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                     <p className="result-value--title">{result.title}</p>
                   </div>
 
-                  <div className="result-group card">
+                  <div className="result-group card" ref={resultsRef}>
                     <div className="result-group__header">
                       <label>
-                        <CircleDollarSign size={18} /> Suggested resale price
+                        <CircleDollarSign size={18} /> Estimated resale price
                       </label>
                       <button
                         onClick={() =>
                           copyToClipboard(result.suggestedPrice, "price")
                         }
+                        data-ph-capture-attribute-button-name="listing-copy-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         {copiedField === "price" ? (
                           <Check size={16} color="#22c55e" />
@@ -557,6 +602,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                             "platform",
                           )
                         }
+                        data-ph-capture-attribute-button-name="listing-copy-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         {copiedField === "platform" ? (
                           <Check size={16} color="#22c55e" />
@@ -578,6 +625,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                         onClick={() =>
                           copyToClipboard(result.description, "desc")
                         }
+                        data-ph-capture-attribute-button-name="listing-copy-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         {copiedField === "desc" ? (
                           <Check size={16} color="#22c55e" />
@@ -610,6 +659,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                             copiedField === tagKey ? "copied" : ""
                           }`}
                           onClick={() => copyToClipboard(tag, tagKey)}
+                          data-ph-capture-attribute-button-name="listing-copy-btn"
+                          data-ph-capture-attribute-feature="listing"
                         >
                           {tag}
                           {copiedField === tagKey ? (
@@ -656,6 +707,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                               setStudioPreviews([]);
                               setResultImage(null);
                             }}
+                            data-ph-capture-attribute-button-name="listing-remove-image-btn"
+                            data-ph-capture-attribute-feature="listing"
                           >
                             <X size={18} />
                           </button>
@@ -668,6 +721,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                           setStudioPreviews([]);
                           setResultImage(null);
                         }}
+                        data-ph-capture-attribute-button-name="listing-clear-images-btn"
+                        data-ph-capture-attribute-feature="listing"
                       >
                         <RefreshCcw size={16} /> Replace Photo
                       </button>
@@ -716,6 +771,8 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   disabled={studioImages.length === 0 || isProcessing}
                   onClick={processBackgroundRemoval}
                   className={`generate-btn ${isProcessing ? "loading" : ""}`}
+                  data-ph-capture-attribute-button-name="listing-remove-background-btn"
+                  data-ph-capture-attribute-feature="listing"
                 >
                   {isProcessing ? (
                     <>
@@ -738,9 +795,9 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                   <ImageIcon size={48} />
                   <h3>Your listing photo will appear here</h3>
                   {useWhiteBackground ? (
-                    <p>The image will be have a white background.</p>
+                    <p>The image will be have a white background</p>
                   ) : (
-                    <p>The image will be have a transparent background.</p>
+                    <p>The image will be have a transparent background</p>
                   )}
                 </div>
               ) : isProcessing ? (
@@ -782,7 +839,7 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
                       href={resultImage!}
                       download="listing-photo.png"
                       className="generate-btn"
-                      style={{ marginTop: "1.5rem", textDecoration: "none" }}
+                      ref={backgroundRef}
                     >
                       <Download size={18} /> Download Image
                     </a>
@@ -804,8 +861,10 @@ export default function GenerateListingClient({ user }: GenerateListingProps) {
             <button
               className="modal-btn modal-btn--secondary"
               onClick={() => setAlertModal(null)}
+              data-ph-capture-attribute-button-name="listing-error-modal-btn-close"
+              data-ph-capture-attribute-feature="listing"
             >
-              Dismiss
+              Close
             </button>
           </div>
         </div>

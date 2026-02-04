@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Mail, Lock, ArrowRight, Chrome } from "lucide-react";
 import InfoModal from "./InfoModal";
@@ -10,9 +9,14 @@ import Image from "next/image";
 import logo from "../../public/images/flipsavvy-icon.png";
 import { getApiUrl } from "@/lib/api-config";
 import Link from "next/link";
+import { useApp } from "@/context/AppContext";
+import { useGoogleLogin } from "@react-oauth/google";
+import posthog from "posthog-js";
 
 export default function UnifiedAuthPage() {
-  const { status } = useSession();
+  // Replace useSession with your custom context logic
+  const { user, isLoading, setUser } = useApp();
+
   const [view, setView] = useState<"login" | "register" | "verify" | "forgot">(
     "login",
   );
@@ -38,35 +42,121 @@ export default function UnifiedAuthPage() {
   const [showResetModal, setShowResetModal] = useState(false);
 
   useEffect(() => {
-    if (status === "authenticated" && window.location.pathname === "/login") {
+    if (!isLoading && user) {
       router.replace("/dashboard");
     }
-  }, [status, router]);
+  }, [user, isLoading, router]);
 
   const openModal = (title: string, message: string) => {
     setModalConfig({ isOpen: true, title, message });
   };
 
-  if (status === "loading") return <Loading />;
-
-  const handleRegister = async (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!agreedToTerms) {
-      setError("You must agree to the Terms and Privacy Policy.");
-      return;
-    }
     setLoading(true);
     setError("");
+
     try {
-      const res = await fetch(getApiUrl("/api/auth/register"), {
+      const res = await fetch(getApiUrl("/api/auth/login"), {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        posthog.capture("user_logged_in", {
+          method: "email",
+        });
+        localStorage.setItem("token", data.token);
+        setUser(data.user);
+        router.push("/dashboard");
+      } else {
+        setError(data.error || "Invalid credentials");
+        // if (data.error?.includes("verify")) setView("verify");
+      }
+    } catch (err) {
+      setError("Server connection failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleLogin = async (googleResponse: any) => {
+    setLoading(true);
+    try {
+      const res = await fetch(getApiUrl("/api/auth/google"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ idToken: googleResponse.credential }),
       });
       const data = await res.json();
       if (res.ok) {
+        localStorage.setItem("token", data.token);
+        if (setUser) setUser(data.user);
+        router.push("/dashboard");
+      } else {
+        setError(data.error || "Google login failed");
+      }
+    } catch (err) {
+      setError("Error connecting to Google auth");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleAuth = useGoogleLogin({
+    onSuccess: async (tokenResponse) => {
+      setLoading(true);
+      setError("");
+      try {
+        // We send the access_token (or id_token) to our Express backend
+        const res = await fetch(getApiUrl("/api/auth/google"), {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            access_token: tokenResponse.access_token,
+          }),
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          posthog.capture("user_logged_in", { method: "google" });
+          localStorage.setItem("token", data.token);
+          if (setUser) setUser(data.user);
+          router.push("/dashboard");
+        } else {
+          setError(data.error || "Google authentication failed");
+        }
+      } catch (err) {
+        setError("Failed to connect to authentication server");
+      } finally {
+        setLoading(false);
+      }
+    },
+    onError: () => setError("Google Login Failed"),
+  });
+
+  const handleRegister = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!agreedToTerms) return setError("You must agree to the Terms.");
+    setLoading(true);
+    try {
+      const res = await fetch(getApiUrl("/api/auth/register"), {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      if (res.ok) {
+        posthog.capture("user_signed_up", {
+          method: "email",
+          view: "register",
+        });
         setSourceView("register");
         setView("verify");
       } else {
+        const data = await res.json();
         setError(data.error || "Registration failed");
       }
     } catch (err) {
@@ -81,8 +171,9 @@ export default function UnifiedAuthPage() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(getApiUrl("/api/auth/reset-password"), {
+      const res = await fetch(getApiUrl("/api/reset-password"), {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, action: "request" }),
       });
       if (res.ok) {
@@ -103,13 +194,12 @@ export default function UnifiedAuthPage() {
     e.preventDefault();
     setLoading(true);
     setError("");
-
-    // FIX: Use sourceView instead of checking !password
     const isResetPath = sourceView === "forgot";
 
     try {
-      const res = await fetch(getApiUrl("/api/verify"), {
+      const res = await fetch(getApiUrl("/api/verify-otp"), {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email,
           otp,
@@ -123,18 +213,9 @@ export default function UnifiedAuthPage() {
         if (isResetPath) {
           setShowResetModal(true);
         } else {
-          // Attempt login for new registrations
-          const result = await signIn("credentials", {
-            redirect: false,
-            email,
-            password,
-          });
-          if (result?.error) {
-            setError("Account verified! Please log in.");
-            setView("login");
-          } else {
-            router.push("/dashboard");
-          }
+          localStorage.setItem("token", data.token);
+          if (setUser) setUser(data.user);
+          router.push("/dashboard");
         }
       } else {
         setError(data.error || "Invalid code.");
@@ -148,13 +229,17 @@ export default function UnifiedAuthPage() {
 
   const handleFinalReset = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (newPassword !== confirmPassword)
+    if (newPassword !== confirmPassword) {
+      setShowResetModal(false);
       return setError("Passwords do not match");
+    }
 
     setLoading(true);
+
     try {
-      const res = await fetch(getApiUrl("/api/auth/reset-password"), {
+      const res = await fetch(getApiUrl("/api/reset-password"), {
         method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, otp, newPassword, action: "reset" }),
       });
       if (res.ok) {
@@ -180,27 +265,19 @@ export default function UnifiedAuthPage() {
   };
 
   const getSubmitHandler = () => {
-    if (view === "login")
-      return (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-        signIn("credentials", { email, password, redirect: false }).then(
-          (res) => {
-            if (res?.error) {
-              setError(res.error);
-              setLoading(false);
-              if (res.error.includes("verify")) setView("verify");
-            } else {
-              router.push("/dashboard");
-              router.refresh();
-            }
-          },
-        );
-      };
+    if (view === "login") return handleLogin;
     if (view === "register") return handleRegister;
     if (view === "forgot") return handleForgotPasswordRequest;
     return handleVerify;
   };
+
+  if (isLoading) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
 
   return (
     <main className="auth-page">
@@ -209,7 +286,7 @@ export default function UnifiedAuthPage() {
           <Image width={125} height={125} alt="Logo" src={logo} priority />
           <h1 className="auth-title">
             {view === "login" && "Welcome Back"}
-            {view === "register" && "Join & Start Flipping"}
+            {view === "register" && "Join & Start Appraising"}
             {view === "verify" && "Enter Code"}
             {view === "forgot" && "Find Account"}
           </h1>
@@ -217,7 +294,16 @@ export default function UnifiedAuthPage() {
 
         {error && <div className="auth-error-pill">{error}</div>}
 
-        <form className="auth-form" onSubmit={getSubmitHandler()}>
+        <form
+          className="auth-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (view === "login") handleLogin(e);
+            else if (view === "register") handleRegister(e);
+            else if (view === "forgot") handleForgotPasswordRequest(e);
+            else handleVerify(e);
+          }}
+        >
           {view !== "verify" && (
             <div className="input-wrapper">
               <Mail className="input-icon" size={18} />
@@ -245,16 +331,23 @@ export default function UnifiedAuthPage() {
           )}
 
           {view === "login" && (
-            <button
-              type="button"
-              className="forgot-btn"
-              onClick={() => {
-                setView("forgot");
-                setError("");
-              }}
-            >
-              Forgot password?
-            </button>
+            <div className="underlined-btn-container">
+              <button
+                type="button"
+                className="forgot-btn"
+                onClick={() => {
+                  setView("forgot");
+                  setError("");
+                }}
+                data-ph-capture-attribute-button-name="auth-forgot-password-btn"
+                data-ph-capture-attribute-feature="auth"
+              >
+                <div className="underline-container">
+                  Forgot password?
+                  <div className="underline" />
+                </div>
+              </button>
+            </div>
           )}
 
           {view === "verify" && (
@@ -292,11 +385,23 @@ export default function UnifiedAuthPage() {
               />
               <label htmlFor="terms" className="terms-label">
                 I agree to the{" "}
-                <Link href="/terms" target="_blank" className="terms-link">
+                <Link
+                  href="/terms"
+                  target="_blank"
+                  className="terms-link letter-spacing-textlink"
+                  data-ph-capture-attribute-button-name="auth-terms-btn"
+                  data-ph-capture-attribute-feature="auth"
+                >
                   Terms of Service
                 </Link>{" "}
                 and{" "}
-                <Link href="/privacy" target="_blank" className="terms-link">
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  className="terms-link letter-spacing-textlink"
+                  data-ph-capture-attribute-button-name="auth-privacy-btn"
+                  data-ph-capture-attribute-feature="auth"
+                >
                   Privacy Policy
                 </Link>
               </label>
@@ -307,16 +412,10 @@ export default function UnifiedAuthPage() {
             type="submit"
             className="auth-submit-btn"
             disabled={loading || (view === "register" && !agreedToTerms)}
+            data-ph-capture-attribute-button-name={`auth-submit-${view}-btn`}
+            data-ph-capture-attribute-feature="auth"
           >
-            {loading
-              ? "Processing..."
-              : view === "forgot"
-                ? "Send reset code"
-                : view === "verify"
-                  ? "Verify code"
-                  : view === "register"
-                    ? "Create account"
-                    : "Log in"}
+            {loading ? "Processing..." : "Continue"}
             {!loading && <ArrowRight size={18} />}
           </button>
 
@@ -328,7 +427,10 @@ export default function UnifiedAuthPage() {
               <button
                 type="button"
                 className="google-auth-btn"
-                onClick={() => signIn("google", { callbackUrl: "/" })}
+                onClick={() => handleGoogleAuth()}
+                disabled={loading}
+                data-ph-capture-attribute-button-name="auth-google-signin-btn"
+                data-ph-capture-attribute-feature="auth"
               >
                 <Chrome size={18} />
                 Continue with Google
@@ -339,13 +441,19 @@ export default function UnifiedAuthPage() {
 
         <footer className="auth-footer">
           <button
+            className="letter-spacing-textlink"
             onClick={() => {
               setView(view === "login" ? "register" : "login");
               setError("");
               setSourceView(null);
             }}
+            data-ph-capture-attribute-button-name="auth-create-account--back-to-login-btn"
+            data-ph-capture-attribute-feature="auth"
           >
-            {view === "login" ? "Create an account" : "Back to login"}
+            <div className="underline-container">
+              {view === "login" ? "Create an account" : "Back to login"}
+              <div className="underline" />
+            </div>
           </button>
         </footer>
       </div>
@@ -377,8 +485,33 @@ export default function UnifiedAuthPage() {
             />
           </div>
           <button type="submit" className="auth-submit-btn" disabled={loading}>
-            {loading ? "Updating..." : "Update Password"}
+            {loading
+              ? "Processing..."
+              : view === "register"
+                ? "Create account"
+                : "Continue"}
+            {!loading && <ArrowRight size={18} />}
           </button>
+
+          {(view === "login" || view === "register") && (
+            <>
+              <div className="auth-divider">
+                <span>OR</span>
+              </div>
+              <button
+                type="button"
+                className="google-auth-btn"
+                onClick={() => handleGoogleAuth()}
+                disabled={loading}
+                data-ph-capture-attribute-button-name="auth-google-signin-btn"
+                data-ph-capture-attribute-feature="auth"
+              >
+                <Chrome size={18} />
+                Continue with Google
+              </button>
+            </>
+          )}
+          <br />
         </form>
       </InfoModal>
 

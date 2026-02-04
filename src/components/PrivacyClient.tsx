@@ -27,7 +27,12 @@ export default function PrivacyClient() {
     <main className="privacy-page">
       {/* Navigation */}
       <header className="privacy-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="privacy-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Privacy & Security</h1>
@@ -42,7 +47,7 @@ export default function PrivacyClient() {
           </div>
           <h2 className="privacy-hero__title">Your Data, Protected</h2>
           {/* <p className="privacy-hero__subtitle">
-            We believe in transparency. Here is how FlipSavvy handles your information.
+            We believe in transparency. Here is how ResaleIQ handles your information.
           </p> */}
           <span className="last-updated-tag">Last updated December 2025</span>
         </section>
@@ -58,7 +63,7 @@ export default function PrivacyClient() {
             </div>
             <div className="privacy-card">
               <p>
-                When you use FlipSavvy, we collect images you upload for AI
+                When you use ResaleIQ, we collect images you upload for AI
                 appraisal, as well as basic account information to provide you
                 with market insights.
               </p>
@@ -94,7 +99,12 @@ export default function PrivacyClient() {
           <p>We’re here to help you understand your rights.</p>
 
           <div className="privacy-footer__links">
-            <Link href="/terms" className="footer-link-card">
+            <Link
+              href="/terms"
+              className="footer-link-card"
+              data-ph-capture-attribute-button-name="privacy-terms-btn"
+              data-ph-capture-attribute-feature="privacy"
+            >
               <div className="footer-link-card__content">
                 <FileText size={18} />
                 <span>Terms of Service</span>
@@ -102,7 +112,12 @@ export default function PrivacyClient() {
               <ChevronRight size={16} />
             </Link>
 
-            <Link href="/help" className="footer-link-card">
+            <Link
+              href="/help"
+              className="footer-link-card"
+              data-ph-capture-attribute-button-name="privacy-help-faq-btn"
+              data-ph-capture-attribute-feature="privacy"
+            >
               <div className="footer-link-card__content">
                 <ShieldCheck size={18} />
                 <span>Help & FAQ</span>

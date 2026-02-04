@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { ArrowLeft, Calculator, History, Trash2, Info } from "lucide-react";
-import Link from "next/link";
+import { ArrowLeft, History, Trash2, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useApp } from "@/context/AppContext";
+import { getApiUrl } from "@/lib/api-config";
+import Loading from "./Loading";
 
 interface ScanHistoryItem {
   id: string;
@@ -23,23 +25,70 @@ const PLATFORMS = [
   { name: "Depop", fee: 10 },
 ];
 
-export default function CalculatorClient({
-  history,
-}: {
-  history: ScanHistoryItem[];
-}) {
+export default function CalculatorClient() {
+  const { user, isLoading: authLoading } = useApp();
+  const router = useRouter();
+
+  const [history, setHistory] = useState<ScanHistoryItem[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const [selectedItem, setSelectedItem] = useState<ScanHistoryItem | null>(
     null,
   );
+
   const [buyCost, setBuyCost] = useState<number | "">("");
   const [sellPrice, setSellPrice] = useState<number | "">("");
   const [shippingCost, setShippingCost] = useState<number | "">("");
   const [platformFeePercent, setPlatformFeePercent] = useState<string | number>(
-    13.25,
+    "",
   );
   const [otherCosts, setOtherCosts] = useState<number | "">("");
 
-  const router = useRouter();
+  useEffect(() => {
+    if (!authLoading && (!user || user.subscriptionStatus === "basic")) {
+      router.replace(user ? "/account" : "/login");
+    }
+  }, [user, authLoading, router]);
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const res = await fetch(getApiUrl("/api/user/history"), {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          const formatted = data.map((item: any) => {
+            const prices = item.priceRange.match(/\d+/g)?.map(Number) || [0, 0];
+            return {
+              id: item.id.toString(),
+              title: item.itemTitle,
+              lowResellValue: prices[0] || 0,
+              highResellValue: prices[1] || prices[0] || 0,
+              estimatedShipping: 10,
+              imageUrl: item.imageUrl,
+            };
+          });
+          setHistory(formatted);
+        }
+      } catch (err) {
+        console.error("Failed to fetch history", err);
+      } finally {
+        setLoadingHistory(false);
+      }
+    };
+
+    if (user) fetchHistory();
+  }, [user]);
+
+  if (authLoading || !user) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
 
   const handleBack = () => {
     if (window.history.length > 1) {
@@ -75,7 +124,12 @@ export default function CalculatorClient({
   return (
     <>
       <header className="help-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="calculator-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Profit Calculator</h1>
@@ -94,7 +148,7 @@ export default function CalculatorClient({
                 onChange={handleSelectItem}
                 value={selectedItem?.id || ""}
               >
-                <option value="">Manual Entry (No item selected)</option>
+                <option value="">Select an item</option>
                 {history.map((item) => (
                   <option key={item.id} value={item.id}>
                     {item.title}
@@ -118,6 +172,8 @@ export default function CalculatorClient({
                 <button
                   className="btn-clear"
                   onClick={() => setSelectedItem(null)}
+                  data-ph-capture-attribute-button-name="calculator-clear-item-btn"
+                  data-ph-capture-attribute-feature="calculator"
                 >
                   <Trash2 size={26} />
                 </button>
@@ -142,7 +198,7 @@ export default function CalculatorClient({
               </div>
 
               <div className="calc-card__group">
-                <label>Potential Sell Price ($)</label>
+                <label>Sell Price ($)</label>
                 <input
                   type="number"
                   value={sellPrice}
@@ -153,7 +209,10 @@ export default function CalculatorClient({
               </div>
 
               <div className="calc-card__group">
-                <label>Shipping & Materials ($)</label>
+                <label>
+                  Shipping & Materials ($){" "}
+                  <span className="hidden-hint">(optional)</span>
+                </label>
                 <input
                   type="number"
                   value={shippingCost}
@@ -203,7 +262,7 @@ export default function CalculatorClient({
                       val.startsWith("0") &&
                       val[1] !== "."
                     ) {
-                      val = val.substring(1);
+                      val = val.substring(0);
                     }
 
                     setPlatformFeePercent(val);
@@ -215,7 +274,12 @@ export default function CalculatorClient({
               </div>
 
               <div className="calc-card__group">
-                <label>Other Costs (Gas, Promoted Listings, etc.)</label>
+                <label>
+                  Other Costs{" "}
+                  <span className="hidden-hint">
+                    (promoted listings, ads, etc.)
+                  </span>
+                </label>
                 <input
                   type="number"
                   value={otherCosts}

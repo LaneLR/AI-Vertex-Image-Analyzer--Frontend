@@ -9,7 +9,7 @@
     padding: 12px 24px;
     background: var(--bg-nav);
     border-bottom: 1px solid var(--border-color);
-    color: var(--primary-text);
+    color: var(--text-primary);
     h1 {
       font-size: 1.1rem;
       font-weight: 700;
@@ -102,7 +102,7 @@
   }
 
   &--highlight {
-    border-color: #ef444455;
+    border-color: var(--error-text);
     background: linear-gradient(
       to bottom right,
       var(--bg-card),
@@ -110,7 +110,7 @@
     );
 
     // .clause-icon {
-    //   color: #ef4444;
+    //   color: var(--error-text);
     // }
   }
 }

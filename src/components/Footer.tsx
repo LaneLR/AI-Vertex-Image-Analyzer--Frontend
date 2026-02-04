@@ -25,9 +25,14 @@ export default function Footer() {
           <div className="footer__section footer__section--brand">
             <div className="footer__brand-container">
               <div className="footer__logo">
-                <Link href="/" className="brand-link">
+                <Link
+                  href="/dashboard"
+                  className="brand-link"
+                  data-ph-capture-attribute-button-name="footer-title-btn"
+                  data-ph-capture-attribute-feature="footer"
+                >
                   <h1 className="brand-text">
-                    Flip<span>Savvy</span>
+                    Resale<span>IQ</span>
                   </h1>
                 </Link>
               </div>
@@ -45,15 +50,27 @@ export default function Footer() {
             <button
               className="footer__link"
               onClick={() => setIsAboutModalOpen(true)}
+              data-ph-capture-attribute-button-name="footer-about-btn"
+              data-ph-capture-attribute-feature="footer"
             >
               <Info size={16} />
               About Us
             </button>
-            <Link href="/terms" className="footer__link">
+            <Link
+              href="/terms"
+              className="footer__link"
+              data-ph-capture-attribute-button-name="footer-terms-btn"
+              data-ph-capture-attribute-feature="footer"
+            >
               <ShieldCheck size={16} />
               Terms
             </Link>
-            <Link href="/privacy" className="footer__link">
+            <Link
+              href="/privacy"
+              className="footer__link"
+              data-ph-capture-attribute-button-name="footer-privacy-btn"
+              data-ph-capture-attribute-feature="footer"
+            >
               <ShieldCheck size={16} />
               Privacy
             </Link>
@@ -62,7 +79,7 @@ export default function Footer() {
 
         <div className="footer__bottom">
           <div className="footer__copyright">
-            {currentYear} FlipSavvy • v{process.env.NEXT_PUBLIC_APP_VERSION}
+            {currentYear} ResaleIQ • v{process.env.NEXT_PUBLIC_APP_VERSION}
           </div>
         </div>
       </div>
@@ -71,7 +88,7 @@ export default function Footer() {
       <InfoModal
         isOpen={isAboutModalOpen}
         onClose={() => setIsAboutModalOpen(false)}
-        title="About FlipSavvy"
+        title="About ResaleIQ"
       >
         <div className="feature-info-modal">
           <div
@@ -84,7 +101,7 @@ export default function Footer() {
               style={{ marginBottom: "0.5rem" }}
             />
             <p style={{ fontSize: "0.9rem", color: "var(--text-muted)" }}>
-              Empowering thrifters with AI-driven market insights.
+              Empowering resellers with AI-driven market insights.
             </p>
           </div>
 
@@ -104,7 +121,7 @@ export default function Footer() {
               <Target size={14} /> Our Mission
             </div>
             <p style={{ fontSize: "0.95rem", lineHeight: "1.5" }}>
-              FlipSavvy was built for the modern treasure hunter. We combine AI
+              ResaleIQ was built for the modern treasure hunter. We combine AI
               vision technology with market data to help you flip finds with
               confidence.
             </p>
@@ -166,6 +183,8 @@ export default function Footer() {
             <button
               className="modal-btn modal-btn--secondary"
               onClick={() => setIsAboutModalOpen(false)}
+              data-ph-capture-attribute-button-name="footer-about-modal-btn-close"
+              data-ph-capture-attribute-feature="footer"
             >
               Close
             </button>

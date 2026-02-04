@@ -2,47 +2,32 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   User,
-  Settings,
   LogOut,
   LayoutDashboard,
   MoreHorizontal,
-  ToolCase,
   Settings2,
-  Calculator,
   Wand2,
   Boxes,
   History,
-  BadgeDollarSign,
   CircleDollarSign,
 } from "lucide-react";
-import { signOut, useSession } from "next-auth/react";
+import { useApp } from "@/context/AppContext";
 
-interface HeaderProps {
-  user: any;
-}
-
-export default function Header({ user }: HeaderProps) {
-  const { data: session, update } = useSession();
+export default function Header() {
+  const { user, setUser, isLoading } = useApp();
   const pathname = usePathname();
+  const router = useRouter();
   const [isMoreOpen, setIsMoreOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const subscriptionStatus =
-    session?.user?.subscriptionStatus || user?.subscriptionStatus;
-  const isPro = subscriptionStatus?.toLowerCase() === "pro";
-  const isHobby = subscriptionStatus?.toLowerCase() === "hobby";
-  const isBusiness = subscriptionStatus?.toLowerCase() === "business";
+  const subscriptionStatus = user?.subscriptionStatus?.toLowerCase() || "basic";
+  const isPro = subscriptionStatus === "pro";
+  const isHobby = subscriptionStatus === "hobby";
+  const isBusiness = subscriptionStatus === "business";
 
-  useEffect(() => {
-    if (user && update) {
-      update();
-    }
-  }, [user]);
-
-  // Close "More" menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
@@ -53,95 +38,141 @@ export default function Header({ user }: HeaderProps) {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  if (!session) return null; // Don't show nav if not logged in
+  if (!user) return null;
 
-  const handleLogout = async () => {
-    await signOut({ callbackUrl: "/login" });
+  const handleLogout = () => {
+    setIsMoreOpen(false);
+    localStorage.removeItem("token");
+    setUser(null);
+    router.push("/login");
   };
 
   const navItems = [
-    { label: "Home", href: "/dashboard", icon: LayoutDashboard },
-    { label: "Account", href: "/account", icon: User },
-    { label: "Settings", href: "/settings", icon: Settings2 },
+    {
+      label: "Home",
+      href: "/dashboard",
+      icon: LayoutDashboard,
+      "data-ph-capture-attribute-button-name": "nav-dashboard-button",
+      "data-ph-capture-attribute-feature": "navigation",
+    },
+    {
+      label: "Account",
+      href: "/account",
+      icon: User,
+      "data-ph-capture-attribute-button-name": "nav-account-button",
+      "data-ph-capture-attribute-feature": "navigation",
+    },
+    {
+      label: "Settings",
+      href: "/settings",
+      icon: Settings2,
+      "data-ph-capture-attribute-button-name": "nav-settings-button",
+      "data-ph-capture-attribute-feature": "navigation",
+    },
   ];
 
   return (
-    <nav className="mobile-nav" ref={menuRef}>
-      <div className="mobile-nav__container">
-        {navItems.map((item) => {
-          const Icon = item.icon;
-          const isActive = pathname === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`mobile-nav__link ${isActive ? "is-active" : ""}`}
-            >
-              <Icon size={24} />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+    <>
+      {!isLoading && (
+        <nav className="mobile-nav" ref={menuRef}>
+          <div className="mobile-nav__container">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`mobile-nav__link ${isActive ? "is-active" : ""}`}
+                  data-ph-capture-attribute-button-name={
+                    item["data-ph-capture-attribute-button-name"]
+                  }
+                  data-ph-capture-attribute-feature={
+                    item["data-ph-capture-attribute-feature"]
+                  }
+                >
+                  <Icon size={24} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
 
-        {/* MORE MENU TOGGLE */}
-        <button
-          className={`mobile-nav__link ${isMoreOpen ? "is-active" : ""}`}
-          onClick={() => setIsMoreOpen(!isMoreOpen)}
-        >
-          <MoreHorizontal size={24} />
-          <span>More</span>
-        </button>
-
-        {/* POPUP MENU */}
-        <div
-          className={`mobile-nav__popover ${isMoreOpen ? "is-visible" : ""}`}
-        >
-          {(isBusiness) && (
-            <Link
-              href="/inventory"
-              className="popover-item"
-              onClick={() => setIsMoreOpen(false)}
+            {/* MORE MENU TOGGLE */}
+            <button
+              className={`mobile-nav__link ${isMoreOpen ? "is-active" : ""}`}
+              onClick={() => setIsMoreOpen(!isMoreOpen)}
+              data-ph-capture-attribute-button-name="nav-burger-menu-button"
+              data-ph-capture-attribute-feature="navigation"
             >
-              <Boxes size={20} />
-              <span>Inventory</span>
-            </Link>
-          )}
-          {(isPro || isBusiness) && (
-            <Link
-              href="/listing"
-              className="popover-item"
-              onClick={() => setIsMoreOpen(false)}
-            >
-              <Wand2 size={20} />
-              <span>Listing Studio</span>
-            </Link>
-          )}
+              <MoreHorizontal size={24} />
+              <span>More</span>
+            </button>
 
-          {(isHobby || isPro || isBusiness) && (
-            <Link
-              href="/calculator"
-              className="popover-item"
-              onClick={() => setIsMoreOpen(false)}
+            {/* POPUP MENU */}
+            <div
+              className={`mobile-nav__popover ${isMoreOpen ? "is-visible" : ""}`}
             >
-              <CircleDollarSign size={20} />
-              <span>Calculator</span>
-            </Link>
-          )}
+              {isBusiness && (
+                <Link
+                  href="/inventory"
+                  className="popover-item"
+                  onClick={() => setIsMoreOpen(false)}
+                  data-ph-capture-attribute-button-name="nav-inventory-button"
+                  data-ph-capture-attribute-feature="navigation"
+                >
+                  <Boxes size={20} />
+                  <span>Inventory</span>
+                </Link>
+              )}
+              {(isPro || isBusiness) && (
+                <Link
+                  href="/listing"
+                  className="popover-item"
+                  onClick={() => setIsMoreOpen(false)}
+                  data-ph-capture-attribute-button-name="nav-listing-studio-button"
+                  data-ph-capture-attribute-feature="navigation"
+                >
+                  <Wand2 size={20} />
+                  <span>Listing Studio</span>
+                </Link>
+              )}
 
-          <Link
-            href="/settings"
-            className="popover-item"
-            onClick={() => setIsMoreOpen(false)}
-          >
-            <History size={20} />
-            <span>Scan History</span>
-          </Link>
-          <button className="popover-item logout" onClick={handleLogout}>
-            <LogOut size={20} />
-            <span>Sign Out</span>
-          </button>
-        </div>
-      </div>
-    </nav>
+              {(isHobby || isPro || isBusiness) && (
+                <Link
+                  href="/calculator"
+                  className="popover-item"
+                  onClick={() => setIsMoreOpen(false)}
+                  data-ph-capture-attribute-button-name="nav-calculator-button"
+                  data-ph-capture-attribute-feature="navigation"
+                >
+                  <CircleDollarSign size={20} />
+                  <span>Calculator</span>
+                </Link>
+              )}
+
+              <Link
+                href="/history"
+                className="popover-item"
+                onClick={() => setIsMoreOpen(false)}
+                data-ph-capture-attribute-button-name="nav-history-button"
+                data-ph-capture-attribute-feature="navigation"
+              >
+                <History size={20} />
+                <span>Scan History</span>
+              </Link>
+              <button
+                className="popover-item logout"
+                onClick={handleLogout}
+                data-ph-capture-attribute-button-name="nav-logout-button"
+                data-ph-capture-attribute-feature="navigation"
+              >
+                <LogOut size={20} />
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </div>
+        </nav>
+      )}
+    </>
   );
 }

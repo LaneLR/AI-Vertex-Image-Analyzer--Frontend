@@ -1,7 +1,6 @@
 .home-screen {
   background-color: var(--bg-main);
   min-height: fit-content;
-  // padding-bottom: 5rem;
 }
 
 .home-stats {
@@ -21,23 +20,62 @@
     gap: 6px;
     font-size: 16px;
   }
+  
+&--title {
+    display: block; 
+    font-size: 18px; 
+    
+    .primary-text { color: var(--primary-theme); }
+    .secondary-text { color: #fff; }
+  }
+
+  /* Mobile Breakpoint */
+  @media screen and (max-width: 768px) {
+    &--title {
+      display: none; /* Disappears on mobile */
+    }
+  }
 }
 
 .home-container {
-  max-width: 500px;
+  width: 100%;
+  max-width: 1400px;
   margin: 0 auto;
   padding: 2rem 1.5rem;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+  justify-content: center;
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+}
+.home-top-section {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 500px;
+  min-width: 400px;
+  justify-content: center;
+  align-items: center;
 }
 
 .home-hero {
   text-align: center;
-  margin-bottom: 2.5rem;
+  margin-bottom: 1.5rem;
 
   h1 {
-    font-size: 1.75rem;
+    font-size: 1.8rem;
     font-weight: 850;
     line-height: 1.1;
     margin-bottom: 0.75rem;
+
+    @media screen and (max-width: 440px) {
+      font-size: 1.4rem;
+    }
   }
 
   p {
@@ -59,7 +97,7 @@
     width: 100%;
     height: 100%;
     min-height: 150px;
-    max-height: auto;
+    max-height: 450px;
     object-fit: cover;
     border-radius: 10px;
     border: 1px solid var(--border-color);
@@ -157,7 +195,7 @@
 
 .result-card {
   // border-left: 4px solid var(--primary-theme);
-  margin-bottom: 2rem;
+  margin-bottom: 60px;
 
   &__price-tag {
     // background: var(--bg-card);
@@ -196,7 +234,7 @@
       font-size: 0.75rem;
       text-transform: uppercase;
       margin-bottom: 0.5rem;
-      color: var(--text-tertiary);
+      color: var(--text-primary);
     }
     .source-pill {
       background: var(--bg-main);
@@ -226,9 +264,9 @@
 
   &__label {
     display: block;
-    font-size: 0.6rem;
+    font-size: 0.75rem;
     font-weight: 800;
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
   }
 
   &__value {

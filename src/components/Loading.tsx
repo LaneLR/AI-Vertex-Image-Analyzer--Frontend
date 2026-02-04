@@ -7,9 +7,14 @@ interface LoadingProps {
   fullPage?: boolean;
 }
 
-export default function Loading({ message = "Loading...", fullPage = true }: LoadingProps) {
+export default function Loading({
+  message = "Loading...",
+  fullPage = true,
+}: LoadingProps) {
   return (
-    <div className={`loading-container ${fullPage ? "loading-container--full" : ""}`}>
+    <div
+      className={`loading-container ${fullPage ? "loading-container--full" : ""}`}
+    >
       <div className="loading-spinner">
         <div className="loading-spinner__circle"></div>
         <div className="loading-spinner__inner-circle"></div>

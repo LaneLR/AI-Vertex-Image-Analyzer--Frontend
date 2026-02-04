@@ -1,15 +1,15 @@
+import Loading from "@/components/Loading";
 import SettingsClient from "@/components/SettingsClient";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { Suspense } from "react";
+
+export const metadata = {
+  title: "Settings | ResaleIQ",
+  description: "Adjust your account settings.",
+};
 
 export default async function SettingsPage() {
-  const session = await getServerSession(authOptions);
-
-  if (!session) {
-    redirect("/login");
-  }
-
-  return <SettingsClient user={session.user} />;
-}
+  return (
+    <Suspense fallback={<Loading />}>
+      <SettingsClient />;
+    </Suspense>
+  );}

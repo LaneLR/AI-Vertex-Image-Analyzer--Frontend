@@ -3,14 +3,13 @@
 import React, { useEffect, useState } from "react";
 import SubscribeButton from "@/components/SubscribeButton";
 import { Check, ArrowLeft } from "lucide-react";
-import { useSession } from "next-auth/react";
-import Link from "next/link";
+import { useApp } from "@/context/AppContext";
 import { Capacitor } from "@capacitor/core";
 import { useRouter } from "next/navigation";
+import Loading from "./Loading";
 
-export default function PaymentsClient({ user: initialUser }: { user: any }) {
-  const { data: session } = useSession();
-  const user = session?.user || initialUser;
+export default function PaymentsClient() {
+  const { user, isLoading } = useApp();
   const [platform, setPlatform] = useState<string>("web");
   const router = useRouter();
 
@@ -18,11 +17,16 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
   const isAndroid = platform === "android";
   const isNative = platform !== "web";
 
+  useEffect(() => {
+    const currentPlatform = Capacitor.getPlatform();
+    setPlatform(currentPlatform);
+  }, []);
+
   const handleBack = () => {
     if (window.history.length > 1) {
       router.back();
     } else {
-      router.push("/");
+      router.push("/dashboard");
     }
   };
 
@@ -31,38 +35,36 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
   const isBusiness = user?.subscriptionStatus === "business";
   const isBasic = !isPro && !isHobby && !isBusiness;
 
-  useEffect(() => {
-    // This returns 'ios', 'android', or 'web'
-    const currentPlatform = Capacitor.getPlatform();
-    setPlatform(currentPlatform);
-
-    //finish this setup for not letting apple pay users checkout to stripe
-    // if (
-    //   (isNative && user?.paymentProvider === "stripe") ||
-    //   (isNative &&
-    //     (user?.paymentProvider === "" || user?.paymentProvider === null))
-    // ) {
-    //   router.push("/");
-    // }
-  }, []);
+  if (isLoading) {
+    return (
+      <div className="loading-state">
+        <Loading />
+      </div>
+    );
+  }
 
   const features = {
-    basic: ["5 Scans per day.", "1 Image per scan.", "Basic price estimates.", "Access to your scan history."],
+    basic: [
+      "5 Scans per day.",
+      "1 Image per scan.",
+      "Basic price estimates.",
+      "Access to your scan history.",
+    ],
     hobby: [
       "50 scans per day.",
       "2 Images per scan.",
       "Improved accuracy and price estimates.",
       "Access to your scan history.",
+      "Profitability grading on appraised items.",
       "Access to Profit Calculator.",
-      "Profitability grading on appraised items"
     ],
     pro: [
       "100 scans per day.",
       "3 Images per scan.",
       "High accuracy price estimates.",
       "Access to your scan history.",
-      "Access to Profit Calculator.",
       "Profitability grading on appraised items.",
+      "Access to Profit Calculator.",
       "Access to SEO Generator to create SEO-optimized listing details.",
       "Unlimited access to Photo Studio to automatically create listing photos.",
     ],
@@ -71,20 +73,26 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
       "3 Images per scan.",
       "High accuracy price estimates.",
       "Access to your scan history.",
-      "Access to Profit Calculator.",
       "Profitability grading on appraised items.",
+      "Access to Profit Calculator.",
       "Access to SEO Generator to create SEO-optimized listing details.",
       "Unlimited access to Photo Studio to automatically create listing photos.",
-      "Multi-platform and marketplace price comparison.",
       "Access to Inventory Manager for tracking and managing items.",
       "CSV download of inventory and listings for bulk uploading.",
     ],
   };
 
+  const userIsPendingDeletion = user.scheduledDeletionDate ? true : false;
+
   return (
     <>
       <header className="help-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="payments-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>Payment Center</h1>
@@ -97,89 +105,121 @@ export default function PaymentsClient({ user: initialUser }: { user: any }) {
           <p className="pricing-section__subtitle">
             Choose the plan that fits you.
           </p>
+
+          {user.scheduledDeletionDate !== null && (
+            <>
+              <br />
+              <div className="deactivation-banner">
+                <div>
+                  <p>
+                    <strong>Your account is pending deactivation. </strong>
+                    <span>
+                      Please cancel your account's pending deletion before
+                      selecting a plan.
+                    </span>
+                  </p>
+                </div>
+              </div>{" "}
+            </>
+          )}
         </header>
 
         <div className="pricing-grid">
-  {/* BUSINESS CARD */}
-  <div className="plan-card">
-    <h3 className="plan-card__name">Business</h3>
-    <div className="plan-card__price">
-      39.99<span className="plan-card__month">/ mo</span>
-    </div>
-    <ul className="plan-card__feature-list">
-      {features.business.map((f, i) => (
-        <li key={i} className="plan-card__feature-item">
-          <Check className="plan-card__icon" size={18} /> 
-          <span className="plan-card__feature-text">{f}</span>
-        </li>
-      ))}
-    </ul>
-    <SubscribeButton
-      priceId={process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID!}
-      isBusiness={isBusiness}
-    />
-  </div>
+          {/* BUSINESS CARD */}
+          <div className="plan-card plan-card--featured">
+            <div className="plan-card__badge">Best Value</div>
+            <h3 className="plan-card__name">Elite</h3>
+            <div className="plan-card__price">
+              59.99<span className="plan-card__month">/ mo</span>
+            </div>
+            <ul className="plan-card__feature-list">
+              {features.business.map((f, i) => (
+                <li key={i} className="plan-card__feature-item">
+                  <Check className="plan-card__icon" size={18} />
+                  <span className="plan-card__feature-text">{f}</span>
+                </li>
+              ))}
+            </ul>
+            <SubscribeButton
+              priceId={process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID!}
+              isCurrentPlan={isBusiness}
+              isPendingDeletion={userIsPendingDeletion}
+              data-ph-capture-attribute-button-name="payments-subscribe-elite-btn"
+              data-ph-capture-attribute-feature="subscribe"
+            />
+          </div>
 
-  {/* PRO CARD (Featured) */}
-  <div className="plan-card plan-card--featured">
-    <div className="plan-card__badge">Most Popular</div>
-    <h3 className="plan-card__name">Pro</h3>
-    <div className="plan-card__price">
-      24.99<span className="plan-card__month">/ mo</span>
-    </div>
-    <ul className="plan-card__feature-list">
-      {features.pro.map((f, i) => (
-        <li key={i} className="plan-card__feature-item">
-          <Check className="plan-card__icon" size={18} /> 
-          <span className="plan-card__feature-text">{f}</span>
-        </li>
-      ))}
-    </ul>
-    <SubscribeButton
-      priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
-      isPro={isPro}
-    />
-  </div>
+          {/* PRO CARD (Featured) */}
+          <div className="plan-card plan-card--featured">
+            <div className="plan-card__badge">Most Popular</div>
+            <h3 className="plan-card__name">Pro</h3>
+            <div className="plan-card__price">
+              24.99<span className="plan-card__month">/ mo</span>
+            </div>
+            <ul className="plan-card__feature-list">
+              {features.pro.map((f, i) => (
+                <li key={i} className="plan-card__feature-item">
+                  <Check className="plan-card__icon" size={18} />
+                  <span className="plan-card__feature-text">{f}</span>
+                </li>
+              ))}
+            </ul>
+            <SubscribeButton
+              priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
+              isCurrentPlan={isPro}
+              isPendingDeletion={userIsPendingDeletion}
+              data-ph-capture-attribute-button-name="payments-subscribe-pro-btn"
+              data-ph-capture-attribute-feature="subscribe"
+            />
+          </div>
 
-  {/* HOBBYIST CARD */}
-  <div className="plan-card">
-    <h3 className="plan-card__name">Hobbyist</h3>
-    <div className="plan-card__price">
-      9.99<span className="plan-card__month">/ mo</span>
-    </div>
-    <ul className="plan-card__feature-list">
-      {features.hobby.map((f, i) => (
-        <li key={i} className="plan-card__feature-item">
-          <Check className="plan-card__icon" size={18} /> 
-          <span className="plan-card__feature-text">{f}</span>
-        </li>
-      ))}
-    </ul>
-    <SubscribeButton
-      priceId={process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID!}
-      isHobby={isHobby}
-    />
-  </div>
+          {/* HOBBY CARD */}
+          <div className="plan-card">
+            <h3 className="plan-card__name">Hobby</h3>
+            <div className="plan-card__price">
+              12.99<span className="plan-card__month">/ mo</span>
+            </div>
+            <ul className="plan-card__feature-list">
+              {features.hobby.map((f, i) => (
+                <li key={i} className="plan-card__feature-item">
+                  <Check className="plan-card__icon" size={18} />
+                  <span className="plan-card__feature-text">{f}</span>
+                </li>
+              ))}
+            </ul>
+            <SubscribeButton
+              priceId={process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID!}
+              isCurrentPlan={isHobby}
+              isPendingDeletion={userIsPendingDeletion}
+              data-ph-capture-attribute-button-name="payments-subscribe-hobby-btn"
+              data-ph-capture-attribute-feature="subscribe"
+            />
+          </div>
 
-  {/* BASIC CARD */}
-  <div className="plan-card">
-    <h3 className="plan-card__name">Free</h3>
-    <div className="plan-card__price">
-      0<span className="plan-card__month">/ mo</span>
-    </div>
-    <ul className="plan-card__feature-list">
-      {features.basic.map((f, i) => (
-        <li key={i} className="plan-card__feature-item">
-          <Check className="plan-card__icon" size={18} /> 
-          <span className="plan-card__feature-text">{f}</span>
-        </li>
-      ))}
-    </ul>
-    <button className="generate-btn" disabled={isBasic}>
-      {isBasic ? "Current Plan" : "Free"}
-    </button>
-  </div>
-</div>
+          {/* BASIC CARD */}
+          <div className="plan-card">
+            <h3 className="plan-card__name">Free</h3>
+            <div className="plan-card__price">
+              0<span className="plan-card__month">/ mo</span>
+            </div>
+            <ul className="plan-card__feature-list">
+              {features.basic.map((f, i) => (
+                <li key={i} className="plan-card__feature-item">
+                  <Check className="plan-card__icon" size={18} />
+                  <span className="plan-card__feature-text">{f}</span>
+                </li>
+              ))}
+            </ul>
+            <button
+              className="generate-btn"
+              disabled={isBasic || userIsPendingDeletion}
+              data-ph-capture-attribute-button-name="payments-subscribe-free-btn"
+              data-ph-capture-attribute-feature="subscribe"
+            >
+              {isBasic ? "Current Plan" : "Free"}
+            </button>
+          </div>
+        </div>
       </main>
     </>
   );

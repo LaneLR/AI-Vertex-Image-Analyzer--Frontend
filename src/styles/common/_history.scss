@@ -282,7 +282,7 @@
     transition: all 0.2s;
 
     // &:hover {
-    //   color: #ef4444;
+    //   color: var(--error-text);
     //   background: rgba(239, 68, 68, 0.1);
     // }
   }
@@ -480,11 +480,11 @@
   }
 
   .btn-danger {
-    background: #ef4444;
+    background: var(--error-text);
     color: white;
     border: none;
     &:hover {
-      background: #dc2626;
+      background: var(--error-bg);
     }
   }
 }

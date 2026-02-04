@@ -1,14 +1,16 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "../api/auth/[...nextauth]/route";
-import { redirect } from "next/navigation";
 import HomeClient from "@/components/HomeClient";
+import Loading from "@/components/Loading";
+import { Suspense } from "react";
 
-export default async function DashboardPage() {
-  const session = await getServerSession(authOptions);
+export const metadata = {
+  title: "Dashboard | ResaleIQ",
+  description: "Identify and appraise items instantly.",
+};
 
-  if (!session) {
-    redirect("/login");
-  }
-  
-  return <HomeClient user={session.user} />;
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <HomeClient />
+    </Suspense>
+  );
 }

@@ -11,22 +11,27 @@ import Link from "next/link";
 
 export default function WebHome() {
   const features = {
-    basic: ["5 Scans per day.", "1 Image per scan.", "Basic price estimates.", "Access to your scan history."],
+    basic: [
+      "5 Scans per day.",
+      "1 Image per scan.",
+      "Basic price estimates.",
+      "Access to your scan history.",
+    ],
     hobby: [
       "50 scans per day.",
       "2 Images per scan.",
       "Improved accuracy and price estimates.",
       "Access to your scan history.",
+      "Profitability grading on appraised items.",
       "Access to Profit Calculator.",
-      "Profitability grading on appraised items"
     ],
     pro: [
       "100 scans per day.",
       "3 Images per scan.",
       "High accuracy price estimates.",
       "Access to your scan history.",
-      "Access to Profit Calculator.",
       "Profitability grading on appraised items.",
+      "Access to Profit Calculator.",
       "Access to SEO Generator to create SEO-optimized listing details.",
       "Unlimited access to Photo Studio to automatically create listing photos.",
     ],
@@ -35,11 +40,10 @@ export default function WebHome() {
       "3 Images per scan.",
       "High accuracy price estimates.",
       "Access to your scan history.",
-      "Access to Profit Calculator.",
       "Profitability grading on appraised items.",
+      "Access to Profit Calculator.",
       "Access to SEO Generator to create SEO-optimized listing details.",
       "Unlimited access to Photo Studio to automatically create listing photos.",
-      "Multi-platform and marketplace price comparison.",
       "Access to Inventory Manager for tracking and managing items.",
       "CSV download of inventory and listings for bulk uploading.",
     ],
@@ -53,7 +57,7 @@ export default function WebHome() {
           <div className="web__heroContent">
             <span className="web__tag">
               <Sparkles size={14} style={{ marginRight: "8px" }} />
-              Item Flipping AI Companion
+              Item Reselling AI Companion
             </span>
             <h1 className="web__title">
               <p>Turn</p>
@@ -62,8 +66,8 @@ export default function WebHome() {
               <span className="web__titleHighlight"> Sold for $200.</span>
             </h1>
             <p className="web__subtitle">
-              Scan items instantly. Analyze market value. Flip with confidence.
-              The most powerful tool for thrift hunters and resellers.
+              Scan items instantly. Analyze market value. Resell and flip with confidence.
+              The most powerful tool for resellers and thrifters.
             </p>
             <div className="web__actions">
               <Link href={"/login"}>
@@ -85,7 +89,7 @@ export default function WebHome() {
                 <div className="web__placeholderImg">
                   <img
                     src="/images/AppDisplay.png"
-                    alt="FlipSavvy App Interface"
+                    alt="ResaleIQ App Interface"
                   />
                 </div>
                 <div className="web__phoneButton volume"></div>
@@ -102,7 +106,7 @@ export default function WebHome() {
           <div className="web__sectionHeader">
             <h2 className="web__sectionTitleWhite">The 3-Second Workflow</h2>
             <p className="web__sectionParagraphWhite">
-              From the thrift shelf to your bank account in three steps.
+              From the shelf to your bank account in three steps.
             </p>
           </div>
 
@@ -147,7 +151,7 @@ export default function WebHome() {
           <div className="web__sectionHeader">
             <h2 className="web__sectionTitleBlack">Affordable Pricing</h2>
             <p className="web__sectionParagraphBlack">
-              From the thrift shelf to your bank account in three steps.
+              From the shelf to your bank account in three steps.
             </p>
           </div>
           <div className="web__pricingWrapper">
@@ -169,9 +173,9 @@ export default function WebHome() {
             </div>
 
             <div className="planCard planCardPro">
-              <h3 className="planCard__name">Hobbyist</h3>
+              <h3 className="planCard__name">Hobby</h3>
               <div className="planCard__price">
-                9.99<span>/ mo</span>
+                12.99<span>/ mo</span>
               </div>
               <ul className="planCard__list">
                 {features.hobby.map((f, i) => (
@@ -209,9 +213,9 @@ export default function WebHome() {
 
             <div className="planCard planCardPro">
               {/* <div className="planCard__badge">Recommended</div> */}
-              <h3 className="planCard__name">Business</h3>
+              <h3 className="planCard__name">Elite</h3>
               <div className="planCard__price">
-                39.99<span>/ mo</span>
+                59.99<span>/ mo</span>
               </div>
               <ul className="planCard__list">
                 {features.business.map((f, i) => (
@@ -222,7 +226,7 @@ export default function WebHome() {
               </ul>
               <Link href={"/login"}>
                 <button className="planCard__btn planCard__btnHighlight">
-                  Upgrade to Business Plan
+                  Upgrade to Elite Plan
                 </button>
               </Link>
             </div>

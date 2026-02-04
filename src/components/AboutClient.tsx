@@ -29,7 +29,12 @@ export default function AboutClient() {
     <main className="about-page">
       {/* Navigation */}
       <header className="about-page__header">
-        <button onClick={handleBack} className="back-btn">
+        <button
+          onClick={handleBack}
+          className="back-btn"
+          data-ph-capture-attribute-button-name="about-back-btn"
+          data-ph-capture-attribute-feature="back"
+        >
           <ArrowLeft size={20} />
         </button>
         <h1>About Us</h1>
@@ -42,7 +47,7 @@ export default function AboutClient() {
           <div className="brand-logo">
             <ScanEye size={40} />
           </div>
-          <h2 className="about-hero__title">FlipSavvy</h2>
+          <h2 className="about-hero__title">ResaleIQ</h2>
           <p className="about-hero__subtitle">
             Empowering thrifters with AI-driven market insights.
           </p>
@@ -54,7 +59,7 @@ export default function AboutClient() {
             <Target size={14} /> Our Mission
           </div>
           <p className="about-text">
-            FlipSavvy was built for the modern treasure hunter. We combine
+            ResaleIQ was built for the modern treasure hunter. We combine
             cutting-edge AI vision technology with real-time market data to help
             you identify, value, and flip thrift store finds with confidence.
           </p>
@@ -103,12 +108,12 @@ export default function AboutClient() {
               <span>Legal Disclaimers</span>
             </div>
             <p>
-              *FlipSavvy is an AI tool that provides price estimates and does
-              not guarantee accuracy. AI-generated appraisals can be incorrect
-              or unreliable. Please perform your own research.
+              *ResaleIQ is an AI tool that provides price estimates and does not
+              guarantee accuracy. AI-generated appraisals can be incorrect or
+              unreliable. Please perform your own research.
             </p>
             <p>
-              **FlipSavvy does not guarantee profit or success in resale
+              **ResaleIQ does not guarantee profit or success in resale
               activities.
             </p>
           </div>
