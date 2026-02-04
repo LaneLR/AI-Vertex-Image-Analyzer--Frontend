@@ -1,14 +1,15 @@
 "use client";
-import Header from "@/components/Header";
+import { Suspense, useEffect } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
 import { usePostHog } from "posthog-js/react";
-import { useEffect } from "react";
+import Header from "@/components/Header";
 
 interface ClientWrapperProps {
   children: React.ReactNode;
 }
 
-export default function ClientWrapper({ children }: ClientWrapperProps) {
+// 1. Create a sub-component for the search params logic
+function PostHogPageView() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const posthog = usePostHog();
@@ -23,8 +24,17 @@ export default function ClientWrapper({ children }: ClientWrapperProps) {
     }
   }, [pathname, searchParams, posthog]);
 
+  return null; // This component doesn't render anything
+}
+
+export default function ClientWrapper({ children }: ClientWrapperProps) {
   return (
     <div>
+      {/* 2. Wrap the search-dependent component in Suspense */}
+      <Suspense fallback={null}>
+        <PostHogPageView />
+      </Suspense>
+      
       <div className="main-content-wrapper">{children}</div>
       <Header />
     </div>
