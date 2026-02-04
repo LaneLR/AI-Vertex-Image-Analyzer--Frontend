@@ -87,8 +87,8 @@ export function AppProvider({
   }, [refreshUser]);
 
   useEffect(() => {
-    if (user?.dailyScansCount !== undefined) {
-      setDailyScansUsed(user.dailyScansCount);
+    if (user) {
+      setDailyScansUsed(user.dailyScansCount ?? 0);
     }
   }, [user]);
 

@@ -49,14 +49,13 @@ export default function PaymentsClient() {
       "1 Image per scan.",
       "Basic price estimates.",
       "Access to your scan history.",
-      "Profitability grading on appraised items",
     ],
     hobby: [
       "50 scans per day.",
       "2 Images per scan.",
       "Improved accuracy and price estimates.",
       "Access to your scan history.",
-      "Profitability grading on appraised items",
+      "Profitability grading on appraised items.",
       "Access to Profit Calculator.",
     ],
     pro: [
@@ -83,6 +82,8 @@ export default function PaymentsClient() {
     ],
   };
 
+  const userIsPendingDeletion = user.scheduledDeletionDate ? true : false;
+
   return (
     <>
       <header className="help-page__header">
@@ -104,13 +105,30 @@ export default function PaymentsClient() {
           <p className="pricing-section__subtitle">
             Choose the plan that fits you.
           </p>
+
+          {user.scheduledDeletionDate !== null && (
+            <>
+              <br />
+              <div className="deactivation-banner">
+                <div>
+                  <p>
+                    <strong>Your account is pending deactivation. </strong>
+                    <span>
+                      Please cancel your account's pending deletion before
+                      selecting a plan.
+                    </span>
+                  </p>
+                </div>
+              </div>{" "}
+            </>
+          )}
         </header>
 
         <div className="pricing-grid">
           {/* BUSINESS CARD */}
           <div className="plan-card plan-card--featured">
             <div className="plan-card__badge">Best Value</div>
-            <h3 className="plan-card__name">Business</h3>
+            <h3 className="plan-card__name">Elite</h3>
             <div className="plan-card__price">
               59.99<span className="plan-card__month">/ mo</span>
             </div>
@@ -125,6 +143,7 @@ export default function PaymentsClient() {
             <SubscribeButton
               priceId={process.env.NEXT_PUBLIC_STRIPE_BUSINESS_PRICE_ID!}
               isCurrentPlan={isBusiness}
+              isPendingDeletion={userIsPendingDeletion}
               data-ph-capture-attribute-button-name="payments-subscribe-elite-btn"
               data-ph-capture-attribute-feature="subscribe"
             />
@@ -148,14 +167,15 @@ export default function PaymentsClient() {
             <SubscribeButton
               priceId={process.env.NEXT_PUBLIC_STRIPE_PRO_PRICE_ID!}
               isCurrentPlan={isPro}
+              isPendingDeletion={userIsPendingDeletion}
               data-ph-capture-attribute-button-name="payments-subscribe-pro-btn"
               data-ph-capture-attribute-feature="subscribe"
             />
           </div>
 
-          {/* HOBBYIST CARD */}
+          {/* HOBBY CARD */}
           <div className="plan-card">
-            <h3 className="plan-card__name">Hobbyist</h3>
+            <h3 className="plan-card__name">Hobby</h3>
             <div className="plan-card__price">
               12.99<span className="plan-card__month">/ mo</span>
             </div>
@@ -170,6 +190,7 @@ export default function PaymentsClient() {
             <SubscribeButton
               priceId={process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID!}
               isCurrentPlan={isHobby}
+              isPendingDeletion={userIsPendingDeletion}
               data-ph-capture-attribute-button-name="payments-subscribe-hobby-btn"
               data-ph-capture-attribute-feature="subscribe"
             />
@@ -191,7 +212,7 @@ export default function PaymentsClient() {
             </ul>
             <button
               className="generate-btn"
-              disabled={isBasic}
+              disabled={isBasic || userIsPendingDeletion}
               data-ph-capture-attribute-button-name="payments-subscribe-free-btn"
               data-ph-capture-attribute-feature="subscribe"
             >

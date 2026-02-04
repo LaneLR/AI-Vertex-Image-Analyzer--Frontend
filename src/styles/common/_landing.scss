@@ -1,7 +1,6 @@
 .home-screen {
   background-color: var(--bg-main);
   min-height: fit-content;
-  // padding-bottom: 5rem;
 }
 
 .home-stats {
@@ -21,6 +20,21 @@
     gap: 6px;
     font-size: 16px;
   }
+  
+&--title {
+    display: block; 
+    font-size: 18px; 
+    
+    .primary-text { color: var(--primary-theme); }
+    .secondary-text { color: #fff; }
+  }
+
+  /* Mobile Breakpoint */
+  @media screen and (max-width: 768px) {
+    &--title {
+      display: none; /* Disappears on mobile */
+    }
+  }
 }
 
 .home-container {
@@ -33,7 +47,7 @@
   align-items: flex-start;
   justify-content: center;
 
-  @media (max-width: 991px) {
+  @media (max-width: 1024px) {
     flex-direction: column;
     align-items: center;
     gap: 0;

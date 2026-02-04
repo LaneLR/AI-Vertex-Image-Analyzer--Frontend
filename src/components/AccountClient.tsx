@@ -204,9 +204,9 @@ export default function AccountClient() {
               {isPro
                 ? "Pro"
                 : isHobby
-                  ? "Hobbyist"
+                  ? "Hobby"
                   : isBusiness
-                    ? "Business"
+                    ? "Elite"
                     : "Free"}
             </span>
           </div>
@@ -247,12 +247,9 @@ export default function AccountClient() {
 
             {/* CONDITIONAL ACTIONS BASED ON PLAN */}
             {isPro || isHobby || isBusiness ? (
-              <div
-                className="subscription-manage-area"
-                style={{ marginTop: "1.5rem" }}
-              >
+              <div className="subscription-manage-area">
                 <p className="usage-hint">
-                  Your daily scans resets at midnight.
+                  Your daily scans resets at in [remaining time].
                 </p>
                 <button
                   className="secondary-btn"
@@ -268,7 +265,7 @@ export default function AccountClient() {
             ) : (
               <div className="upgrade-area">
                 <p className="usage-hint">
-                  Get more scans with the Hobbyist or Pro plans!
+                  Get more scans when you ugprade your account!
                 </p>
                 {/* <PaymentsClient user={user} /> */}
                 <Link href={"/payments"}>

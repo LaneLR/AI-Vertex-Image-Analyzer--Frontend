@@ -42,15 +42,6 @@ export default function HomeClient() {
     }
   }, [user, isLoading, router]);
 
-  useEffect(() => {
-    if (user?.dailyScansCount !== undefined) {
-      const lastUpdate = new Date(user.lastScanDate || new Date());
-      const now = new Date();
-      const isNewDay = lastUpdate.getUTCDate() !== now.getUTCDate();
-      setDailyScansUsed(isNewDay ? 0 : user.dailyScansCount);
-    }
-  }, [user, setDailyScansUsed]);
-
   if (isLoading || !user) {
     return (
       <div className="loading-state">
@@ -62,6 +53,7 @@ export default function HomeClient() {
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
   const isBusiness = user?.subscriptionStatus === "business";
+  const isBasic = user?.subscriptionStatus === "basic"
   const maxPhotos = isPro || isBusiness ? 3 : isHobby ? 2 : 1;
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -223,12 +215,16 @@ export default function HomeClient() {
             {isPro
               ? "Pro Plan"
               : isHobby
-                ? "Hobbyist Plan"
+                ? "Hobby Plan"
                 : isBusiness
-                  ? "Business Plan"
+                  ? "Elite Plan"
                   : "Free Plan"}
           </span>
         </div>
+        {/* <div className="home-stats--title">
+          <span className="primary-text">Resale</span>
+          <span className="secondary-text">IQ</span>
+        </div> */}
         <div className="home-stats__item">
           <BarChart3 size={16} className="orange-icon" />
           <span className="home-stats__item">
@@ -382,7 +378,7 @@ export default function HomeClient() {
                   <label>Estimated Value</label>
                   <h2>{result.priceRange}</h2>
                 </div>
-                {result.grade && (
+                {!isBasic && result.grade && (
                   <div
                     className="grade-badge"
                     style={{ borderColor: getGradeColor(result.grade) }}

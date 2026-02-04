@@ -398,7 +398,7 @@ export default function SettingsClient() {
               </div>
               <div>
                 <strong>One-Tap Inventory:</strong> Easily move successful scans
-                into your Business Inventory for long-term tracking.
+                into your Inventory for long-term tracking.
               </div>
               <div>
                 <strong>Cloud Sync:</strong> Your history is saved to your
@@ -577,8 +577,8 @@ export default function SettingsClient() {
         >
           <div className="feature-info-modal">
             <p>
-              Designed for Business Tier users to manage their active stock and
-              track the total value of their business.
+              Designed for Elite Tier users to manage their active stock and
+              track the total value of their inventory.
             </p>
             <br />
             <div className="feature-benefits">
@@ -591,7 +591,7 @@ export default function SettingsClient() {
                 your entire inventory at a single glance.
               </div>
               <div>
-                <strong>Business Workflow:</strong> Toggle "Auto-Add" on the
+                <strong>Workflow:</strong> Toggle "Auto-Add" on the
                 home screen to skip history and send scans straight to
                 inventory.
               </div>
@@ -763,7 +763,7 @@ export default function SettingsClient() {
                 <div className="icon-box icon-box--alert">
                   <BookmarkX size={20} />
                 </div>
-                <p className="item-label item-label--alert">
+                <div className="item-label item-label--alert">
                   {user.scheduledDeletionDate === null ? (
                     "Deactivate Account"
                   ) : (
@@ -771,7 +771,7 @@ export default function SettingsClient() {
                       Deactivation scheduled in <u>{deletionCountdown} days</u>
                     </div>
                   )}
-                </p>
+                </div>
               </div>
               <ChevronRight size={18} className="chevron" />
             </button>

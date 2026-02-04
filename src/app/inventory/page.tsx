@@ -4,7 +4,7 @@ import { Suspense } from "react";
 
 export const metadata = {
   title: "Inventory | ResaleIQ",
-  description: "Manage your business inventory and track potential profits.",
+  description: "Manage your inventory and track potential profits.",
 };
 
 export default function InventoryPage() {

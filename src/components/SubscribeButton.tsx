@@ -7,12 +7,14 @@ import { useRouter } from "next/navigation";
 
 interface SubscribeButtonProps {
   priceId: string;
-  isCurrentPlan?: boolean; // Simplified prop
+  isCurrentPlan?: boolean; 
+  isPendingDeletion?: boolean;
 }
 
 export default function SubscribeButton({
   priceId,
   isCurrentPlan = false,
+  isPendingDeletion = false,
 }: SubscribeButtonProps) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -74,8 +76,8 @@ export default function SubscribeButton({
     const HOBBY_ID = process.env.NEXT_PUBLIC_STRIPE_HOBBY_PRICE_ID;
 
     if (priceId === PRO_ID) return "Switch to Pro";
-    if (priceId === BUSINESS_ID) return "Switch to Business";
-    if (priceId === HOBBY_ID) return "Switch to Hobbyist";
+    if (priceId === BUSINESS_ID) return "Switch to Elite";
+    if (priceId === HOBBY_ID) return "Switch to Hobby";
     return "";
   };
 
@@ -88,7 +90,7 @@ export default function SubscribeButton({
           <button
             className="generate-btn"
             onClick={handleSubscribe}
-            disabled={isCurrentPlan || loading}
+            disabled={isCurrentPlan || isPendingDeletion || loading}
             data-ph-capture-attribute-button-name="subscribe-button"
             data-ph-capture-attribute-feature="subscribe"
           >

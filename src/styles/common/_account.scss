@@ -25,9 +25,14 @@
   }
 
   &__content {
-    max-width: 500px;
+    max-width: 100%;
     margin: 0 auto;
     padding: 2rem 1.25rem 4.5rem 1.25rem;
+
+    @media screen and (min-width: 768px) {
+      display: row;
+      width: 80%;
+    }
   }
 }
 
@@ -144,8 +149,11 @@
   .usage-hint {
     font-size: 0.9rem;
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
+    padding: 0.3rem;
     text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -311,6 +319,18 @@
     &:active {
       transform: translateY(0);
     }
+  }
+  
+  &--pending-deactivation {
+    display: inline;
+    flex-direction: row;
+    gap: 5px;
+  }
+
+  &--strong {
+    display: flex;
+    flex-direction: column;
+    width: auto;
   }
 }
 

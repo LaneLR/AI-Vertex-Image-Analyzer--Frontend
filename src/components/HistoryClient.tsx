@@ -105,7 +105,7 @@ export default function HistoryClient() {
       });
 
       if (res.ok) {
-        setSuccessMessage("Item added to your business inventory!");
+        setSuccessMessage("Item added to your inventory!");
         setTimeout(() => setSuccessMessage(null), 3000);
       } else {
         const data = await res.json();
