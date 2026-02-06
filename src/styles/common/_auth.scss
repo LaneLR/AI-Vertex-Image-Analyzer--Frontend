@@ -145,6 +145,7 @@
 
 .underline-container {
   width: fit-content;
+  font-size: 14px;
 }
 
 .underline {
@@ -160,6 +161,7 @@
   color: var(--text-primary);
   border-radius: 14px;
   font-weight: 700;
+  font-size: 14px;
   border: none;
   display: flex;
   align-items: center;
@@ -204,7 +206,8 @@
   border: 1px solid var(--border-color);
   border-radius: 14px;
   color: var(--text-primary);
-  font-weight: 600;
+  font-weight: 700;
+  font-size: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
