@@ -7,6 +7,7 @@
   background: var(--bg-main);
   overflow: none;
   padding: 0 1.5rem;
+  overflow: hidden;
 }
 
 .auth-container {
@@ -101,7 +102,7 @@
     left: 1rem;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-tertiary);
+    color: var(--text-secondary);
   }
 
   input {
@@ -215,6 +216,22 @@
   cursor: pointer;
 }
 
+.apple-auth-btn {
+  width: 100%;
+  padding: 0.9rem;
+  background: #1a1a1a;
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  cursor: pointer;
+}
+
 .letter-spacing-textlink {
   letter-spacing: 0.35px;
 }
@@ -271,4 +288,12 @@
     border-radius: 14px;
     color: var(--text-primary);
   }
+}
+
+.sso-button-cont {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
 }

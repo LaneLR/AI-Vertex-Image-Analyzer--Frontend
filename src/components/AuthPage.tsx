@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Mail, Lock, ArrowRight, Chrome } from "lucide-react";
+import { Mail, Lock, ArrowRight, Chrome, Apple, AppleIcon } from "lucide-react";
 import InfoModal from "./InfoModal";
 import Loading from "./Loading";
 import Image from "next/image";
@@ -285,7 +285,7 @@ export default function UnifiedAuthPage() {
         <header className="auth-header">
           {/* <Image width={125} height={125} alt="Logo" src={logo} priority /> */}
           <h1 className="auth-title">
-            {view === "login" && "Welcome Back"}
+            {view === "login" && "Sign In"}
             {view === "register" && "Join & Start Appraising"}
             {view === "verify" && "Enter Code"}
             {view === "forgot" && "Find Account"}
@@ -424,17 +424,36 @@ export default function UnifiedAuthPage() {
               <div className="auth-divider">
                 <span>OR</span>
               </div>
-              <button
-                type="button"
-                className="google-auth-btn"
-                onClick={() => handleGoogleAuth()}
-                disabled={loading}
-                data-ph-capture-attribute-button-name="auth-google-signin-btn"
-                data-ph-capture-attribute-feature="auth"
-              >
-                <Chrome size={18} />
-                Continue with Google
-              </button>
+              <div className="sso-button-cont">
+                <button
+                  type="button"
+                  className="google-auth-btn"
+                  onClick={() => handleGoogleAuth()}
+                  disabled={loading}
+                  data-ph-capture-attribute-button-name="auth-google-signin-btn"
+                  data-ph-capture-attribute-feature="auth"
+                >
+                  <Chrome size={22} />
+                  Sign in with Google
+                </button>
+                <button
+                  type="button"
+                  className="apple-auth-btn"
+                  onClick={() => handleGoogleAuth()}
+                  disabled={loading}
+                  data-ph-capture-attribute-button-name="auth-google-signin-btn"
+                  data-ph-capture-attribute-feature="auth"
+                >
+                  {/* <AppleIcon size={18} /> */}
+                  <Image
+                    src={"/images/AppleLogo.png"}
+                    width={22}
+                    height={22}
+                    alt=""
+                  />
+                  Sign in with Apple
+                </button>
+              </div>
             </>
           )}
         </form>
@@ -498,17 +517,36 @@ export default function UnifiedAuthPage() {
               <div className="auth-divider">
                 <span>OR</span>
               </div>
-              <button
-                type="button"
-                className="google-auth-btn"
-                onClick={() => handleGoogleAuth()}
-                disabled={loading}
-                data-ph-capture-attribute-button-name="auth-google-signin-btn"
-                data-ph-capture-attribute-feature="auth"
-              >
-                <Chrome size={18} />
-                Continue with Google
-              </button>
+              <div className="sso-button-cont">
+                <button
+                  type="button"
+                  className="google-auth-btn"
+                  onClick={() => handleGoogleAuth()}
+                  disabled={loading}
+                  data-ph-capture-attribute-button-name="auth-google-signin-btn"
+                  data-ph-capture-attribute-feature="auth"
+                >
+                  <Chrome size={22} />
+                  Sign in with Google
+                </button>
+                <button
+                  type="button"
+                  className="apple-auth-btn"
+                  onClick={() => handleGoogleAuth()}
+                  disabled={loading}
+                  data-ph-capture-attribute-button-name="auth-google-signin-btn"
+                  data-ph-capture-attribute-feature="auth"
+                >
+                  {/* <AppleIcon size={18} /> */}
+                  <Image
+                    src={"/images/AppleLogo.png"}
+                    width={22}
+                    height={22}
+                    alt=""
+                  />
+                  Sign in with Apple
+                </button>
+              </div>
             </>
           )}
           <br />
