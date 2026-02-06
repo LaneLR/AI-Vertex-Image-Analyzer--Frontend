@@ -43,6 +43,7 @@
     "stripe": "^18.4.0"
   },
   "devDependencies": {
+    "@capacitor/status-bar": "^8.0.0",
     "@eslint/eslintrc": "^3",
     "@google/generative-ai": "^0.24.1",
     "@types/jsonwebtoken": "^9.0.10",
