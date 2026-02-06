@@ -53,7 +53,7 @@ export default function HomeClient() {
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
   const isBusiness = user?.subscriptionStatus === "business";
-  const isBasic = user?.subscriptionStatus === "basic"
+  const isBasic = user?.subscriptionStatus === "basic";
   const maxPhotos = isPro || isBusiness ? 3 : isHobby ? 2 : 1;
 
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
