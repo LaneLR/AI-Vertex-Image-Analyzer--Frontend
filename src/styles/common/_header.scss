@@ -8,7 +8,7 @@
   backdrop-filter: blur(10px);
   border-top: 1px solid var(--border-color);
   z-index: 1000;
-  padding-bottom: env(safe-area-inset-bottom); // Support for iPhone Notch
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 
   &__container {
     display: flex;
