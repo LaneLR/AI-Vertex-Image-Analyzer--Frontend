@@ -15,5 +15,8 @@ declare module '@capacitor/cli' {
     android?: {
       appendUserAgent?: string;
     };
+    plugins?: {
+      
+    }
   }
 }

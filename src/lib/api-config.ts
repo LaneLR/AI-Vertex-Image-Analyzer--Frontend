@@ -42,26 +42,9 @@
 
 // lib/api-config.ts
 
-const PRODUCTION_API_URL = "https://flip-finder.onrender.com";
-
 export const getApiUrl = (path: string) => {
   const sanitizedPath = path.startsWith("/") ? path : `/${path}`;
-  
-  // Use the env variable if it exists, otherwise fallback to Production
   const baseUrl = process.env.NEXT_PUBLIC_API_URL 
-    // || PRODUCTION_API_URL;
-
-  if (typeof window !== "undefined") {
-    // If we are in development (localhost), we MUST use the absolute URL (port 5000)
-    // because Next.js (port 3000) is no longer hosting the API.
-    if (window.location.hostname === 'localhost') {
-      return `${baseUrl}${sanitizedPath}`;
-    }
-
-    // For production web builds, relative paths are fine if hosted on the same domain
-    // but absolute paths are safer for Capacitor.
-    return `${baseUrl}${sanitizedPath}`;
-  }
 
   return `${baseUrl}${sanitizedPath}`;
 };

@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
+import { StatusBar, Style } from '@capacitor/status-bar';
 
 interface AppContextRef {
   user: any;
@@ -81,6 +82,24 @@ export function AppProvider({
     setDailyScansUsed(0);
     router.push("/login");
   }, [router]);
+
+  useEffect(() => {
+  const updateStatusBar = async () => {
+    // Check if the HTML has the 'dark' class (from your script)
+    const isDark = document.documentElement.classList.contains('dark');
+
+    if (isDark) {
+      await StatusBar.setStyle({ style: Style.Dark });
+      // Only works on Android, but good for consistency:
+      // await StatusBar.setBackgroundColor({ color: '#0f0f0f' }); 
+    } else {
+      await StatusBar.setStyle({ style: Style.Light });
+      // await StatusBar.setBackgroundColor({ color: '#ffffff' });
+    }
+  };
+
+  updateStatusBar();
+}, []);
 
   useEffect(() => {
     refreshUser();
