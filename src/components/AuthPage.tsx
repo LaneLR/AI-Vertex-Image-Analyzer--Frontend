@@ -283,7 +283,7 @@ export default function UnifiedAuthPage() {
     <main className="auth-page">
       <div className="auth-container">
         <header className="auth-header">
-          <Image width={125} height={125} alt="Logo" src={logo} priority />
+          {/* <Image width={125} height={125} alt="Logo" src={logo} priority /> */}
           <h1 className="auth-title">
             {view === "login" && "Welcome Back"}
             {view === "register" && "Join & Start Appraising"}
