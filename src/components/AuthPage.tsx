@@ -433,7 +433,7 @@ export default function UnifiedAuthPage() {
                   data-ph-capture-attribute-button-name="auth-google-signin-btn"
                   data-ph-capture-attribute-feature="auth"
                 >
-                  <Chrome size={24} />
+                  <Chrome size={22} />
                   Sign in with Google
                 </button>
                 <button
@@ -447,8 +447,8 @@ export default function UnifiedAuthPage() {
                   {/* <AppleIcon size={18} /> */}
                   <Image
                     src={"/images/AppleLogo.png"}
-                    width={24}
-                    height={24}
+                    width={22}
+                    height={22}
                     alt=""
                   />
                   Sign in with Apple
@@ -526,7 +526,7 @@ export default function UnifiedAuthPage() {
                   data-ph-capture-attribute-button-name="auth-google-signin-btn"
                   data-ph-capture-attribute-feature="auth"
                 >
-                  <Chrome size={24} />
+                  <Chrome size={22} />
                   Sign in with Google
                 </button>
                 <button
@@ -540,8 +540,8 @@ export default function UnifiedAuthPage() {
                   {/* <AppleIcon size={18} /> */}
                   <Image
                     src={"/images/AppleLogo.png"}
-                    width={24}
-                    height={24}
+                    width={22}
+                    height={22}
                     alt=""
                   />
                   Sign in with Apple
