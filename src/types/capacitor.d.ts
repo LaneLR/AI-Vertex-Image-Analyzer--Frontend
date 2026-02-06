@@ -10,6 +10,7 @@ declare module '@capacitor/cli' {
     };
     ios?: {
       appendUserAgent?: string;
+      backgroundColor?: string;
     };
     android?: {
       appendUserAgent?: string;
