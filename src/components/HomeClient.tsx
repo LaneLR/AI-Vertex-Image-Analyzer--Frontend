@@ -239,7 +239,7 @@ export default function HomeClient() {
         <div className="home-top-section">
           <section className="home-hero">
             <h1>Identify & Appraise Instantly</h1>
-            <p>Snapshot any item to get resale values and profit estimates.</p>
+            <p>Snapshot any item to get resale values.</p>
           </section>
 
           <div className="home-upload card">
