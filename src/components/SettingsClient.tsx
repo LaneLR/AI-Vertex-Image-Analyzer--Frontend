@@ -561,7 +561,7 @@ export default function SettingsClient() {
                     data-ph-capture-attribute-button-name="settings-modal-btn-photo-redirect"
                     data-ph-capture-attribute-feature="settings"
                   >
-                    Go to Listing Generator
+                    Go to Listing Studio
                   </Link>
                 )}
               </div>

@@ -303,7 +303,7 @@ export default function HistoryClient() {
                                       <Trash2 size={18} />
                                     </button>
                                     {isBusiness ||
-                                      (isPro && (
+                                      (isBusiness && (
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
