@@ -6,8 +6,10 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 24px;
-    // position: sticky;
+    padding-top: calc(1rem + env(safe-area-inset-top)); 
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    padding-bottom: 1.25rem;
     top: 0;
     z-index: 10;
     background: var(--bg-nav);

@@ -16,7 +16,10 @@
 
   &__header {
     background: var(--bg-nav);
-    padding: 12px 24px;
+    padding-top: calc(1rem + env(safe-area-inset-top)); 
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    padding-bottom: 1.25rem;
     color: var(--text-primary);
     border-bottom: 1px solid var(--border-color);
     display: flex;
