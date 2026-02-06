@@ -1,5 +1,5 @@
 import React from "react";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "@/styles/main.scss";
 import ClientWrapper from "../components/ClientWrapper";
@@ -7,9 +7,16 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AppProvider } from "@/context/AppContext";
 import { PHProvider } from "@/providers/PosthogProvider";
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false, 
+};
+
 export const metadata: Metadata = {
   title: "ResaleIQ | Item Appraisal",
-  description: "Identify and value thrift finds instantly with AI",
+  description: "Identify and value items instantly with AI",
 };
 
 export default function RootLayout({
