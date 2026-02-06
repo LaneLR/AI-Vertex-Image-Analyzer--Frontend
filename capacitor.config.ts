@@ -9,7 +9,8 @@ const config: CapacitorConfig = {
     iosScheme: 'https'
   },
   ios: {
-    appendUserAgent: 'ResaleIQ-Mobile-App'
+    appendUserAgent: 'ResaleIQ-Mobile-App',
+    backgroundColor: 'var(--bg-main)'
   },
   android: {
     appendUserAgent: 'ResaleIQ-Mobile-App'
