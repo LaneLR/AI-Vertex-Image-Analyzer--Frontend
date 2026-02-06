@@ -132,13 +132,9 @@ export default function HomeClient() {
     if (images.length === 0) return;
 
     setLoading(true);
-
     const formData = new FormData();
-
     images.forEach((img) => formData.append("image", img));
-
     formData.append("mode", "appraisal");
-
     formData.append("addToInventory", String(addToInventory));
 
     try {
@@ -158,8 +154,13 @@ export default function HomeClient() {
 
       if (res.ok) {
         setResult(data);
-
         incrementScans();
+        setTimeout(() => {
+          resultsRef.current?.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }, 150);
       } else if (res.status === 429) {
         setShowModal(true);
       } else if (res.status === 401) {
@@ -455,6 +456,7 @@ export default function HomeClient() {
             <div className="errorModal-text">
               One or more of the images could not be scanned.
             </div>
+            <br />
             <div className="errorModal-text">
               Please select a different photo and try again.
             </div>

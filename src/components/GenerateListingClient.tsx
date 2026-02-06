@@ -26,13 +26,14 @@ import { getApiUrl } from "@/lib/api-config";
 import { useApp } from "@/context/AppContext";
 import { useRouter } from "next/navigation";
 import InfoModal from "./InfoModal";
+import Link from "next/link";
 
 export default function GenerateListingClient() {
   const { user, dailyScansUsed, setDailyScansUsed, incrementScans, isLoading } =
     useApp();
   const router = useRouter();
   const resultsRef = useRef<HTMLDivElement>(null);
-  const backgroundRef = useRef<HTMLAnchorElement>(null);
+  const backgroundRef = useRef<HTMLButtonElement>(null);
   const [activeTab, setActiveTab] = useState<"seo" | "studio">("seo");
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [images, setImages] = useState<File[]>([]);
@@ -49,6 +50,8 @@ export default function GenerateListingClient() {
     title: string;
     message: string;
   } | null>(null);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
 
   const isPro = user?.subscriptionStatus === "pro";
   const isHobby = user?.subscriptionStatus === "hobby";
@@ -172,6 +175,41 @@ export default function GenerateListingClient() {
     }
   };
 
+  const handleDownloadImage = async () => {
+    if (!resultImage) return;
+
+    if (
+      navigator.share &&
+      /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    ) {
+      try {
+        const response = await fetch(resultImage);
+        const blob = await response.blob();
+        const file = new File([blob], "listing-photo.png", { type: blob.type });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: "Listing Photo",
+            text: "Check out my generated listing photo!",
+          });
+        } else {
+          throw new Error("Cannot share files");
+        }
+      } catch (err) {
+        console.error("Share failed, falling back to direct link", err);
+        window.open(resultImage, "_blank");
+      }
+    } else {
+      const link = document.createElement("a");
+      link.href = resultImage;
+      link.download = "listing-photo.png";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+  };
+
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
@@ -202,20 +240,17 @@ export default function GenerateListingClient() {
   };
 
   const generateListing = async () => {
-    if (images.length === 0) return;
+    const token = localStorage.getItem("token");
+    if (!images.length || !token) return;
     setLoading(true);
     const formData = new FormData();
     images.forEach((img) => formData.append("image", img));
     formData.append("mode", "listing");
 
     try {
-      // Ensure this points to your Express backend via getApiUrl
       const res = await fetch(getApiUrl("/api/listing/analyze"), {
         method: "POST",
-        headers: {
-          // Include your custom auth token if applicable
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
         body: formData,
       });
 
@@ -229,9 +264,13 @@ export default function GenerateListingClient() {
             behavior: "smooth",
             block: "start",
           });
-        }, 100);
+        }, 150);
+      } else if (res.status === 429) {
+        setShowModal(true);
+      } else if (res.status === 401) {
+        router.push("/login");
       } else {
-        throw new Error(data.error || "Generation failed");
+        setShowErrorModal(true);
       }
     } catch (err) {
       setAlertModal({
@@ -835,14 +874,15 @@ export default function GenerateListingClient() {
                         style={{ width: "100%", borderRadius: "8px" }}
                       />
                     </div>
-                    <a
-                      href={resultImage!}
-                      download="listing-photo.png"
+                    <button
+                      type="button"
+                      onClick={handleDownloadImage}
                       className="generate-btn"
-                      ref={backgroundRef}
+                      style={{ cursor: "pointer" }}
+                      ref={backgroundRef as any}
                     >
                       <Download size={18} /> Download Image
-                    </a>
+                    </button>
                   </div>
                 </div>
               )}
@@ -867,6 +907,44 @@ export default function GenerateListingClient() {
               Close
             </button>
           </div>
+        </div>
+      </InfoModal>
+
+      <InfoModal
+        isOpen={!!showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        title={"Error scanning item"}
+      >
+        <div className="too-many-scans-cont">
+          <div className="errorModal-cont">
+            <div className="errorModal-text">
+              One or more of the images could not be scanned.
+            </div>
+            <br />
+            <div className="errorModal-text">
+              Please select a different photo and try again.
+            </div>
+          </div>
+        </div>
+      </InfoModal>
+      <InfoModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        title={"Limit Reached"}
+      >
+        <div className="too-many-scans-cont">
+          <p>
+            You've reached your max scans for today. Upgrade your account for
+            more!
+          </p>
+          <Link
+            href="/payments"
+            className="generate-btn"
+            data-ph-capture-attribute-button-name="dashboard-view-plans-btn"
+            data-ph-capture-attribute-feature="dashboard"
+          >
+            View Plans
+          </Link>
         </div>
       </InfoModal>
     </main>
