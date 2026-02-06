@@ -10,7 +10,7 @@ import React, {
 } from "react";
 import { getApiUrl } from "@/lib/api-config";
 import { useRouter } from "next/navigation";
-import { StatusBar, Style } from '@capacitor/status-bar';
+import { StatusBar, Style } from "@capacitor/status-bar";
 
 interface AppContextRef {
   user: any;
@@ -42,7 +42,9 @@ export function AppProvider({
   const [isLoading, setIsLoading] = useState(true);
   const [dailyScansUsed, setDailyScansUsed] = useState(initialScans);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
-  const [deletionCountdown, setDeletionCountdown] = useState<number | null>(null);
+  const [deletionCountdown, setDeletionCountdown] = useState<number | null>(
+    null,
+  );
   const router = useRouter();
   const maxFreeScans = 5;
 
@@ -84,22 +86,55 @@ export function AppProvider({
   }, [router]);
 
   useEffect(() => {
-  const updateStatusBar = async () => {
-    // Check if the HTML has the 'dark' class (from your script)
-    const isDark = document.documentElement.classList.contains('dark');
+    const updateStatusBar = async () => {
+      const isDark = document.documentElement.classList.contains("dark");
 
-    if (isDark) {
-      await StatusBar.setStyle({ style: Style.Dark });
-      // Only works on Android, but good for consistency:
-      // await StatusBar.setBackgroundColor({ color: '#0f0f0f' }); 
+      if (isDark) {
+        await StatusBar.setStyle({ style: Style.Dark });
+      } else {
+        await StatusBar.setStyle({ style: Style.Light });
+      }
+    };
+
+    updateStatusBar();
+  }, []);
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("darkMode") === "true";
+    const userTheme = user?.darkMode;
+    const finalTheme = userTheme !== undefined ? userTheme : savedTheme;
+    setIsDarkMode(finalTheme);
+
+    if (finalTheme) {
+      document.documentElement.classList.add("dark");
     } else {
-      await StatusBar.setStyle({ style: Style.Light });
-      // await StatusBar.setBackgroundColor({ color: '#ffffff' });
+      document.documentElement.classList.remove("dark");
     }
-  };
 
-  updateStatusBar();
-}, []);
+    const syncStatusBar = async () => {
+      if (typeof window !== "undefined" && (window as any).Capacitor) {
+        const { StatusBar, Style } = await import("@capacitor/status-bar");
+
+        try {
+          if (finalTheme) {
+            await StatusBar.setStyle({ style: Style.Dark }); 
+            if ((window as any).Capacitor.getPlatform() === "android") {
+              await StatusBar.setBackgroundColor({ color: "#121212" });
+            }
+          } else {
+            await StatusBar.setStyle({ style: Style.Light }); 
+            if ((window as any).Capacitor.getPlatform() === "android") {
+              await StatusBar.setBackgroundColor({ color: "#eeeeee" });
+            }
+          }
+        } catch (e) {
+          console.warn("StatusBar plugin not available", e);
+        }
+      }
+    };
+
+    syncStatusBar();
+  }, [user]);
 
   useEffect(() => {
     refreshUser();
@@ -128,15 +163,15 @@ export function AppProvider({
   }, [refreshUser]);
 
   useEffect(() => {
-  if (user?.scheduledDeletionDate) {
-    const end = new Date(user.scheduledDeletionDate).getTime();
-    const now = new Date().getTime();
-    const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
-    setDeletionCountdown(diff > 0 ? diff : 0);
-  } else {
-    setDeletionCountdown(null);
-  }
-}, [user]);
+    if (user?.scheduledDeletionDate) {
+      const end = new Date(user.scheduledDeletionDate).getTime();
+      const now = new Date().getTime();
+      const diff = Math.ceil((end - now) / (1000 * 60 * 60 * 24));
+      setDeletionCountdown(diff > 0 ? diff : 0);
+    } else {
+      setDeletionCountdown(null);
+    }
+  }, [user]);
 
   useEffect(() => {
     const savedTheme = localStorage.getItem("darkMode") === "true";
@@ -168,7 +203,7 @@ export function AppProvider({
         refreshUser,
         logout,
         setIsLoading,
-        isDarkMode, 
+        isDarkMode,
         setIsDarkMode,
         deletionCountdown,
         setDeletionCountdown,

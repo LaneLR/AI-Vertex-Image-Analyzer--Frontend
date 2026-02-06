@@ -11,7 +11,7 @@ const config: CapacitorConfig = {
   },
   ios: {
     appendUserAgent: 'ResaleIQ-Mobile-App',
-    backgroundColor: '#ffffff', 
+    backgroundColor: '#eeeeee', 
   },
   android: {
     appendUserAgent: 'ResaleIQ-Mobile-App'
@@ -19,8 +19,8 @@ const config: CapacitorConfig = {
   plugins: {
     StatusBar: {
       overlaysWebView: false,
-      style: 'DARK',
-      backgroundColor: '#0f0f0f'
+      style: 'DEFAULT',
+      backgroundColor: '#eeeeee'
     }
   }
 };
