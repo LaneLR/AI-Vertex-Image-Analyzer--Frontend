@@ -925,6 +925,16 @@ export default function GenerateListingClient() {
               Please select a different photo and try again.
             </div>
           </div>
+          <div className="delete-modal__actions">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setShowErrorModal(false)}
+              data-ph-capture-attribute-button-name="account-modal-btn-close"
+              data-ph-capture-attribute-feature="account"
+            >
+              Close
+            </button>
+          </div>
         </div>
       </InfoModal>
       <InfoModal
