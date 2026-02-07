@@ -35,6 +35,11 @@ export default function HomeClient() {
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showErrorModal, setShowErrorModal] = useState<boolean>(false);
   const [addToInventory, setAddToInventory] = useState(false);
+  const [gradeAModal, setGradeAModal] = useState(false);
+  const [gradeBModal, setGradeBModal] = useState(false);
+  const [gradeCModal, setGradeCModal] = useState(false);
+  const [gradeDModal, setGradeDModal] = useState(false);
+  const [gradeFModal, setGradeFModal] = useState(false);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -197,6 +202,27 @@ export default function HomeClient() {
 
     setImages(newImages);
     setPreviews(newPreviews);
+  };
+
+  const getGradeModal = (grade: string) => {
+    switch (grade) {
+      case "A":
+        setGradeAModal(true);
+        break;
+      case "B":
+        setGradeBModal(true);
+        break;
+      case "C":
+        setGradeCModal(true);
+        break;
+      case "D":
+        setGradeDModal(true);
+        break;
+      case "F":
+        setGradeFModal(true);
+      default:
+        break;
+    }
   };
 
   return (
@@ -383,6 +409,7 @@ export default function HomeClient() {
                   <div
                     className="grade-badge"
                     style={{ borderColor: getGradeColor(result.grade) }}
+                    onClick={() => getGradeModal(result?.grade)}
                   >
                     <span className="grade-badge__label">FLIP GRADE</span>
                     <span
@@ -461,6 +488,174 @@ export default function HomeClient() {
               Please select a different photo and try again.
             </div>
           </div>
+        </div>
+      </InfoModal>
+
+      <InfoModal
+        isOpen={!!gradeAModal}
+        onClose={() => setGradeAModal(false)}
+        title={"Resale Grade A"}
+      >
+        <div>
+          <strong>High Value | High Demand | High Stability</strong>
+          <br />
+          <br />
+          <div>
+            Grade A items are in high demand. It combines a high sell-through rate with
+            consistent pricing and generally high margins. Items of this grade
+            have high demand and low supply, meaning you can list this item and
+            expect it to sell quickly.
+          </div>
+          <br />
+          <div>
+            <strong>Strategy:</strong> Buy if the margin is right.
+          </div>
+        </div>
+        <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setGradeAModal(false)}
+            data-ph-capture-attribute-button-name="account-modal-btn-close"
+            data-ph-capture-attribute-feature="account"
+          >
+            Close
+          </button>
+        </div>
+      </InfoModal>
+
+      <InfoModal
+        isOpen={!!gradeBModal}
+        onClose={() => setGradeBModal(false)}
+        title={"Resale Grade B"}
+      >
+        <div>
+          <strong>Good Value | Moderate Demand | Reliable</strong>
+          <br />
+          <br />
+          <div>
+            Grade B items are dependable earners. While they might not sell
+            within 24 hours like a Grade A, they have a proven track record. You
+            may encounter slight price fluctuations or a few more competitors,
+            but the demand is strong enough to move the item at a healthy
+            profit.
+          </div>
+          <br />
+          <div>
+            <strong>Strategy:</strong> Buy if the margin is right.
+          </div>
+        </div>
+        <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setGradeBModal(false)}
+            data-ph-capture-attribute-button-name="account-modal-btn-close"
+            data-ph-capture-attribute-feature="account"
+          >
+            Close
+          </button>
+        </div>
+      </InfoModal>
+
+      <InfoModal
+        isOpen={!!gradeCModal}
+        onClose={() => setGradeCModal(false)}
+        title={"Resale Grade C"}
+      >
+        <div>
+          <strong>High Value | Low Velocity | Volatile</strong>
+          <br />
+          <br />
+          <div>
+            Grade C items are often worth the buy, but can sit on your shelf for
+            a while before the right buyer comes along. The price might also be
+            volatile, swinging up and down based on trends.
+          </div>
+          <br />
+          <div>
+            <strong>Strategy:</strong> Only buy if you are comfortable holding
+            onto the item for a long period or if the profit margin is massive.
+          </div>
+        </div>
+        <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setGradeCModal(false)}
+            data-ph-capture-attribute-button-name="account-modal-btn-close"
+            data-ph-capture-attribute-feature="account"
+          >
+            Close
+          </button>
+        </div>
+      </InfoModal>
+
+      <InfoModal
+        isOpen={!!gradeDModal}
+        onClose={() => setGradeDModal(false)}
+        title={"Resale Grade D"}
+      >
+        <div>
+          <strong>Low Value | High Saturation | Low Margin</strong>
+          <br />
+          <br />
+          <div>
+            Grade D items are tough to profit from. These are usually commodity
+            items where hundreds of other sellers are offering the same thing
+            and there is high supply on the market. Your profit will most likely
+            be minimal.
+          </div>
+          <br />
+          <div>
+            <strong>Strategy:</strong> Usually best to pass, unless you are
+            selling in very high volume.
+          </div>
+        </div>
+        <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setGradeDModal(false)}
+            data-ph-capture-attribute-button-name="account-modal-btn-close"
+            data-ph-capture-attribute-feature="account"
+          >
+            Close
+          </button>
+        </div>
+      </InfoModal>
+
+      <InfoModal
+        isOpen={!!gradeFModal}
+        onClose={() => setGradeFModal(false)}
+        title={"Resale Grade F"}
+      >
+        <div>
+          <strong>No or Low Value | High Risk | Restricted</strong>
+          <br />
+          <br />
+          <div>
+            Grade F items have virtually no viable resale market. This could be
+            due to extreme market saturation, very low consumer demand, or the
+            item being flagged as potentially counterfeit or restricted on major
+            platforms.
+          </div>
+          <br />
+          <div>
+            <strong>Strategy:</strong> Avoid. This item is likely to cost you
+            more in time and fees than it is worth.
+          </div>
+        </div>
+        <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setGradeFModal(false)}
+            data-ph-capture-attribute-button-name="account-modal-btn-close"
+            data-ph-capture-attribute-feature="account"
+          >
+            Close
+          </button>
         </div>
       </InfoModal>
     </main>

@@ -49,7 +49,18 @@ export default function ManageBilling() {
         onClose={() => setIsErrorOpen(false)}
         title="Billing Notice"
       >
-        <p>{errorMessage}</p>
+        <p>An error has occurred. Please try again later.</p>
+        <br />
+        <div className="delete-modal__actions">
+          <button
+            className="modal-btn modal-btn--secondary"
+            onClick={() => setIsErrorOpen(false)}
+            data-ph-capture-attribute-button-name="account-modal-btn-close"
+            data-ph-capture-attribute-feature="account"
+          >
+            Close
+          </button>
+        </div>
       </InfoModal>
     </div>
   );
