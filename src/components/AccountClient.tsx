@@ -177,183 +177,185 @@ export default function AccountClient() {
           </div>
         )}
         {/* PROFILE HERO */}
-        <section className="profile-hero">
-          <div className="profile-hero__avatar">
-            <UserIcon size={32} />
-          </div>
-          <div className="profile-hero__info">
-            <h2>{user?.email}</h2>
-            <span
-              className={`status-pill ${
-                isPro || isBusiness
-                  ? "status-pill--pro"
+        <div className="account-header-info">
+          <section className="profile-hero">
+            <div className="profile-hero__avatar">
+              <UserIcon size={32} />
+            </div>
+            <div className="profile-hero__info">
+              <h2>{user?.email}</h2>
+              <span
+                className={`status-pill ${
+                  isPro || isBusiness
+                    ? "status-pill--pro"
+                    : isHobby
+                      ? "status-pill--hobby"
+                      : ""
+                }`}
+              >
+                {isBusiness ? (
+                  <BriefcaseBusiness size={18} className="orange-icon" />
+                ) : isPro ? (
+                  <Flame size={18} className="orange-icon" />
+                ) : isHobby ? (
+                  <Zap size={18} className="orange-icon" />
+                ) : (
+                  <ZapOff size={18} />
+                )}{" "}
+                {isPro
+                  ? "Pro"
                   : isHobby
-                    ? "status-pill--hobby"
-                    : ""
-              }`}
-            >
-              {isBusiness ? (
-                <BriefcaseBusiness size={18} className="orange-icon" />
-              ) : isPro ? (
-                <Flame size={18} className="orange-icon" />
-              ) : isHobby ? (
-                <Zap size={18} className="orange-icon" />
-              ) : (
-                <ZapOff size={18} />
-              )}{" "}
-              {isPro
-                ? "Pro"
-                : isHobby
-                  ? "Hobby"
-                  : isBusiness
-                    ? "Elite"
-                    : "Free"}
-            </span>
-          </div>
-        </section>
-
-        {/* USAGE & SUBSCRIPTION CARD */}
-        <section className="account-card subscription-card">
-          <div className="account-card__header">
-            <h3>Daily Usage</h3>
-            <Zap
-              size={18}
-              className={
-                isPro || isHobby || isBusiness ? "icon-gold" : "icon-gray"
-              }
-            />
-          </div>
-
-          <div className="usage-content">
-            <div className="usage-stats">
-              <span>Scans Used Today</span>
-              <span className="usage-count">
-                {dailyScansUsed} / {maxScans}
+                    ? "Hobby"
+                    : isBusiness
+                      ? "Elite"
+                      : "Free"}
               </span>
             </div>
+          </section>
 
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{
-                  width: `${usagePercentage}%`,
-                  backgroundColor:
-                    usagePercentage > 90
-                      ? "var(--error-color)"
-                      : "var(--primary-theme)",
-                }}
+          {/* USAGE & SUBSCRIPTION CARD */}
+          <section className="account-card subscription-card">
+            <div className="account-card__header">
+              <h3>Daily Usage</h3>
+              <Zap
+                size={18}
+                className={
+                  isPro || isHobby || isBusiness ? "icon-gold" : "icon-gray"
+                }
               />
             </div>
 
-            {/* CONDITIONAL ACTIONS BASED ON PLAN */}
-            {isPro || isHobby || isBusiness ? (
-              <div className="subscription-manage-area">
-                <p className="usage-hint">
-                  Your daily scans resets at in [remaining time].
-                </p>
-                <button
-                  className="secondary-btn"
-                  onClick={handleManageSubscription}
-                  disabled={loadingPortal}
-                  data-ph-capture-attribute-button-name="account-handle-subscription-btn"
-                  data-ph-capture-attribute-feature="account"
-                >
-                  <Settings size={14} />{" "}
-                  {loadingPortal ? "Loading..." : "Manage Subscription"}
-                </button>
+            <div className="usage-content">
+              <div className="usage-stats">
+                <span>Scans Used Today</span>
+                <span className="usage-count">
+                  {dailyScansUsed} / {maxScans}
+                </span>
               </div>
-            ) : (
-              <div className="upgrade-area">
-                <p className="usage-hint">
-                  Get more scans when you ugprade your account!
-                </p>
-                {/* <PaymentsClient user={user} /> */}
-                <Link href={"/payments"}>
+
+              <div className="progress-bar">
+                <div
+                  className="progress-fill"
+                  style={{
+                    width: `${usagePercentage}%`,
+                    backgroundColor:
+                      usagePercentage > 90
+                        ? "var(--error-color)"
+                        : "var(--primary-theme)",
+                  }}
+                />
+              </div>
+
+              {/* CONDITIONAL ACTIONS BASED ON PLAN */}
+              {isPro || isHobby || isBusiness ? (
+                <div className="subscription-manage-area">
+                  <p className="usage-hint">
+                    Your daily scans resets at in [remaining time].
+                  </p>
                   <button
-                    className="generate-btn"
-                    data-ph-capture-attribute-button-name="account-upgrade-account-btn"
+                    className="secondary-btn"
+                    onClick={handleManageSubscription}
+                    disabled={loadingPortal}
+                    data-ph-capture-attribute-button-name="account-handle-subscription-btn"
                     data-ph-capture-attribute-feature="account"
                   >
-                    Upgrade account
+                    <Settings size={14} />{" "}
+                    {loadingPortal ? "Loading..." : "Manage Subscription"}
                   </button>
-                </Link>
-              </div>
-            )}
-          </div>
-        </section>
-
-        <Link
-          href="/history"
-          className="account-card listing-shortcut"
-          data-ph-capture-attribute-button-name="account-scan-history-btn"
-          data-ph-capture-attribute-feature="account"
-        >
-          <div className="shortcut-info">
-            <HistoryIcon size={20} />
-            <div>
-              <h4>Scan History</h4>
-              <p>View your recent scans</p>
+                </div>
+              ) : (
+                <div className="upgrade-area">
+                  <p className="usage-hint">
+                    Get more scans when you ugprade your account!
+                  </p>
+                  {/* <PaymentsClient user={user} /> */}
+                  <Link href={"/payments"}>
+                    <button
+                      className="generate-btn"
+                      data-ph-capture-attribute-button-name="account-upgrade-account-btn"
+                      data-ph-capture-attribute-feature="account"
+                    >
+                      Upgrade account
+                    </button>
+                  </Link>
+                </div>
+              )}
             </div>
-          </div>
-          <ChevronRight size={18} />
-        </Link>
-
-        {(isPro || isHobby || isBusiness) && (
+          </section>
+        </div>
+        <div className="account-perk-links">
           <Link
-            href="/calculator"
+            href="/history"
             className="account-card listing-shortcut"
-            data-ph-capture-attribute-button-name="account-calculator-btn"
+            data-ph-capture-attribute-button-name="account-scan-history-btn"
             data-ph-capture-attribute-feature="account"
           >
             <div className="shortcut-info">
-              <CircleDollarSign size={20} />
+              <HistoryIcon size={20} />
               <div>
-                <h4>Profit Calculator</h4>
-                <p>Calculate the profits for items you find</p>
+                <h4>Scan History</h4>
+                <p>View your recent scans</p>
               </div>
             </div>
             <ChevronRight size={18} />
           </Link>
-        )}
 
-        {/* TOOLS SHORTCUTS */}
-        {(isPro || isBusiness) && (
-          <Link
-            href="/listing"
-            className="account-card listing-shortcut"
-            data-ph-capture-attribute-button-name="account-listing-studio-btn"
-            data-ph-capture-attribute-feature="account"
-          >
-            <div className="shortcut-info">
-              <Wand2 size={20} />
-              <div>
-                <h4>Listing Studio</h4>
-                <p>Generate SEO marketplace details</p>
+          {(isPro || isHobby || isBusiness) && (
+            <Link
+              href="/calculator"
+              className="account-card listing-shortcut"
+              data-ph-capture-attribute-button-name="account-calculator-btn"
+              data-ph-capture-attribute-feature="account"
+            >
+              <div className="shortcut-info">
+                <CircleDollarSign size={20} />
+                <div>
+                  <h4>Profit Calculator</h4>
+                  <p>Calculate the profits for items you find</p>
+                </div>
               </div>
-            </div>
-            <ChevronRight size={18} />
-          </Link>
-        )}
+              <ChevronRight size={18} />
+            </Link>
+          )}
 
-        {isBusiness && (
-          <Link
-            href="/inventory"
-            className="account-card listing-shortcut"
-            data-ph-capture-attribute-button-name="account-inventory-btn"
-            data-ph-capture-attribute-feature="account"
-          >
-            <div className="shortcut-info">
-              <Boxes size={20} />
-              <div>
-                <h4>Inventory Manager</h4>
-                <p>Manage your inventory items</p>
+          {/* TOOLS SHORTCUTS */}
+          {(isPro || isBusiness) && (
+            <Link
+              href="/listing"
+              className="account-card listing-shortcut"
+              data-ph-capture-attribute-button-name="account-listing-studio-btn"
+              data-ph-capture-attribute-feature="account"
+            >
+              <div className="shortcut-info">
+                <Wand2 size={20} />
+                <div>
+                  <h4>Listing Studio</h4>
+                  <p>Generate SEO marketplace details</p>
+                </div>
               </div>
-            </div>
-            <ChevronRight size={18} />
-          </Link>
-        )}
+              <ChevronRight size={18} />
+            </Link>
+          )}
+
+          {isBusiness && (
+            <Link
+              href="/inventory"
+              className="account-card listing-shortcut"
+              data-ph-capture-attribute-button-name="account-inventory-btn"
+              data-ph-capture-attribute-feature="account"
+            >
+              <div className="shortcut-info">
+                <Boxes size={20} />
+                <div>
+                  <h4>Inventory Manager</h4>
+                  <p>Manage your inventory items</p>
+                </div>
+              </div>
+              <ChevronRight size={18} />
+            </Link>
+          )}
+        </div>
       </div>
-
       <InfoModal
         isOpen={errorModal}
         onClose={() => setErrorModal(false)}
