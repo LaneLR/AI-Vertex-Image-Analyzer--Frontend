@@ -303,7 +303,7 @@ export default function HistoryClient() {
                                       <Trash2 size={18} />
                                     </button>
                                     {isBusiness ||
-                                      (isBusiness && (
+                                      (isBusiness || isPro && (
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
@@ -422,7 +422,7 @@ export default function HistoryClient() {
 
         {successMessage && (
           <div className="history-page__toast success">
-            <Package size={18} />
+            <Package size={24} />
             {successMessage}
           </div>
         )}

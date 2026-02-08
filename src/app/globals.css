@@ -15,6 +15,7 @@
   --bg-main: #ffffff;
   --bg-header: #eeeeee;
   --bg-card: #eaeaea;
+  --bg-card2: transparent;
   --bg-loading: #81818148;
 
   --footer-bg: #f1f1f1;
@@ -45,6 +46,7 @@
   --bg-nav: #151515;
   --bg-main: #0f0f0f;
   --bg-card: #1e1e1e;
+  --bg-card2: #1e1e1e;
   --bg-header: #121212;
   --bg-loading: #2c2c2c;
   

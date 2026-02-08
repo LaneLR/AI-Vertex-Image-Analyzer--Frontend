@@ -385,7 +385,7 @@ export default function InventoryClient() {
                     data-ph-capture-attribute-button-name="inventory-remove-item-btn"
                     data-ph-capture-attribute-feature="inventory"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={21} />
                   </button>
                 </div>
               </div>
