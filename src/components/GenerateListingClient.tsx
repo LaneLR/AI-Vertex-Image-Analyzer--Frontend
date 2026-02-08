@@ -738,9 +738,9 @@ export default function GenerateListingClient() {
                     For best results, take photos in a well-lit environment with
                     a solid background.
                   </p>
-                                  <p className="hint-text-big">
-                  Photo Studio does not count toward your daily scan limit.
-                </p>
+                  <p className="hint-text-big">
+                    Photo Studio does not count toward your daily scan limit.
+                  </p>
                 </div>
                 <div
                   className={`upload-zone ${
