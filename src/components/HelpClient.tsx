@@ -144,7 +144,7 @@ export default function HelpClient() {
           data-ph-capture-attribute-button-name="help-back-btn"
           data-ph-capture-attribute-feature="back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={24} />
         </button>
         <h1>Help Center</h1>
         <div className="header-spacer" />

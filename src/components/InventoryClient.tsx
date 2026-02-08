@@ -246,7 +246,7 @@ export default function InventoryClient() {
             data-ph-capture-attribute-button-name="inventory-back-btn"
             data-ph-capture-attribute-feature="back"
           >
-            <ArrowLeft size={20} />
+            <ArrowLeft size={24} />
           </button>
           <h1>Inventory Manager</h1>
           <div className="header-spacer" />
@@ -385,7 +385,7 @@ export default function InventoryClient() {
                     data-ph-capture-attribute-button-name="inventory-remove-item-btn"
                     data-ph-capture-attribute-feature="inventory"
                   >
-                    <Trash2 size={20} />
+                    <Trash2 size={21} />
                   </button>
                 </div>
               </div>

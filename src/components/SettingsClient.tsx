@@ -197,7 +197,7 @@ export default function SettingsClient() {
           data-ph-capture-attribute-button-name="settings-back-btn"
           data-ph-capture-attribute-feature="back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={24} />
         </button>
         <h1>Settings</h1>
         <div className="header-spacer" />

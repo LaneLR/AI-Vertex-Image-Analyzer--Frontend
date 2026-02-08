@@ -78,8 +78,7 @@ export default function Header() {
           <div className="mobile-nav__container">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
-              return (
+              const isActive = pathname === item.href || (item.href !== '/dashboard/' && pathname.startsWith(item.href));              return (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -112,7 +111,7 @@ export default function Header() {
             <div
               className={`mobile-nav__popover ${isMoreOpen ? "is-visible" : ""}`}
             >
-              {isBusiness && (
+              {isBusiness || isPro && (
                 <Link
                   href="/inventory"
                   className="popover-item"

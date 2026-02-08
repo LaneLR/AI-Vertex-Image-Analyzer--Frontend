@@ -20,6 +20,12 @@ import {
   Tags,
   BarChart3,
   CircleDollarSign,
+  Sparkles,
+  Search,
+  ChevronsDownUp,
+  ChevronsUp,
+  Wallpaper,
+  ImageUpscale,
 } from "lucide-react";
 import Loading from "./Loading";
 import { getApiUrl } from "@/lib/api-config";
@@ -391,7 +397,7 @@ export default function GenerateListingClient() {
           data-ph-capture-attribute-button-name="listing-back-btn"
           data-ph-capture-attribute-feature="back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={24} />
         </button>
         <div className="listing-page__header-content">
           <div className="listing-page__header-container">
@@ -483,8 +489,8 @@ export default function GenerateListingClient() {
                                 accept="image/*"
                                 hidden
                               />
-                              <Camera size={20} />
-                              <span>Add</span>
+                              <Camera size={26} />
+                              <span>Add Photo</span>
                             </label>
                           )}
                       </div>
@@ -512,13 +518,12 @@ export default function GenerateListingClient() {
                       />
                       <div className="dropzone-content">
                         <div className="icon-circle">
-                          <Upload />
+                          <Camera size={32} />
                         </div>
-                        <span>
-                          {isPro || isHobby || isBusiness
-                            ? "Tap to upload up to 3 photos"
-                            : "Tap to upload item photo"}
-                        </span>
+                        <h3>
+                          {(isPro || isHobby || isBusiness) &&
+                            "Tap to take or upload photos"}
+                        </h3>
                       </div>
                     </label>
                   )}
@@ -530,6 +535,11 @@ export default function GenerateListingClient() {
                   data-ph-capture-attribute-button-name="listing-generate-seo-btn"
                   data-ph-capture-attribute-feature="listing"
                 >
+                  {loading ? (
+                    <Sparkles className="animate-spin" />
+                  ) : (
+                    <ChevronsUp size={20} />
+                  )}
                   {loading
                     ? "AI is writing..."
                     : `Generate Details (${images.length} Photo${
@@ -728,6 +738,9 @@ export default function GenerateListingClient() {
                     For best results, take photos in a well-lit environment with
                     a solid background.
                   </p>
+                  <p className="hint-text-big">
+                    Photo Studio does not count toward your daily scan limit.
+                  </p>
                 </div>
                 <div
                   className={`upload-zone ${
@@ -736,7 +749,7 @@ export default function GenerateListingClient() {
                 >
                   {studioPreviews.length > 0 ? (
                     <div className="multi-preview-wrapper">
-                      <div className="preview-grid-system">
+                      <div className="preview-grid-single">
                         <div className="preview-slot">
                           <img src={studioPreviews[0]} alt="Studio Preview" />
                           <button
@@ -776,9 +789,12 @@ export default function GenerateListingClient() {
                       />
                       <div className="dropzone-content">
                         <div className="icon-circle">
-                          <Upload />
+                          <Camera size={32} />
                         </div>
-                        <span>Tap to upload a photo</span>
+                        <h3>
+                          {(isPro || isHobby || isBusiness) &&
+                            "Tap to take or upload photos"}
+                        </h3>
                       </div>
                     </label>
                   )}
@@ -813,18 +829,20 @@ export default function GenerateListingClient() {
                   data-ph-capture-attribute-button-name="listing-remove-background-btn"
                   data-ph-capture-attribute-feature="listing"
                 >
+                  {loading ? (
+                    <Sparkles className="animate-spin" />
+                  ) : (
+                    <ImageUpscale size={20} />
+                  )}
                   {isProcessing ? (
                     <>
-                      <Loader2 className="animate-spin" size={18} />{" "}
-                      Processing...
+                      <Loader2 className="animate-spin" size={18} /> Removing
+                      Background...
                     </>
                   ) : (
                     `Remove Background`
                   )}
                 </button>
-                <p className="download-hint">
-                  Photo Studio does not count toward your daily scan limit.
-                </p>
               </div>
             </section>
 
