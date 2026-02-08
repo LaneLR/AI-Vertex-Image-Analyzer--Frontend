@@ -665,7 +665,7 @@ export default function SettingsClient() {
                 <p className="item-label">App Version</p>
               </div>
               <span className="version-tag">
-                {appVersion}
+                {process.env.NEXT_PUBLIC_APP_VERSION}
               </span>
             </div>
           </div>
