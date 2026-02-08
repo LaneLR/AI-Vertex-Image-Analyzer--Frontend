@@ -13,6 +13,9 @@ import {
   ZapOff,
   Layout,
   Gem,
+  RefreshCcw,
+  Scan,
+  ScanSearch,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Added router
@@ -269,77 +272,81 @@ export default function HomeClient() {
           </section>
 
           <div className="home-upload card">
-            {previews.length > 0 ? (
-              <div className="home-upload__preview-container">
-                <div className="preview-grid multi">
-                  {/* Render existing previews */}
-                  {previews.map((src, idx) => (
-                    <div key={idx} className="preview-item">
-                      <img src={src} alt="Preview" className="preview-img" />
-                      <button
-                        className="remove-single"
-                        onClick={() => handleRemoveImage(idx)}
-                        data-ph-capture-attribute-button-name="dashboard-remove-image-btn"
-                        data-ph-capture-attribute-feature="dashboard"
-                      >
-                        <X size={12} />
-                      </button>
-                    </div>
-                  ))}
+            <div
+              className={`upload-zone ${previews.length > 0 ? "has-image" : ""}`}
+            >
+              {previews.length > 0 ? (
+                <div className="multi-preview-wrapper">
+                  <div className="preview-grid-system">
+                    {previews.map((src, idx) => (
+                      <div key={idx} className="preview-slot">
+                        <img src={src} alt={`Preview ${idx + 1}`} />
+                        <button
+                          className="remove-btn"
+                          onClick={() => handleRemoveImage(idx)}
+                          data-ph-capture-attribute-button-name="dashboard-remove-image-btn"
+                          data-ph-capture-attribute-feature="dashboard"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
 
-                  {/* Show empty slots for Pro users to add more (up to 3) */}
-                  {(isPro || isHobby || isBusiness) && previews.length < 3 && (
-                    <label className="add-more-slot">
-                      <input
-                        type="file"
-                        onChange={handleAdditionalFile}
-                        accept="image/*"
-                        hidden
-                      />
-                      <Camera size={20} />
-                      <span>Add Photo</span>
-                    </label>
-                  )}
-                </div>
-
-                <button
-                  className="btn-reset"
-                  onClick={() => {
-                    setPreviews([]);
-                    setImages([]);
-                    setResult(null);
-                  }}
-                  data-ph-capture-attribute-button-name="dashboard-remove-all-image-btn"
-                  data-ph-capture-attribute-feature="dashboard"
-                >
-                  Clear All
-                </button>
-              </div>
-            ) : (
-              /* Standard Dropzone for the first upload */
-              <label className="home-upload__dropzone">
-                <input
-                  type="file"
-                  onChange={handleFile}
-                  accept="image/*"
-                  multiple={isPro || isHobby || isBusiness}
-                  hidden
-                />
-                <div className="dropzone-ui">
-                  <div className="camera-icon-wrapper">
-                    <Camera size={32} />
+                    {(isPro || isHobby || isBusiness) &&
+                      previews.length < 3 && (
+                        <label className="add-slot-btn">
+                          <input
+                            type="file"
+                            onChange={handleAdditionalFile}
+                            accept="image/*"
+                            hidden
+                          />
+                          <Camera size={26} />
+                          <span>Add</span>
+                        </label>
+                      )}
                   </div>
-                  <h3>
-                    {isPro || isHobby || isBusiness
-                      ? "Upload up to 3 photos"
-                      : "Capture or Upload"}
-                  </h3>
-                  <p className="image-subtext">
-                    Show different angles for more accurate anaysis
-                  </p>
+
+                  <button
+                    className="change-img-btn"
+                    onClick={() => {
+                      setPreviews([]);
+                      setImages([]);
+                      setResult(null);
+                    }}
+                    data-ph-capture-attribute-button-name="dashboard-remove-all-image-btn"
+                    data-ph-capture-attribute-feature="dashboard"
+                  >
+                    <RefreshCcw size={16} /> Clear All
+                  </button>
                 </div>
-              </label>
-            )}
+              ) : (
+                <label className="dropzone-label">
+                  <input
+                    type="file"
+                    onChange={handleFile}
+                    accept="image/*"
+                    multiple={isPro || isHobby || isBusiness}
+                    hidden
+                  />
+                  <div className="dropzone-content">
+                    <div className="icon-circle">
+                      <Camera size={40} />
+                    </div>
+                    <h3>
+                      {isPro || isHobby || isBusiness
+                        ? "Tap to take or upload photos"
+                        : "Tap to take or upload a photo"}
+                    </h3>
+                    <p className="image-subtext">
+                      Show different angles for more accurate analysis
+                    </p>
+                  </div>
+                </label>
+              )}
+            </div>
+
+            {/* Business Toggle remains at the bottom of the card */}
             {isBusiness && (
               <div
                 className={`studio-option ${addToInventory ? "active" : ""}`}
@@ -363,25 +370,23 @@ export default function HomeClient() {
                 </div>
               </div>
             )}
-            <button
-              className={`generate-btn ${loading ? "loading" : ""}`}
-              disabled={images.length === 0 || loading}
-              onClick={analyzeItem}
-              data-ph-capture-attribute-button-name="dashboard-analyze-btn"
-              data-ph-capture-attribute-feature="dashboard"
-            >
-              {loading ? (
-                <Sparkles className="animate-spin" />
-              ) : (
-                <Search size={20} />
-              )}
-              {loading
-                ? "Analyzing..."
-                : `Appraise Item (${images.length} Photo${
-                    images.length !== 1 ? "s" : ""
-                  })`}
-            </button>
           </div>
+          <button
+            className={`generate-btn ${loading ? "loading" : ""}`}
+            disabled={images.length === 0 || loading}
+            onClick={analyzeItem}
+            data-ph-capture-attribute-button-name="dashboard-analyze-btn"
+            data-ph-capture-attribute-feature="dashboard"
+          >
+            {loading ? (
+              <Sparkles className="animate-spin" />
+            ) : (
+              <ScanSearch size={20} />
+            )}
+            {loading
+              ? "Analyzing..."
+              : `Appraise Item (${images.length} Photo${images.length !== 1 ? "s" : ""})`}
+          </button>
         </div>
 
         {!result && !loading ? (
@@ -501,10 +506,10 @@ export default function HomeClient() {
           <br />
           <br />
           <div>
-            Grade A items are in high demand. It combines a high sell-through rate with
-            consistent pricing and generally high margins. Items of this grade
-            have high demand and low supply, meaning you can list this item and
-            expect it to sell quickly.
+            Grade A items are in high demand. It combines a high sell-through
+            rate with consistent pricing and generally high margins. Items of
+            this grade have high demand and low supply, meaning you can list
+            this item and expect it to sell quickly.
           </div>
           <br />
           <div>

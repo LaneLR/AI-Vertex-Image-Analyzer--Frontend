@@ -86,20 +86,6 @@ export function AppProvider({
   }, [router]);
 
   useEffect(() => {
-    const updateStatusBar = async () => {
-      const isDark = document.documentElement.classList.contains("dark");
-
-      if (isDark) {
-        await StatusBar.setStyle({ style: Style.Dark });
-      } else {
-        await StatusBar.setStyle({ style: Style.Light });
-      }
-    };
-
-    updateStatusBar();
-  }, []);
-
-  useEffect(() => {
     const savedTheme = localStorage.getItem("darkMode") === "true";
     const userTheme = user?.darkMode;
     const finalTheme = userTheme !== undefined ? userTheme : savedTheme;
@@ -117,12 +103,12 @@ export function AppProvider({
 
         try {
           if (finalTheme) {
-            await StatusBar.setStyle({ style: Style.Dark }); 
+            await StatusBar.setStyle({ style: Style.Dark });
             if ((window as any).Capacitor.getPlatform() === "android") {
               await StatusBar.setBackgroundColor({ color: "#121212" });
             }
           } else {
-            await StatusBar.setStyle({ style: Style.Light }); 
+            await StatusBar.setStyle({ style: Style.Light });
             if ((window as any).Capacitor.getPlatform() === "android") {
               await StatusBar.setBackgroundColor({ color: "#eeeeee" });
             }
@@ -139,6 +125,20 @@ export function AppProvider({
   useEffect(() => {
     refreshUser();
   }, [refreshUser]);
+  
+  useEffect(() => {
+    const updateStatusBar = async () => {
+      const isDark = document.documentElement.classList.contains("dark");
+
+      if (isDark) {
+        await StatusBar.setStyle({ style: Style.Dark });
+      } else {
+        await StatusBar.setStyle({ style: Style.Light });
+      }
+    };
+
+    updateStatusBar();
+  }, []);
 
   useEffect(() => {
     if (user) {
