@@ -15,6 +15,8 @@ import {
   Flame,
   ZapOff,
   Boxes,
+  RefreshCw,
+  RefreshCcw,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -38,9 +40,64 @@ export default function AccountClient() {
   const [errorModal, setErrorModal] = useState(false);
   const [reactivateModal, setReactivateModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [timeLeft, setTimeLeft] = useState("");
+  const [needsReload, setNeedsReload] = useState(false);
   const searchParams = useSearchParams();
   const router = useRouter();
   const success = searchParams.get("success");
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const now = new Date();
+      const pacificTime = new Intl.DateTimeFormat("en-US", {
+        timeZone: "America/Los_Angeles",
+        hour: "numeric",
+        minute: "numeric",
+        second: "numeric",
+        hour12: false,
+        year: "numeric",
+        month: "numeric",
+        day: "numeric",
+      }).formatToParts(now);
+
+      const parts: any = {};
+      pacificTime.forEach(({ type, value }) => (parts[type] = value));
+
+      const midnightPacific = new Date(now);
+      midnightPacific.setUTCFullYear(parts.year, parts.month - 1, parts.day);
+      midnightPacific.setUTCHours(parts.hour, parts.minute);
+
+      const target = new Date(now);
+      target.setHours(24, 0, 0, 0);
+
+      const nowInPT = new Date(
+        now.toLocaleString("en-US", { timeZone: "America/Los_Angeles" }),
+      );
+      const tomorrowInPT = new Date(nowInPT);
+      tomorrowInPT.setHours(24, 0, 0, 0);
+
+      const diff = tomorrowInPT.getTime() - nowInPT.getTime();
+
+      if (diff <= 0) {
+        setTimeLeft("00:00:00");
+        setNeedsReload(true);
+        return;
+      }
+
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / 1000 / 60) % 60);
+
+      const minute = minutes === 1 ? "minute" : "minutes";
+
+      setTimeLeft(
+        `${hours.toString().padStart(2)} hours ${minutes.toString().padStart(2)} ${minute}`,
+      );
+    };
+    const timer = setInterval(calculateTimeLeft, 1000);
+    calculateTimeLeft();
+
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (!isLoading && !user) {
@@ -159,6 +216,19 @@ export default function AccountClient() {
       </header>
 
       <div className="account-page__content">
+        {needsReload && (
+          <div className="deactivation-banner">
+            <p>Scans have reset!</p>
+            <button
+              onClick={() => window.location.reload()}
+              className="cancel-btn"
+              data-ph-capture-attribute-button-name="account-reload-btn"
+              data-ph-capture-attribute-feature="account"
+            >
+              <RefreshCcw size={14} /> Reload
+            </button>
+          </div>
+        )}
         {user.scheduledDeletionDate !== null && (
           <div className="deactivation-banner">
             <p>
@@ -248,20 +318,33 @@ export default function AccountClient() {
 
               {/* CONDITIONAL ACTIONS BASED ON PLAN */}
               {isPro || isHobby || isBusiness ? (
-                <div className="subscription-manage-area">
-                  <p className="usage-hint">
-                    Your daily scans resets at in [remaining time].
-                  </p>
-                  <button
-                    className="secondary-btn"
-                    onClick={handleManageSubscription}
-                    disabled={loadingPortal}
-                    data-ph-capture-attribute-button-name="account-handle-subscription-btn"
-                    data-ph-capture-attribute-feature="account"
-                  >
-                    <Settings size={14} />{" "}
-                    {loadingPortal ? "Loading..." : "Manage Subscription"}
-                  </button>
+                <div className="account-page-content">
+                  <div className="subscription-manage-area">
+                    <div className="timer-container">
+                      <h4 className="timer-label">Daily reset in</h4>
+                      <div className="timer-display">
+                        {timeLeft.split(":").map((unit, index) => (
+                          <React.Fragment key={index}>
+                            <span className="timer-unit">{unit}</span>
+                            {index < 2 && (
+                              <span className="timer-separator"></span>
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </div>
+
+                    <button
+                      className="secondary-btn manage-btn"
+                      onClick={handleManageSubscription}
+                      disabled={loadingPortal}
+                      data-ph-capture-attribute-button-name="account-handle-subscription-btn"
+                      data-ph-capture-attribute-feature="account"
+                    >
+                      <Settings size={14} />
+                      {loadingPortal ? "Loading..." : "Manage Subscription"}
+                    </button>
+                  </div>
                 </div>
               ) : (
                 <div className="upgrade-area">
