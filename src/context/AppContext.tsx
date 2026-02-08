@@ -86,59 +86,38 @@ export function AppProvider({
   }, [router]);
 
   useEffect(() => {
-    const savedTheme = localStorage.getItem("darkMode") === "true";
-    const userTheme = user?.darkMode;
-    const finalTheme = userTheme !== undefined ? userTheme : savedTheme;
-    setIsDarkMode(finalTheme);
-
-    if (finalTheme) {
+    if (isDarkMode) {
       document.documentElement.classList.add("dark");
     } else {
       document.documentElement.classList.remove("dark");
     }
 
-    const syncStatusBar = async () => {
-      if (typeof window !== "undefined" && (window as any).Capacitor) {
-        const { StatusBar, Style } = await import("@capacitor/status-bar");
+    const themeColor = isDarkMode ? "#121212" : "#eeeeee"; 
+    let metaTag = document.querySelector('meta[name="theme-color"]');
+    if (metaTag) metaTag.setAttribute("content", themeColor);
 
-        try {
-          if (finalTheme) {
-            await StatusBar.setStyle({ style: Style.Dark });
-            if ((window as any).Capacitor.getPlatform() === "android") {
-              await StatusBar.setBackgroundColor({ color: "#121212" });
-            }
-          } else {
-            await StatusBar.setStyle({ style: Style.Light });
-            if ((window as any).Capacitor.getPlatform() === "android") {
-              await StatusBar.setBackgroundColor({ color: "#eeeeee" });
-            }
+    const syncNativeBar = async () => {
+      try {
+        if (typeof window !== "undefined" && (window as any).Capacitor) {
+          await StatusBar.setStyle({
+            style: isDarkMode ? Style.Dark : Style.Light,
+          });
+
+          if ((window as any).Capacitor.getPlatform() === "android") {
+            await StatusBar.setBackgroundColor({ color: themeColor });
           }
-        } catch (e) {
-          console.warn("StatusBar plugin not available", e);
         }
+      } catch (e) {
+        console.warn("StatusBar plugin error:", e);
       }
     };
 
-    syncStatusBar();
-  }, [user]);
+    syncNativeBar();
+  }, [isDarkMode]); 
 
   useEffect(() => {
     refreshUser();
   }, [refreshUser]);
-  
-  useEffect(() => {
-    const updateStatusBar = async () => {
-      const isDark = document.documentElement.classList.contains("dark");
-
-      if (isDark) {
-        await StatusBar.setStyle({ style: Style.Dark });
-      } else {
-        await StatusBar.setStyle({ style: Style.Light });
-      }
-    };
-
-    updateStatusBar();
-  }, []);
 
   useEffect(() => {
     if (user) {

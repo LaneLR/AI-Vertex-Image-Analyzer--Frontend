@@ -1,5 +1,6 @@
 "use client";
 
+import packageInfo from "../../package.json";
 import React, { useState, useEffect } from "react";
 import {
   Sparkles,
@@ -54,6 +55,8 @@ export default function SettingsClient() {
   const [isPrivacyModalOpen, setIsPrivacyModalOpen] = useState(false);
   const [reactivateModal, setReactivateModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+
+  const appVersion = packageInfo.version;
 
   useEffect(() => {
     if (user) {
@@ -662,7 +665,7 @@ export default function SettingsClient() {
                 <p className="item-label">App Version</p>
               </div>
               <span className="version-tag">
-                {process.env.NEXT_PUBLIC_APP_VERSION}
+                {appVersion}
               </span>
             </div>
           </div>
