@@ -33,7 +33,7 @@ export default function PrivacyClient() {
           data-ph-capture-attribute-button-name="privacy-back-btn"
           data-ph-capture-attribute-feature="back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={24} />
         </button>
         <h1>Privacy & Security</h1>
         <div className="header-spacer" />

@@ -206,7 +206,7 @@ export default function HistoryClient() {
           data-ph-capture-attribute-button-name="history-back-btn"
           data-ph-capture-attribute-feature="back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={24} />
         </button>
         <h1 className="history-page__nav-title">Scan History</h1>
         <div className="header-spacer" />

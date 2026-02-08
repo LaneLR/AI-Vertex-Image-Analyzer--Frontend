@@ -93,7 +93,7 @@ export default function PaymentsClient() {
           data-ph-capture-attribute-button-name="payments-back-btn"
           data-ph-capture-attribute-feature="back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={24} />
         </button>
         <h1>Payment Center</h1>
         <div className="header-spacer" />

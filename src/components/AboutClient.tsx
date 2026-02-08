@@ -35,7 +35,7 @@ export default function AboutClient() {
           data-ph-capture-attribute-button-name="about-back-btn"
           data-ph-capture-attribute-feature="back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={24} />
         </button>
         <h1>About Us</h1>
         <div className="header-spacer" />

@@ -152,7 +152,7 @@ export default function AccountClient() {
           data-ph-capture-attribute-button-name="account-back-btn"
           data-ph-capture-attribute-feature="back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={24} />
         </button>
         <h1>Account Settings</h1>
         <div className="header-spacer" />

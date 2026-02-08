@@ -391,7 +391,7 @@ export default function GenerateListingClient() {
           data-ph-capture-attribute-button-name="listing-back-btn"
           data-ph-capture-attribute-feature="back"
         >
-          <ArrowLeft size={20} />
+          <ArrowLeft size={24} />
         </button>
         <div className="listing-page__header-content">
           <div className="listing-page__header-container">
