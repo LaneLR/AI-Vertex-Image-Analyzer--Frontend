@@ -128,12 +128,12 @@
     margin-bottom: 16px;
 
     &.has-image {
-      border: 2px dashed var(--primary-theme);
+      border: 2px dashed var(--upload-zone);
     }
 
     .dropzone-label {
       display: block;
-      padding: 3rem 1rem;
+      padding: 3rem 1rem 3rem 32px;
       cursor: pointer;
       text-align: center;
       background: var(--bg-main);

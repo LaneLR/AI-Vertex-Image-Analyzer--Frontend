@@ -739,7 +739,7 @@ export default function GenerateListingClient() {
                     a solid background.
                   </p>
                   <p className="hint-text-big">
-                    Photo Studio does not count toward your daily scan limit.
+                    Photo Studio does not count towards your daily scan limit.
                   </p>
                 </div>
                 <div

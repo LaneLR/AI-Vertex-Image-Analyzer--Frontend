@@ -321,7 +321,7 @@ export default function AccountClient() {
                 <div className="account-page-content">
                   <div className="subscription-manage-area">
                     <div className="timer-container">
-                      <h4 className="timer-label">Daily reset in</h4>
+                      <h4 className="timer-label">Daily reset in:</h4>
                       <div className="timer-display">
                         {timeLeft.split(":").map((unit, index) => (
                           <React.Fragment key={index}>

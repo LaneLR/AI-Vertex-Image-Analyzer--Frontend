@@ -73,7 +73,7 @@ export default function Header() {
 
   return (
     <>
-      {!isLoading && (
+      {!isLoading ? (
         <nav className="mobile-nav" ref={menuRef}>
           <div className="mobile-nav__container">
             {navItems.map((item) => {
@@ -171,7 +171,7 @@ export default function Header() {
             </div>
           </div>
         </nav>
-      )}
+      ) : ""}
     </>
   );
 }
