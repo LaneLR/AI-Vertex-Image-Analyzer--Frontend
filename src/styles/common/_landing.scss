@@ -67,6 +67,7 @@
   max-width: 500px;
   justify-content: center;
   align-items: center;
+  padding: 0 0 3rem 0;
 }
 
 .home-hero {
@@ -116,7 +117,6 @@
 
 .home-upload {
   padding: 0;
-  // box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
   display: flex;
   width: 100%;
@@ -128,7 +128,7 @@
     margin-bottom: 16px;
 
     &.has-image {
-      border: 2px dashed var(--bg-card);
+      border: 2px dashed var(--primary-theme);
     }
 
     .dropzone-label {
@@ -152,7 +152,7 @@
   grid-template-columns: repeat(
     3,
     1fr
-  ); // 3 columns for mobile/desktop symmetry
+  ); 
   gap: 10px;
 }
 
@@ -220,6 +220,7 @@
   gap: 6px;
   margin-top: 1rem;
   transition: var(--transition);
+  // margin-left: 8px;
 
   &:hover {
     background: var(--bg-card);

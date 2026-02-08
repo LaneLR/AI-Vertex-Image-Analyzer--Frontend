@@ -302,7 +302,7 @@ export default function HomeClient() {
                             hidden
                           />
                           <Camera size={26} />
-                          <span>Add</span>
+                          <span>Add Photo</span>
                         </label>
                       )}
                   </div>
