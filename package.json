@@ -1,6 +1,6 @@
 {
   "name": "ResaleIQ",
-  "version": "1.7.4",
+  "version": "1.7.5",
   "description": "Find items to thrift with ResaleIQ",
   "main": "next.config.js",
   "scripts": {
