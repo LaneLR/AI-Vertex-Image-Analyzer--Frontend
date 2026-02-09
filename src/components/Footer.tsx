@@ -89,6 +89,18 @@ export default function Footer() {
         isOpen={isAboutModalOpen}
         onClose={() => setIsAboutModalOpen(false)}
         title="About ResaleIQ"
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setIsAboutModalOpen(false)}
+              data-ph-capture-attribute-button-name="footer-about-modal-btn-close"
+              data-ph-capture-attribute-feature="footer"
+            >
+              Close
+            </button>
+          </div>
+        }
       >
         <div className="feature-info-modal">
           <div
@@ -174,20 +186,6 @@ export default function Footer() {
                 Get instant price estimates based on resale market trends.
               </p>
             </div>
-          </div>
-
-          <div
-            className="delete-modal__actions"
-            style={{ marginTop: "1.5rem" }}
-          >
-            <button
-              className="modal-btn modal-btn--secondary"
-              onClick={() => setIsAboutModalOpen(false)}
-              data-ph-capture-attribute-button-name="footer-about-modal-btn-close"
-              data-ph-capture-attribute-feature="footer"
-            >
-              Close
-            </button>
           </div>
         </div>
       </InfoModal>

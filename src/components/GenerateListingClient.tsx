@@ -911,11 +911,9 @@ export default function GenerateListingClient() {
       <InfoModal
         isOpen={!!alertModal}
         onClose={() => setAlertModal(null)}
-        title={alertModal?.title || "Notice"}
-      >
-        <div className="help-article">
-          <p className="help-article__text">{alertModal?.message}</p>
-          <div className="help-article__actions">
+        title={"Error"}
+        footer={
+          <div className="modal-btn-container">
             <button
               className="modal-btn modal-btn--secondary"
               onClick={() => setAlertModal(null)}
@@ -925,25 +923,22 @@ export default function GenerateListingClient() {
               Close
             </button>
           </div>
+        }
+      >
+        <div className="help-article">
+          <p className="help-article__text">
+            An error has occurred. Please wait a few minutes and try again.
+          </p>
         </div>
+        <br />
       </InfoModal>
 
       <InfoModal
         isOpen={!!showErrorModal}
         onClose={() => setShowErrorModal(false)}
         title={"Error scanning item"}
-      >
-        <div className="too-many-scans-cont">
-          <div className="errorModal-cont">
-            <div className="errorModal-text">
-              One or more of the images could not be scanned.
-            </div>
-            <br />
-            <div className="errorModal-text">
-              Please select a different photo and try again.
-            </div>
-          </div>
-          <div className="delete-modal__actions">
+        footer={
+          <div className="modal-btn-container">
             <button
               className="modal-btn modal-btn--secondary"
               onClick={() => setShowErrorModal(false)}
@@ -953,27 +948,44 @@ export default function GenerateListingClient() {
               Close
             </button>
           </div>
+        }
+      >
+        <div className="too-many-scans-cont">
+          <div className="errorModal-cont">
+            <div className="errorModal-text">
+              One or more of the images could not be analyzed.
+            </div>
+            <br />
+            <div className="errorModal-text">
+              Please select a different photo and try again.
+            </div>
+          </div>
         </div>
       </InfoModal>
       <InfoModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={"Limit Reached"}
+        title={"Limit reached"}
+        footer={
+          <div className="modal-btn-container">
+            <Link
+              href="/payments"
+              className="generate-btn"
+              data-ph-capture-attribute-button-name="dashboard-view-plans-btn"
+              data-ph-capture-attribute-feature="dashboard"
+            >
+              View Plans
+            </Link>
+          </div>
+        }
       >
         <div className="too-many-scans-cont">
           <p>
             You've reached your max scans for today. Upgrade your account for
             more!
           </p>
-          <Link
-            href="/payments"
-            className="generate-btn"
-            data-ph-capture-attribute-button-name="dashboard-view-plans-btn"
-            data-ph-capture-attribute-feature="dashboard"
-          >
-            View Plans
-          </Link>
         </div>
+        <br />
       </InfoModal>
     </main>
   );

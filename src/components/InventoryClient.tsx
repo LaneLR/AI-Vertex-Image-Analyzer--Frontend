@@ -396,29 +396,9 @@ export default function InventoryClient() {
         <InfoModal
           isOpen={isClearModalOpen}
           onClose={() => setIsClearModalOpen(false)}
-          title="Clear Inventory"
-        >
-          <div className="modal-content">
-            <div className="delete-modal__warning">
-              <p>
-                Are you sure you want to remove <b>all items</b> from your
-                inventory? This action cannot be undone.
-              </p>
-            </div>
-
-            {/* <div
-            className="modal-actions"
-            style={{ marginTop: "1.5rem", display: "flex", gap: "1rem" }}
-          >
-            <button
-              className="secondary-btn"
-              onClick={() => setIsClearModalOpen(false)}
-              style={{ flex: 1 }}
-            >
-              Cancel
-            </button> */}
-
-            <div className="delete-modal__actions">
+          title="Clear inventory"
+          footer={
+            <div className="modal-btn-container">
               <button
                 className="modal-btn modal-btn--secondary"
                 onClick={() => setIsClearModalOpen(false)}
@@ -429,17 +409,26 @@ export default function InventoryClient() {
                 Cancel
               </button>
               <button
-                className="modal-btn modal-btn--primary"
+                className="modal-btn modal-btn--danger"
                 onClick={handleClearAll}
                 disabled={isClearing}
                 data-ph-capture-attribute-button-name="inventory-clear-modal-btn-confirm"
                 data-ph-capture-attribute-feature="inventory"
               >
-                {isClearing ? "Clearing..." : "Yes, Clear All"}
+                {isClearing ? "Clearing..." : "Clear inventory"}
               </button>
             </div>
-            {/* </div> */}
+          }
+        >
+          <div className="modal-content">
+            <div className="delete-modal__warning">
+              <p>
+                Are you sure you want to remove <b>all items</b> from your
+                inventory? This action cannot be undone.
+              </p>
+            </div>
           </div>
+          <br />
         </InfoModal>
       </div>
     </>

@@ -443,43 +443,47 @@ export default function AccountClient() {
         isOpen={errorModal}
         onClose={() => setErrorModal(false)}
         title={"Could not open billing settings"}
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setErrorModal(false)}
+              data-ph-capture-attribute-button-name="account-modal-btn-close"
+              data-ph-capture-attribute-feature="account"
+            >
+              Close
+            </button>
+          </div>
+        }
       >
         <div className="errorModal-text">
           There was an error trying to open the billing settings. Please try
           again later.
         </div>
         <br />
-        <div className="delete-modal__actions">
-          <button
-            className="modal-btn modal-btn--secondary"
-            onClick={() => setErrorModal(false)}
-            data-ph-capture-attribute-button-name="account-modal-btn-close"
-            data-ph-capture-attribute-feature="account"
-          >
-            Close
-          </button>
-        </div>
       </InfoModal>
 
       <InfoModal
         isOpen={reactivateModal}
         onClose={() => setReactivateModal(false)}
         title={"Deactivation cancelled"}
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setReactivateModal(false)}
+              data-ph-capture-attribute-button-name="account-modal-btn-close"
+              data-ph-capture-attribute-feature="account"
+            >
+              Close
+            </button>
+          </div>
+        }
       >
         <div>
           The scheduled deactivation for your account has been cancelled.
         </div>
         <br />
-        <div className="delete-modal__actions">
-          <button
-            className="modal-btn modal-btn--secondary"
-            onClick={() => setReactivateModal(false)}
-            data-ph-capture-attribute-button-name="account-modal-btn-close"
-            data-ph-capture-attribute-feature="account"
-          >
-            Close
-          </button>
-        </div>
       </InfoModal>
     </main>
   );

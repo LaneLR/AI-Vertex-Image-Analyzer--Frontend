@@ -33,7 +33,14 @@ import Loading from "./Loading";
 
 export default function SettingsClient() {
   // Use custom context instead of useSession
-  const { user, isLoading, refreshUser, setUser, deletionCountdown } = useApp();
+  const {
+    user,
+    isLoading,
+    refreshUser,
+    setUser,
+    deletionCountdown,
+    maxFreeScans,
+  } = useApp();
   const router = useRouter();
 
   const [isUpdating, setIsUpdating] = useState(false);
@@ -218,7 +225,7 @@ export default function SettingsClient() {
                 </div>
                 <div>
                   <p className="item-label">Dark Mode</p>
-                  <p className="item-desc">Easier on the eyes in low light</p>
+                  {/* <p className="item-desc">Easier on the eyes in low light</p> */}
                 </div>
               </div>
               <button
@@ -335,6 +342,29 @@ export default function SettingsClient() {
           isOpen={isListingStudioModalOpen}
           onClose={() => setIsListingStudioModalOpen(false)}
           title="SEO Generator"
+          footer={
+            <div>
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsListingStudioModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+                {(user?.subscriptionStatus === "business" ||
+                  user?.subscriptionStatus === "pro") && (
+                  <Link
+                    href="/listing"
+                    className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-seo-generator-redirect"
+                    data-ph-capture-attribute-feature="settings"
+                  >
+                    Go to Listing Studio
+                  </Link>
+                )}
+              </div>
+            </div>
+          }
         >
           <div className="feature-info-modal">
             <p>
@@ -358,27 +388,6 @@ export default function SettingsClient() {
               </div>
             </div>
             <br />
-            <div className="delete-modal__actions">
-              <div
-                className="modal-btn-container"
-                onClick={() => setIsListingStudioModalOpen(false)}
-                data-ph-capture-attribute-button-name="settings-modal-btn-close"
-                data-ph-capture-attribute-feature="settings"
-              >
-                <div className="modal-btn modal-btn--secondary">Close</div>
-                {(user?.subscriptionStatus === "business" ||
-                  user?.subscriptionStatus === "pro") && (
-                  <Link
-                    href="/listing"
-                    className="modal-btn modal-btn--primary"
-                    data-ph-capture-attribute-button-name="settings-modal-btn-seo-generator-redirect"
-                    data-ph-capture-attribute-feature="settings"
-                  >
-                    Go to Listing Studio
-                  </Link>
-                )}
-              </div>
-            </div>
           </div>
         </InfoModal>
 
@@ -387,6 +396,26 @@ export default function SettingsClient() {
           isOpen={isScanHistoryModalOpen}
           onClose={() => setIsScanHistoryModalOpen(false)}
           title="Scan History"
+          footer={
+            <div>
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsScanHistoryModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+                <Link
+                  href="/history"
+                  className="modal-btn modal-btn--primary"
+                  data-ph-capture-attribute-button-name="settings-modal-btn-history-redirect"
+                  data-ph-capture-attribute-feature="settings"
+                >
+                  Go to Scan History
+                </Link>
+              </div>
+            </div>
+          }
         >
           <div className="feature-info-modal">
             <p>
@@ -409,24 +438,6 @@ export default function SettingsClient() {
               </div>
             </div>
             <br />
-            <div className="delete-modal__actions">
-              <div
-                className="modal-btn-container"
-                onClick={() => setIsScanHistoryModalOpen(false)}
-                data-ph-capture-attribute-button-name="settings-modal-btn-close"
-                data-ph-capture-attribute-feature="settings"
-              >
-                <div className="modal-btn modal-btn--secondary">Close</div>
-                <Link
-                  href="/history"
-                  className="modal-btn modal-btn--primary"
-                  data-ph-capture-attribute-button-name="settings-modal-btn-history-redirect"
-                  data-ph-capture-attribute-feature="settings"
-                >
-                  Go to Scan History
-                </Link>
-              </div>
-            </div>
           </div>
         </InfoModal>
 
@@ -435,6 +446,18 @@ export default function SettingsClient() {
           isOpen={isGradesModalOpen}
           onClose={() => setIsGradesModalOpen(false)}
           title="Resale Grades"
+          footer={
+            <div>
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsGradesModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+              </div>
+            </div>
+          }
         >
           <div className="feature-info-modal">
             <p>
@@ -458,16 +481,6 @@ export default function SettingsClient() {
               </div>
             </div>
             <br />
-            <div className="delete-modal__actions">
-              <div
-                className="modal-btn-container"
-                onClick={() => setIsGradesModalOpen(false)}
-                data-ph-capture-attribute-button-name="settings-modal-btn-close"
-                data-ph-capture-attribute-feature="settings"
-              >
-                <div className="modal-btn modal-btn--secondary">Close</div>
-              </div>
-            </div>
           </div>
         </InfoModal>
 
@@ -476,6 +489,28 @@ export default function SettingsClient() {
           isOpen={isProfitCalcModalOpen}
           onClose={() => setIsProfitCalcModalOpen(false)}
           title="Profit Calculator"
+          footer={
+            <div>
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsProfitCalcModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+                {user?.subscriptionStatus !== "basic" && (
+                  <Link
+                    href="/calculator"
+                    className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-calculator-redirect"
+                    data-ph-capture-attribute-feature="settings"
+                  >
+                    Go to Profit Calculator
+                  </Link>
+                )}
+              </div>
+            </div>
+          }
         >
           <div className="feature-info-modal">
             <p>
@@ -498,26 +533,6 @@ export default function SettingsClient() {
               </div>
             </div>
             <br />
-            <div className="delete-modal__actions">
-              <div
-                className="modal-btn-container"
-                onClick={() => setIsProfitCalcModalOpen(false)}
-                data-ph-capture-attribute-button-name="settings-modal-btn-close"
-                data-ph-capture-attribute-feature="settings"
-              >
-                <div className="modal-btn modal-btn--secondary">Close</div>
-                {user?.subscriptionStatus !== "basic" && (
-                  <Link
-                    href="/calculator"
-                    className="modal-btn modal-btn--primary"
-                    data-ph-capture-attribute-button-name="settings-modal-btn-calculator-redirect"
-                    data-ph-capture-attribute-feature="settings"
-                  >
-                    Go to Profit Calculator
-                  </Link>
-                )}
-              </div>
-            </div>
           </div>
         </InfoModal>
 
@@ -526,6 +541,29 @@ export default function SettingsClient() {
           isOpen={isPhotoStudioModalOpen}
           onClose={() => setIsPhotoStudioModalOpen(false)}
           title="Photo Generator"
+          footer={
+            <div>
+              <div
+                className="modal-btn-container"
+                onClick={() => setIsPhotoStudioModalOpen(false)}
+                data-ph-capture-attribute-button-name="settings-modal-btn-close"
+                data-ph-capture-attribute-feature="settings"
+              >
+                <div className="modal-btn modal-btn--secondary">Close</div>
+                {(user?.subscriptionStatus === "business" ||
+                  user?.subscriptionStatus === "pro") && (
+                  <Link
+                    href="/listing"
+                    className="modal-btn modal-btn--primary"
+                    data-ph-capture-attribute-button-name="settings-modal-btn-photo-redirect"
+                    data-ph-capture-attribute-feature="settings"
+                  >
+                    Go to Listing Studio
+                  </Link>
+                )}
+              </div>
+            </div>
+          }
         >
           <div className="feature-info-modal">
             <p>
@@ -548,27 +586,6 @@ export default function SettingsClient() {
               </div>
             </div>
             <br />
-            <div className="delete-modal__actions">
-              <div
-                className="modal-btn-container"
-                onClick={() => setIsPhotoStudioModalOpen(false)}
-                data-ph-capture-attribute-button-name="settings-modal-btn-close"
-                data-ph-capture-attribute-feature="settings"
-              >
-                <div className="modal-btn modal-btn--secondary">Close</div>
-                {(user?.subscriptionStatus === "business" ||
-                  user?.subscriptionStatus === "pro") && (
-                  <Link
-                    href="/listing"
-                    className="modal-btn modal-btn--primary"
-                    data-ph-capture-attribute-button-name="settings-modal-btn-photo-redirect"
-                    data-ph-capture-attribute-feature="settings"
-                  >
-                    Go to Listing Studio
-                  </Link>
-                )}
-              </div>
-            </div>
           </div>
         </InfoModal>
 
@@ -577,6 +594,21 @@ export default function SettingsClient() {
           isOpen={isInventoryModalOpen}
           onClose={() => setIsInventoryModalOpen(false)}
           title="Inventory Manager"
+          footer={
+            <>
+              <div className="modal-btn modal-btn--secondary">Close</div>
+              {user?.subscriptionStatus === "business" && (
+                <Link
+                  href="/inventory"
+                  className="modal-btn modal-btn--primary"
+                  data-ph-capture-attribute-button-name="settings-modal-btn-inventory-redirect"
+                  data-ph-capture-attribute-feature="settings"
+                >
+                  Go to Inventory Manager
+                </Link>
+              )}
+            </>
+          }
         >
           <div className="feature-info-modal">
             <p>
@@ -594,32 +626,11 @@ export default function SettingsClient() {
                 your entire inventory at a single glance.
               </div>
               <div>
-                <strong>Workflow:</strong> Toggle "Auto-Add" on the
-                home screen to skip history and send scans straight to
-                inventory.
+                <strong>Workflow:</strong> Toggle "Auto-Add" on the dashboard to
+                send scans straight to your inventory.
               </div>
             </div>
             <br />
-            <div className="delete-modal__actions">
-              <div
-                className="modal-btn-container"
-                onClick={() => setIsInventoryModalOpen(false)}
-                data-ph-capture-attribute-button-name="settings-modal-btn-close"
-                data-ph-capture-attribute-feature="settings"
-              >
-                <div className="modal-btn modal-btn--secondary">Close</div>
-                {user?.subscriptionStatus === "business" && (
-                  <Link
-                    href="/inventory"
-                    className="modal-btn modal-btn--primary"
-                    data-ph-capture-attribute-button-name="settings-modal-btn-inventory-redirect"
-                    data-ph-capture-attribute-feature="settings"
-                  >
-                    Go to Inventory Manager
-                  </Link>
-                )}
-              </div>
-            </div>
           </div>
         </InfoModal>
 
@@ -673,43 +684,150 @@ export default function SettingsClient() {
           <InfoModal
             isOpen={isHelpModalOpen}
             onClose={() => setIsHelpModalOpen(false)}
-            title="Help"
+            title="Support & FAQ"
+            footer={
+              <button
+                className="modal-btn modal-btn--secondary"
+                onClick={() => setIsHelpModalOpen(false)}
+              >
+                Close
+              </button>
+            }
           >
             <div className="feature-info-modal">
-              <p>You can get help here.</p>
-              <br />
-              <div className="delete-modal__actions">
-                <div
-                  className="modal-btn-container"
-                  onClick={() => setIsHelpModalOpen(false)}
-                  data-ph-capture-attribute-button-name="settings-modal-btn-close"
-                  data-ph-capture-attribute-feature="settings"
+              <section style={{ marginBottom: "1.5rem" }}>
+                <h4
+                  style={{
+                    color: "var(--text-primary)",
+                    marginBottom: "0.5rem",
+                  }}
                 >
-                  <div className="modal-btn modal-btn--secondary">Close</div>
-                </div>
-              </div>
+                  How it works
+                </h4>
+                <p>
+                  Take a clear photo of any item. Our AI analyzes the brand,
+                  model, and condition to provide an estimated resale value
+                  based on current market data.
+                </p>
+              </section>
+
+              <section style={{ marginBottom: "1.5rem" }}>
+                <h4
+                  style={{
+                    color: "var(--text-primary)",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  Scan Limits
+                </h4>
+                <p>
+                  Free accounts get{" "}
+                  <strong>{maxFreeScans} scans per day</strong>. Limits reset at
+                  midnight Pacific Time. Subscribing to a Hobby, Pro or Elite
+                  plan increases your daily capacity.
+                </p>
+              </section>
+
+              <section>
+                <h4
+                  style={{
+                    color: "var(--text-primary)",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  Contact Us
+                </h4>
+                <p>
+                  Have a question or found a bug? Email our support team at:
+                </p>
+                <a
+                  href="mailto:support@resaleiq.com"
+                  style={{ color: "var(--primary-theme)", fontWeight: "600" }}
+                >
+                  support@resaleiq.com
+                </a>
+              </section>
             </div>
           </InfoModal>
 
           <InfoModal
             isOpen={isPrivacyModalOpen}
             onClose={() => setIsPrivacyModalOpen(false)}
-            title="Privacy and Terms"
+            title="Privacy & Terms"
+            footer={
+              <button
+                className="modal-btn modal-btn--secondary"
+                onClick={() => setIsPrivacyModalOpen(false)}
+              >
+                Close
+              </button>
+            }
           >
             <div className="feature-info-modal">
-              <p>
-                You can view our <a>Terms of Service</a> and{" "}
-                <a>Privacy Policy</a> here.
-              </p>
-              <br />
-              <div className="delete-modal__actions">
-                <div
-                  className="modal-btn-container"
-                  onClick={() => setIsPrivacyModalOpen(false)}
-                  data-ph-capture-attribute-button-name="settings-modal-btn-close"
-                  data-ph-capture-attribute-feature="settings"
+              <section style={{ marginBottom: "1.5rem" }}>
+                <h4
+                  style={{
+                    color: "var(--text-primary)",
+                    marginBottom: "0.5rem",
+                  }}
                 >
-                  <div className="modal-btn modal-btn--secondary">Close</div>
+                  Data Usage
+                </h4>
+                <p>
+                  We use your uploaded images solely for the purpose of
+                  identifying items and generating valuations. We do not sell
+                  your personal data to third parties.
+                </p>
+              </section>
+
+              <section style={{ marginBottom: "1.5rem" }}>
+                <h4
+                  style={{
+                    color: "var(--text-primary)",
+                    marginBottom: "0.5rem",
+                  }}
+                >
+                  Account Deletion
+                </h4>
+                <p>
+                  You can request to delete your account at any time. Once
+                  requested, your data will be permanently removed after a
+                  30-day grace period.
+                </p>
+              </section>
+
+              <div
+                style={{
+                  padding: "12px",
+                  background: "var(--bg-main)",
+                  borderRadius: "12px",
+                  fontSize: "0.85rem",
+                }}
+              >
+                <p style={{ marginBottom: "8px" }}>
+                  For the full legal documentation, please visit:
+                </p>
+                <div style={{ display: "flex", gap: "16px" }}>
+                  <a
+                    href="/terms"
+                    target="_blank"
+                    style={{
+                      color: "var(--primary-theme)",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    Terms of Service
+                  </a>
+                  <a
+                    href="/privacy"
+                    target="_blank"
+                    style={{
+                      color: "var(--primary-theme)",
+                      textDecoration: "underline",
+                    }}
+                  >
+                    Privacy Policy
+                  </a>
                 </div>
               </div>
             </div>
@@ -785,21 +903,9 @@ export default function SettingsClient() {
         <InfoModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}
-          title="Clear History"
-        >
-          <div className="delete-modal">
-            <div className="delete-modal__warning">
-              <div className="warning-icon-bg">
-                <AlertTriangle size={32} />
-              </div>
-              <h3>Are you sure?</h3>
-              <p>
-                All scanned items and valuations will be permanently removed.
-                <strong> This cannot be undone.</strong>
-              </p>
-            </div>
-
-            <div className="delete-modal__actions">
+          title="Clear history"
+          footer={
+            <div className="modal-btn-container">
               <button
                 className="modal-btn modal-btn--secondary"
                 onClick={() => setIsModalOpen(false)}
@@ -819,13 +925,7 @@ export default function SettingsClient() {
                 Delete All Scan History
               </button>
             </div>
-          </div>
-        </InfoModal>
-
-        <InfoModal
-          isOpen={showConfirmDelete}
-          onClose={() => setShowConfirmDelete(false)}
-          title="Deactivate account"
+          }
         >
           <div className="delete-modal">
             <div className="delete-modal__warning">
@@ -834,13 +934,19 @@ export default function SettingsClient() {
               </div>
               <h3>Are you sure?</h3>
               <p>
-                This will schedule your account to be deactivated in{" "}
-                <strong>30 days</strong>. After this time, you will not be able
-                to log into your account.
+                All scanned items and valuations will be permanently removed.
+                <strong> This cannot be undone.</strong>
               </p>
             </div>
+          </div>
+        </InfoModal>
 
-            <div className="delete-modal__actions">
+        <InfoModal
+          isOpen={showConfirmDelete}
+          onClose={() => setShowConfirmDelete(false)}
+          title="Deactivate account"
+          footer={
+            <div className="modal-btn-container">
               <button
                 className="modal-btn modal-btn--secondary"
                 onClick={() => setShowConfirmDelete(false)}
@@ -861,6 +967,20 @@ export default function SettingsClient() {
                   ? "Preparing to deactivate account..."
                   : "Deactivate Account"}
               </button>
+            </div>
+          }
+        >
+          <div className="delete-modal">
+            <div className="delete-modal__warning">
+              <div className="warning-icon-bg">
+                <AlertTriangle size={32} />
+              </div>
+              <h3>Are you sure?</h3>
+              <p>
+                This will schedule your account to be deactivated in{" "}
+                <strong>30 days</strong>. After this time, you will not be able
+                to log into your account.
+              </p>
             </div>
           </div>
         </InfoModal>
