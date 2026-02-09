@@ -78,64 +78,6 @@ export default function HomeClient() {
     setPreviews(newPreviews);
   };
 
-  // const analyzeItem = async () => {
-  //   if (images.length === 0) return;
-  //   setLoading(true);
-
-  //   const formData = new FormData();
-
-  //   try {
-  //     // 1. Resize all images in parallel before sending
-  //     // This reduces the payload from ~20MB down to ~300KB
-  //     const resizedImageBlobs = await Promise.all(
-  //       images.map((img) => resizeImage(img, 768)),
-  //     );
-
-  //     // 2. Append the resized Blobs to FormData
-  //     resizedImageBlobs.forEach((blob, index) => {
-  //       // We give it a filename so the backend Multer knows it's an image
-  //       formData.append("image", blob, `image-${index}.jpg`);
-  //     });
-
-  //     formData.append("mode", "appraisal");
-  //     formData.append("addToInventory", String(addToInventory));
-
-  //     const token = localStorage.getItem("token");
-  //     const res = await fetch(getApiUrl("/api/analyze"), {
-  //       method: "POST",
-  //       headers: {
-  //         Authorization: `Bearer ${token}`,
-  //       },
-  //       body: formData,
-  //     });
-
-  //     const data = await res.json();
-
-  //     if (res.ok) {
-  //       setResult(data);
-  //       incrementScans();
-  //       setTimeout(() => {
-  //         resultsRef.current?.scrollIntoView({
-  //           behavior: "smooth",
-  //           block: "start",
-  //         });
-  //       }, 100);
-  //     } else if (res.status === 429) {
-  //       setShowModal(true);
-  //     } else if (res.status === 401) {
-  //       router.push("/login");
-  //     } else {
-  //       setShowErrorModal(true);
-  //     }
-  //   } catch (err) {
-  //     console.error("Analysis Error:", err);
-  //     setShowErrorModal(true);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  //not changing image size smaller
   const analyzeItem = async () => {
     if (images.length === 0) return;
 
@@ -175,6 +117,7 @@ export default function HomeClient() {
         router.push("/login");
       } else {
         setShowErrorModal(true);
+        return;
       }
     } catch (err) {
       console.error(err);
@@ -268,7 +211,7 @@ export default function HomeClient() {
         <div className="home-top-section">
           <section className="home-hero">
             <h1>Identify & Appraise Instantly</h1>
-            <p>Snapshot any item to get resale values.</p>
+            <p>Snapshot any item to get resale values!</p>
           </section>
 
           <div className="home-upload card">
@@ -450,56 +393,72 @@ export default function HomeClient() {
       <InfoModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={"Limit Reached"}
+        title={"Limit reached"}
+        footer={
+          <div className="modal-btn-container">
+            <Link
+              href="/payments"
+              className="generate-btn"
+              data-ph-capture-attribute-button-name="dashboard-view-plans-btn"
+              data-ph-capture-attribute-feature="dashboard"
+            >
+              View Plans
+            </Link>
+          </div>
+        }
       >
         <div className="too-many-scans-cont">
           <p>
             You've reached your max scans for today. Upgrade your account for
             more!
           </p>
-          <Link
-            href="/payments"
-            className="generate-btn"
-            data-ph-capture-attribute-button-name="dashboard-view-plans-btn"
-            data-ph-capture-attribute-feature="dashboard"
-          >
-            View Plans
-          </Link>
         </div>
-      </InfoModal>
-
-      <InfoModal
-        isOpen={showErrorModal}
-        onClose={() => setShowErrorModal(false)}
-        title={"Error"}
-      >
-        <div className="errorModal-cont">
-          <p>One or more images could not be scanned. Please try again.</p>
-        </div>
+        <br />
       </InfoModal>
 
       <InfoModal
         isOpen={!!showErrorModal}
         onClose={() => setShowErrorModal(false)}
-        title={"Error scanning item"}
-      >
-        <div className="too-many-scans-cont">
-          <div className="errorModal-cont">
-            <div className="errorModal-text">
-              One or more of the images could not be scanned.
-            </div>
-            <br />
-            <div className="errorModal-text">
-              Please select a different photo and try again.
-            </div>
+        title={"Error"}
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setShowErrorModal(false)}
+              data-ph-capture-attribute-button-name="dashboard-error-modal-btn-close"
+              data-ph-capture-attribute-feature="dashboard"
+            >
+              Close
+            </button>
           </div>
+        }
+      >
+        <div className="errorModal-cont">
+          <p>
+            One or more images could not be analyzed. Be sure that the image(s)
+            you are uploading are of the same item and not multiple different
+            items. Please try again.
+          </p>
         </div>
+        <br />
       </InfoModal>
 
       <InfoModal
         isOpen={!!gradeAModal}
         onClose={() => setGradeAModal(false)}
         title={"Resale Grade A"}
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setGradeAModal(false)}
+              data-ph-capture-attribute-button-name="dashboard-modal-btn-close"
+              data-ph-capture-attribute-feature="dashboard"
+            >
+              Close
+            </button>
+          </div>
+        }
       >
         <div>
           <strong>High Value | High Demand | High Stability</strong>
@@ -517,22 +476,24 @@ export default function HomeClient() {
           </div>
         </div>
         <br />
-        <div className="delete-modal__actions">
-          <button
-            className="modal-btn modal-btn--secondary"
-            onClick={() => setGradeAModal(false)}
-            data-ph-capture-attribute-button-name="account-modal-btn-close"
-            data-ph-capture-attribute-feature="account"
-          >
-            Close
-          </button>
-        </div>
       </InfoModal>
 
       <InfoModal
         isOpen={!!gradeBModal}
         onClose={() => setGradeBModal(false)}
         title={"Resale Grade B"}
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setGradeBModal(false)}
+              data-ph-capture-attribute-button-name="dashboard-modal-btn-close"
+              data-ph-capture-attribute-feature="dashboard"
+            >
+              Close
+            </button>
+          </div>
+        }
       >
         <div>
           <strong>Good Value | Moderate Demand | Reliable</strong>
@@ -551,22 +512,24 @@ export default function HomeClient() {
           </div>
         </div>
         <br />
-        <div className="delete-modal__actions">
-          <button
-            className="modal-btn modal-btn--secondary"
-            onClick={() => setGradeBModal(false)}
-            data-ph-capture-attribute-button-name="account-modal-btn-close"
-            data-ph-capture-attribute-feature="account"
-          >
-            Close
-          </button>
-        </div>
       </InfoModal>
 
       <InfoModal
         isOpen={!!gradeCModal}
         onClose={() => setGradeCModal(false)}
         title={"Resale Grade C"}
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setGradeCModal(false)}
+              data-ph-capture-attribute-button-name="dashboard-modal-btn-close"
+              data-ph-capture-attribute-feature="dashboard"
+            >
+              Close
+            </button>
+          </div>
+        }
       >
         <div>
           <strong>High Value | Low Velocity | Volatile</strong>
@@ -584,22 +547,24 @@ export default function HomeClient() {
           </div>
         </div>
         <br />
-        <div className="delete-modal__actions">
-          <button
-            className="modal-btn modal-btn--secondary"
-            onClick={() => setGradeCModal(false)}
-            data-ph-capture-attribute-button-name="account-modal-btn-close"
-            data-ph-capture-attribute-feature="account"
-          >
-            Close
-          </button>
-        </div>
       </InfoModal>
 
       <InfoModal
         isOpen={!!gradeDModal}
         onClose={() => setGradeDModal(false)}
         title={"Resale Grade D"}
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setGradeDModal(false)}
+              data-ph-capture-attribute-button-name="dashboard-modal-btn-close"
+              data-ph-capture-attribute-feature="dashboard"
+            >
+              Close
+            </button>
+          </div>
+        }
       >
         <div>
           <strong>Low Value | High Saturation | Low Margin</strong>
@@ -618,22 +583,24 @@ export default function HomeClient() {
           </div>
         </div>
         <br />
-        <div className="delete-modal__actions">
-          <button
-            className="modal-btn modal-btn--secondary"
-            onClick={() => setGradeDModal(false)}
-            data-ph-capture-attribute-button-name="account-modal-btn-close"
-            data-ph-capture-attribute-feature="account"
-          >
-            Close
-          </button>
-        </div>
       </InfoModal>
 
       <InfoModal
         isOpen={!!gradeFModal}
         onClose={() => setGradeFModal(false)}
         title={"Resale Grade F"}
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setGradeFModal(false)}
+              data-ph-capture-attribute-button-name="dashboard-modal-btn-close"
+              data-ph-capture-attribute-feature="dashboard"
+            >
+              Close
+            </button>
+          </div>
+        }
       >
         <div>
           <strong>No or Low Value | High Risk | Restricted</strong>
@@ -652,16 +619,6 @@ export default function HomeClient() {
           </div>
         </div>
         <br />
-        <div className="delete-modal__actions">
-          <button
-            className="modal-btn modal-btn--secondary"
-            onClick={() => setGradeFModal(false)}
-            data-ph-capture-attribute-button-name="account-modal-btn-close"
-            data-ph-capture-attribute-feature="account"
-          >
-            Close
-          </button>
-        </div>
       </InfoModal>
     </main>
   );

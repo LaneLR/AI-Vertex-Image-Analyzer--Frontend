@@ -16,8 +16,8 @@
   --bg-header: #eeeeee;
   --bg-card: #eaeaea;
   --bg-card2: transparent;
-  --bg-loading: #81818148;
-  --upload-zone: #cacaca;
+  --bg-loading: #eeeeee;
+  --upload-zone: #b1b1b1;
 
   --footer-bg: #f1f1f1;
   --footer-text-light: #ffffff;
@@ -49,8 +49,8 @@
   --bg-card: #1e1e1e;
   --bg-card2: #1e1e1e;
   --bg-header: #121212;
-  --bg-loading: #2c2c2c;
-  --upload-zone: #333;
+  --bg-loading: #1a1a1a;
+  --upload-zone: #464646;
   
   --footer-bg: #1f1f1f;
 

@@ -1,11 +1,9 @@
 .modal-overlay {
   position: fixed;
   inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   z-index: 9999;
   padding: 1.25rem;
+  pointer-events: auto;
 
   &__backdrop {
     position: absolute;
@@ -17,15 +15,22 @@
 }
 
 .modal-container {
-  position: relative;
-  background: var(--bg-card); // Uses your existing variable
-  width: 100%;
+position: absolute; /* Relative to overlay */
+  top: 50%;
+  left: 50%;
+  /* This ensures the modal is centered regardless of the animation */
+  transform: translate(-50%, -50%); 
+  
+  background: var(--bg-card);
+  width: calc(100% - 2.5rem); /* Adjust for overlay padding */
   max-width: 440px;
   border-radius: 28px;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   border: 1px solid var(--border-color);
   overflow: hidden;
-  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  
+  /* Update the animation name */
+  animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
   &__handle {
     width: 40px;
@@ -100,6 +105,19 @@
   }
 }
 
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    /* Start slightly below center and slightly smaller */
+    transform: translate(-50%, calc(-50% + 30px)) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    /* End exactly at center */
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
 .delete-modal {
   text-align: center;
   padding-top: 0.5rem;
@@ -142,12 +160,11 @@
 
   &__actions {
     display: flex;
-    flex-direction: column; // Stacked for mobile UX
+    flex-direction: column; 
     gap: 0.75rem;
   }
 }
 
-// Global Modal Button Styles
 .modal-btn-container {
   width: 100%;
   border-radius: 14px;
@@ -166,22 +183,6 @@
     width: 100%;
   }
 }
-
-// .modal-btn-container {
-//   width: 100%;
-//   display: flex;
-//   align-items: center;
-//   justify-content: center;
-//   gap: 12px; // Space between buttons
-  
-//   // Remove padding here so buttons can reach the edges if necessary
-//   padding: 0; 
-
-//   @media (max-width: 440px) {
-//     flex-direction: column;
-//     gap: 8px;
-//   }
-// }
 
 .modal-btn {
   width: auto;
@@ -210,6 +211,7 @@
   &--danger {
     background: var(--error-text);
     color: white;
+    width: 100%;
 
     &:hover:not(:disabled) {
       background: var(--error-bg);
@@ -223,7 +225,7 @@
 
   &--primary {
     background: var(--primary-theme);
-    color: var(--text-primary);
+    color: white;
     border: 1px solid var(--border-color);
     flex: 1;
 

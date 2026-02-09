@@ -11,7 +11,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  userScalable: false, 
+  userScalable: false,
   viewportFit: "cover",
 };
 
@@ -28,6 +28,16 @@ export default function RootLayout({
   return (
     <html lang="en" className="global" suppressHydrationWarning>
       <head>
+        <meta
+          name="theme-color"
+          content="#eeeeee"
+          media="(prefers-color-scheme: light)"
+        />
+        <meta
+          name="theme-color"
+          content="#121212"
+          media="(prefers-color-scheme: dark)"
+        />
         <script
           dangerouslySetInnerHTML={{
             __html: `

@@ -202,29 +202,8 @@ export default function HelpClient() {
         isOpen={!!activeModal}
         onClose={() => setActiveModal(null)}
         title={activeModal?.title || ""}
-      >
-        <div className="help-article">
-          <p className="help-article__text">{activeModal?.content}</p>
-
-          {/* <div className="help-article__feedback">
-            <span>Was this helpful?</span>
-            <div className="feedback-btns">
-              <button
-                className="feedback-btn"
-                onClick={() => setActiveModal(null)}
-              >
-                Yes
-              </button>
-              <button
-                className="feedback-btn"
-                onClick={() => setActiveModal(null)}
-              >
-                No
-              </button>
-            </div>
-          </div> */}
-
-          <div className="help-article__actions">
+        footer={
+          <div className="modal-btn-container">
             <button
               className="modal-btn modal-btn--secondary"
               onClick={() => setActiveModal(null)}
@@ -234,7 +213,12 @@ export default function HelpClient() {
               Close
             </button>
           </div>
+        }
+      >
+        <div className="help-article">
+          <p className="help-article__text">{activeModal?.content}</p>
         </div>
+        <br />
       </InfoModal>
     </main>
   );

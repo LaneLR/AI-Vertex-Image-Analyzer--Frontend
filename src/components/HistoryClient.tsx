@@ -303,7 +303,8 @@ export default function HistoryClient() {
                                       <Trash2 size={18} />
                                     </button>
                                     {isBusiness ||
-                                      (isBusiness || isPro && (
+                                      isBusiness ||
+                                      (isPro && (
                                         <button
                                           onClick={(e) => {
                                             e.stopPropagation();
@@ -312,7 +313,7 @@ export default function HistoryClient() {
                                           data-ph-capture-attribute-button-name="history-add-inventory-btn"
                                           data-ph-capture-attribute-feature="history"
                                           className="history-card__inventory-btn"
-                                          title="Add to Inventory"
+                                          title="Add to inventory"
                                         >
                                           <Boxes size={18} />
                                         </button>
@@ -374,11 +375,11 @@ export default function HistoryClient() {
         <InfoModal
           isOpen={!!deleteTarget}
           onClose={() => setDeleteTarget(null)}
-          title="Delete Scan"
+          title="Delete scan"
           footer={
-            <div className="modal-footer-gap">
+            <div className="modal-btn-container">
               <button
-                className="btn-secondary"
+                className="modal-btn modal-btn--secondary"
                 onClick={() => setDeleteTarget(null)}
                 data-ph-capture-attribute-button-name="history-delete-modal-btn-cancel"
                 data-ph-capture-attribute-feature="history"
@@ -386,12 +387,12 @@ export default function HistoryClient() {
                 Cancel
               </button>
               <button
-                className="btn-danger"
+                className="modal-btn modal-btn--danger"
                 onClick={confirmDelete}
                 data-ph-capture-attribute-button-name="history-delete-modal-btn-confirm"
                 data-ph-capture-attribute-feature="history"
               >
-                Delete
+                Delete Scanned Item
               </button>
             </div>
           }
@@ -405,19 +406,24 @@ export default function HistoryClient() {
         <InfoModal
           isOpen={!!errorMessage}
           onClose={() => setErrorMessage(null)}
-          title="Delete Error"
+          title="Error deleting"
+          footer={
+            <div className="modal-btn-container">
+              <button
+                className="modal-btn modal-btn--secondary"
+                onClick={() => setErrorMessage(null)}
+                data-ph-capture-attribute-button-name="history-error-modal-btn-close"
+                data-ph-capture-attribute-feature="history"
+              >
+                Close
+              </button>
+            </div>
+          }
         >
           <div className="errorModal-cont">
             <p className="errorModal-text">{errorMessage}</p>
-            <button
-              className="generate-btn"
-              onClick={() => setErrorMessage(null)}
-              data-ph-capture-attribute-button-name="history-error-modal-btn-close"
-              data-ph-capture-attribute-feature="history"
-            >
-              Close
-            </button>
           </div>
+          <br />
         </InfoModal>
 
         {successMessage && (

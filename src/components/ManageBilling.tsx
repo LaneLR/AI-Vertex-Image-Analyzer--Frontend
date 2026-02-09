@@ -47,20 +47,22 @@ export default function ManageBilling() {
       <InfoModal
         isOpen={isErrorOpen}
         onClose={() => setIsErrorOpen(false)}
-        title="Billing Notice"
+        title="Billing notice"
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setIsErrorOpen(false)}
+              data-ph-capture-attribute-button-name="account-modal-btn-close"
+              data-ph-capture-attribute-feature="account"
+            >
+              Close
+            </button>
+          </div>
+        }
       >
         <p>An error has occurred. Please try again later.</p>
         <br />
-        <div className="delete-modal__actions">
-          <button
-            className="modal-btn modal-btn--secondary"
-            onClick={() => setIsErrorOpen(false)}
-            data-ph-capture-attribute-button-name="account-modal-btn-close"
-            data-ph-capture-attribute-feature="account"
-          >
-            Close
-          </button>
-        </div>
       </InfoModal>
     </div>
   );

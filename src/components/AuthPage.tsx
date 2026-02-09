@@ -34,8 +34,8 @@ export default function UnifiedAuthPage() {
 
   const [modalConfig, setModalConfig] = useState({
     isOpen: false,
-    title: "",
-    message: "",
+    title: "Error",
+    message: "An error has occurred. Please wait a few minutes and try again.",
   });
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -480,7 +480,7 @@ export default function UnifiedAuthPage() {
       <InfoModal
         isOpen={showResetModal}
         onClose={() => setShowResetModal(false)}
-        title="Reset Password"
+        title="Reset password"
       >
         <form onSubmit={handleFinalReset} className="auth-form">
           <div className="input-wrapper">
@@ -557,8 +557,21 @@ export default function UnifiedAuthPage() {
         isOpen={modalConfig.isOpen}
         onClose={() => setModalConfig({ ...modalConfig, isOpen: false })}
         title={modalConfig.title}
+        footer={
+          <div className="modal-btn-container">
+            <button
+              className="modal-btn modal-btn--secondary"
+              onClick={() => setModalConfig({ ...modalConfig, isOpen: false })}
+              data-ph-capture-attribute-button-name="auth-modal-btn-close"
+              data-ph-capture-attribute-feature="auth"
+            >
+              Close
+            </button>
+          </div>
+        }
       >
         <p className="modal-text">{modalConfig.message}</p>
+        <br />
       </InfoModal>
     </main>
   );

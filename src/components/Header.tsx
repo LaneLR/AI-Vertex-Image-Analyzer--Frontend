@@ -38,6 +38,10 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    setIsMoreOpen(false);
+  }, [pathname]);
+
   if (!user) return null;
 
   const handleLogout = () => {
@@ -73,12 +77,15 @@ export default function Header() {
 
   return (
     <>
-      {!isLoading && (
+      {!isLoading ? (
         <nav className="mobile-nav" ref={menuRef}>
           <div className="mobile-nav__container">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href || (item.href !== '/dashboard/' && pathname.startsWith(item.href));              return (
+              const isActive =
+                pathname === item.href ||
+                (item.href !== "/dashboard/" && pathname.startsWith(item.href));
+              return (
                 <Link
                   key={item.href}
                   href={item.href}
@@ -111,18 +118,19 @@ export default function Header() {
             <div
               className={`mobile-nav__popover ${isMoreOpen ? "is-visible" : ""}`}
             >
-              {isBusiness || isPro && (
-                <Link
-                  href="/inventory"
-                  className="popover-item"
-                  onClick={() => setIsMoreOpen(false)}
-                  data-ph-capture-attribute-button-name="nav-inventory-button"
-                  data-ph-capture-attribute-feature="navigation"
-                >
-                  <Boxes size={20} />
-                  <span>Inventory</span>
-                </Link>
-              )}
+              {isBusiness ||
+                (isPro && (
+                  <Link
+                    href="/inventory"
+                    className="popover-item"
+                    onClick={() => setIsMoreOpen(false)}
+                    data-ph-capture-attribute-button-name="nav-inventory-button"
+                    data-ph-capture-attribute-feature="navigation"
+                  >
+                    <Boxes size={20} />
+                    <span>Inventory</span>
+                  </Link>
+                ))}
               {(isPro || isBusiness) && (
                 <Link
                   href="/listing"
@@ -171,6 +179,8 @@ export default function Header() {
             </div>
           </div>
         </nav>
+      ) : (
+        ""
       )}
     </>
   );
