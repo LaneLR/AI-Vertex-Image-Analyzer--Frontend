@@ -16,6 +16,7 @@ import {
   RefreshCcw,
   Scan,
   ScanSearch,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation"; // Added router
@@ -176,13 +177,13 @@ export default function HomeClient() {
       <section className="home-stats">
         <div className="home-stats__item">
           {isBusiness ? (
-            <BriefcaseBusiness size={18} className="orange-icon" />
+            <Star size={22} className="orange-icon" />
           ) : isPro ? (
-            <Flame size={18} className="orange-icon" />
+            <Flame size={22} className="orange-icon" />
           ) : isHobby ? (
-            <Zap size={18} className="orange-icon" />
+            <Zap size={22} className="orange-icon" />
           ) : (
-            <ZapOff size={18} />
+            <ZapOff size={22} />
           )}
           <span>
             {isPro
@@ -199,7 +200,7 @@ export default function HomeClient() {
           <span className="secondary-text">IQ</span>
         </div> */}
         <div className="home-stats__item">
-          <BarChart3 size={16} className="orange-icon" />
+          <BarChart3 size={22} className="orange-icon" />
           <span className="home-stats__item">
             {dailyScansUsed} /{" "}
             {isPro ? "100" : isHobby ? "50" : isBusiness ? "250" : "5"} scans
