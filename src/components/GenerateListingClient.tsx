@@ -443,7 +443,7 @@ export default function GenerateListingClient() {
                     <Package size={28} /> SEO Generator
                   </h3>
                   <div className="home-stats__item">
-                    <BarChart3 size={16} className="orange-icon" />
+                    <BarChart3 size={22} className="orange-icon" />
                     <span className="home-stats__item">
                       <b>
                         {dailyScansUsed} /{" "}

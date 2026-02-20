@@ -17,6 +17,7 @@ import {
   Boxes,
   RefreshCw,
   RefreshCcw,
+  Star,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -264,13 +265,13 @@ export default function AccountClient() {
                 }`}
               >
                 {isBusiness ? (
-                  <BriefcaseBusiness size={18} className="orange-icon" />
+                  <Star size={22} className="orange-icon" />
                 ) : isPro ? (
-                  <Flame size={18} className="orange-icon" />
+                  <Flame size={22} className="orange-icon" />
                 ) : isHobby ? (
-                  <Zap size={18} className="orange-icon" />
+                  <Zap size={22} className="orange-icon" />
                 ) : (
-                  <ZapOff size={18} />
+                  <ZapOff size={22} />
                 )}{" "}
                 {isPro
                   ? "Pro"
